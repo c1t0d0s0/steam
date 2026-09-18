@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs sm:text-sm font-black text-slate-800 tracking-tight">
-                わくわくSTEAM探検隊
+                STEAM探検隊
               </span>
               <select
                 value={progress.grade}

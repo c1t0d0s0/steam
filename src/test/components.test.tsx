@@ -7,7 +7,7 @@ describe('App Component Integration', () => {
     render(<App />);
 
     // Brand title
-    expect(screen.getByText('わくわくSTEAM探検隊')).toBeInTheDocument();
+    expect(screen.getByText('STEAM探検隊')).toBeInTheDocument();
 
     // All 5 STEAM islands should be visible on map
     expect(screen.getByText('サイエンス島')).toBeInTheDocument();

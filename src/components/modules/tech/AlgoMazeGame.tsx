@@ -77,7 +77,7 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
   });
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [feedback, setFeedback] = useState<string>('命令カードを並べてロボット「ピコ」を星まで導こう！');
+  const [feedback, setFeedback] = useState<string>('命令カードを並べてロボットを星まで導こう！');
 
   const addCommand = (cmd: Command) => {
     if (commands.length >= maze.maxCommands || isRunning) return;
@@ -204,7 +204,7 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
         setCommands([]);
         resetBot();
         setIsCompleted(false);
-        setFeedback('命令カードを並べてロボット「ピコ」を星まで導こう！');
+        setFeedback('命令カードを並べてロボットを星まで導こう！');
       }}
     >
       <div className="flex flex-col items-center select-none w-full">

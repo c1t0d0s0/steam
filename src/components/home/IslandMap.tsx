@@ -136,27 +136,16 @@ export const IslandMap: React.FC<IslandMapProps> = ({ progress, onLaunchGame }) 
   return (
     <div className="w-full max-w-6xl mx-auto px-3 py-4 sm:px-6 sm:py-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 rounded-3xl p-4 sm:p-6 text-white shadow-lg border-4 border-amber-300 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/30 backdrop-blur-sm rounded-full text-xs font-black mb-1">
-            <span>✨ ひらめき冒険マップ</span>
-          </div>
-          <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-sm">
-            すきな島をえらんで探検に出発しよう！
-          </h1>
-          <p className="text-xs sm:text-sm text-amber-950 font-bold mt-1">
-            中学受験で差がつく算数・理科の最重要テーマを、ゲームで体感マスター！
-          </p>
+      <div className="bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 rounded-3xl p-5 sm:p-6 text-white shadow-lg border-4 border-amber-300 mb-6 text-center sm:text-left">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/30 backdrop-blur-sm rounded-full text-xs font-black mb-1.5">
+          <span>✨ ひらめき冒険マップ</span>
         </div>
-
-        {/* Mascot badge */}
-        <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-2.5 border border-white/40 shrink-0">
-          <span className="text-3xl sm:text-4xl animate-bounce-slow">🚀</span>
-          <div className="text-xs font-bold text-amber-950">
-            <span className="font-black block text-sm">案内ロボ「ピコ」</span>
-            「今日もひらめきを発見しよう！」
-          </div>
-        </div>
+        <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-sm">
+          すきな島をえらんで探検に出発しよう！
+        </h1>
+        <p className="text-xs sm:text-sm text-amber-950 font-bold mt-1">
+          中学受験で差がつく算数・理科の最重要テーマを、ゲームで体感マスター！
+        </p>
       </div>
 
       {/* Islands Grid */}
