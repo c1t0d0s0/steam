@@ -1,4 +1,3 @@
-import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { App } from '../App';
@@ -16,6 +15,10 @@ describe('App Component Integration', () => {
     expect(screen.getByText('エンジニア鉱山')).toBeInTheDocument();
     expect(screen.getByText('デザイン神殿')).toBeInTheDocument();
     expect(screen.getByText('テックラボ')).toBeInTheDocument();
+
+    // Grade selector defaults to 3 (小学3年)
+    const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
+    expect(gradeSelect.value).toBe('3');
   });
 
   it('can open and close the stamp book modal', () => {

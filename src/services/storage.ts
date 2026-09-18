@@ -338,7 +338,7 @@ const STORAGE_KEY = 'steam_lab_adventure_user_v1';
 
 export const INITIAL_USER_PROGRESS: UserProgress = {
   name: 'ひらめきけんきゅういん',
-  grade: 4,
+  grade: 3,
   furiganaEnabled: true,
   soundEnabled: true,
   level: 1,

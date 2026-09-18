@@ -15,6 +15,7 @@ describe('STEAM Lab Core Logic & Calculations', () => {
 
   describe('Level & XP Progression Engine', () => {
     it('calculates initial level 1 correctly', () => {
+      expect(INITIAL_USER_PROGRESS.grade).toBe(3);
       const result = calculateLevel(0);
       expect(result.level).toBe(1);
       expect(result.title).toBe('見習い研究員');
