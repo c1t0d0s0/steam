@@ -123,11 +123,23 @@ const ISLANDS: Island[] = [
 
 interface IslandMapProps {
   progress: UserProgress;
+  selectedIslandId?: string | null;
+  onSelectIslandId?: (islandId: string | null) => void;
   onLaunchGame: (gameType: GameModuleType, level: number) => void;
 }
 
-export const IslandMap: React.FC<IslandMapProps> = ({ progress, onLaunchGame }) => {
-  const [selectedIsland, setSelectedIsland] = useState<Island | null>(null);
+export const IslandMap: React.FC<IslandMapProps> = ({
+  progress,
+  selectedIslandId = null,
+  onSelectIslandId,
+  onLaunchGame
+}) => {
+  const [internalSelectedIslandId, setInternalSelectedIslandId] = useState<string | null>(null);
+
+  const currentIslandId = onSelectIslandId !== undefined ? selectedIslandId : internalSelectedIslandId;
+  const setIslandId = onSelectIslandId || setInternalSelectedIslandId;
+
+  const selectedIsland = ISLANDS.find((i) => i.id === currentIslandId) || null;
 
   const getStageStars = (stageKey: string): number => {
     return progress.stageProgress[stageKey]?.stars || 0;
@@ -166,7 +178,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({ progress, onLaunchGame }) 
               key={island.id}
               onClick={() => {
                 sound.playClick();
-                setSelectedIsland(island);
+                setIslandId(island.id);
               }}
               className="group bg-white rounded-3xl border-4 border-slate-200 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-300 p-5 flex flex-col justify-between cursor-pointer active:scale-[0.98] relative overflow-hidden"
             >
@@ -222,7 +234,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({ progress, onLaunchGame }) 
             <button
               onClick={() => {
                 sound.playClick();
-                setSelectedIsland(null);
+                setIslandId(null);
               }}
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700"
             >
@@ -256,7 +268,6 @@ export const IslandMap: React.FC<IslandMapProps> = ({ progress, onLaunchGame }) 
                           key={lvl}
                           onClick={() => {
                             sound.playClick();
-                            setSelectedIsland(null);
                             onLaunchGame(game.type, lvl);
                           }}
                           className="p-2.5 rounded-xl border-2 border-amber-200 bg-white hover:border-amber-400 hover:bg-amber-50 active:scale-95 shadow-sm transition-all flex flex-col items-center text-center"

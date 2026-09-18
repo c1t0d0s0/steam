@@ -1,5 +1,4 @@
-import React from 'react';
-import { ArrowLeft, HelpCircle, Star, Sparkles, Award } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Star, Sparkles, Award, LayoutGrid, RotateCcw, ChevronRight } from 'lucide-react';
 import { sound } from '../../services/audio';
 
 interface GameModalWrapperProps {
@@ -43,7 +42,7 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 text-sm sm:text-base font-bold transition-all"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>もどる</span>
+          <span>ステージ選択</span>
         </button>
 
         <div className="flex flex-col items-center">
@@ -137,38 +136,41 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-2.5 justify-center w-full mt-2">
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  onBack();
+                }}
+                className="flex-1 py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5 border border-slate-300 shadow-sm"
+              >
+                <LayoutGrid className="w-4 h-4 text-slate-600" />
+                <span>ステージ選択へ</span>
+              </button>
+
               {onRetry && (
                 <button
                   onClick={() => {
                     sound.playClick();
                     onRetry();
                   }}
-                  className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition-all text-sm"
+                  className="py-3 px-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5 border border-amber-300 shadow-sm"
                 >
-                  もういちど
+                  <RotateCcw className="w-4 h-4 text-amber-700" />
+                  <span>もう一度</span>
                 </button>
               )}
+
               {onNextLevel && (
                 <button
                   onClick={() => {
                     sound.playClick();
                     onNextLevel();
                   }}
-                  className="flex-1 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold shadow-md active:scale-95 transition-all"
+                  className="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black shadow-md active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-1.5"
                 >
-                  次のレベルへ！
-                </button>
-              )}
-              {!onNextLevel && (
-                <button
-                  onClick={() => {
-                    sound.playClick();
-                    onBack();
-                  }}
-                  className="flex-1 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold shadow-md active:scale-95 transition-all"
-                >
-                  マップへもどる
+                  <span>次のレベルへ！</span>
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               )}
             </div>

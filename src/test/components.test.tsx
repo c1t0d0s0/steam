@@ -57,4 +57,45 @@ describe('App Component Integration', () => {
     expect(screen.getByText('てこ天秤の釣り合いパズル')).toBeInTheDocument();
     expect(screen.getByText('Lv.1 (初級)')).toBeInTheDocument();
   });
+
+  it('navigates to game and returns to stage select upon clicking stage select button', () => {
+    render(<App />);
+
+    // Click on science island
+    fireEvent.click(screen.getByText('サイエンス島'));
+
+    // Start Lv.1
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[0]);
+
+    // Game screen is shown
+    expect(screen.getAllByText('てこ天秤の釣り合いパズル').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('ステージ選択')).toBeInTheDocument();
+
+    // In Level 1, Left pos -3 has 20g (torque 60). Right needs at pos 2 -> 30g
+    // Select 30g weight button
+    const weight30 = screen.getByText('30g');
+    fireEvent.click(weight30);
+
+    // Click right hook at position 2 (second hook with distance 2)
+    const hooksPos2 = screen.getAllByTitle('距離 2');
+    fireEvent.click(hooksPos2[1]);
+
+    // Check balance
+    const checkBtn = screen.getByText('⚖️ つり合いを判定する！');
+    fireEvent.click(checkBtn);
+
+    // Victory modal should be visible with "ステージ選択へ" button
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    const returnStageBtn = screen.getByText('ステージ選択へ');
+    expect(returnStageBtn).toBeInTheDocument();
+
+    // Click "ステージ選択へ"
+    fireEvent.click(returnStageBtn);
+
+    // User is returned directly to the stage selection modal of Science island!
+    expect(screen.getByText('てこ天秤の釣り合いパズル')).toBeInTheDocument();
+    expect(screen.getByText('Lv.1 (初級)')).toBeInTheDocument();
+  });
 });
+

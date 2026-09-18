@@ -23,6 +23,7 @@ import { sound } from './services/audio';
 
 export const App: React.FC = () => {
   const [progress, setProgress] = useState<UserProgress>(getStoredProgress);
+  const [selectedIslandId, setSelectedIslandId] = useState<string | null>(null);
   const [activeGame, setActiveGame] = useState<{ type: GameModuleType; level: number } | null>(null);
 
   // Modals
@@ -142,7 +143,20 @@ export const App: React.FC = () => {
       <main className="flex-1 flex flex-col items-center">
         <IslandMap
           progress={progress}
-          onLaunchGame={(type, level) => setActiveGame({ type, level })}
+          selectedIslandId={selectedIslandId}
+          onSelectIslandId={setSelectedIslandId}
+          onLaunchGame={(type, level) => {
+            const gameToIsland: Record<GameModuleType, string> = {
+              lever: 'science',
+              block: 'math',
+              tsurukame: 'math',
+              gear: 'engineering',
+              cube_net: 'art',
+              algo_maze: 'tech'
+            };
+            setSelectedIslandId(gameToIsland[type]);
+            setActiveGame({ type, level });
+          }}
         />
       </main>
 
