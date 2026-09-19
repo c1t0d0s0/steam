@@ -240,7 +240,45 @@ describe('App Component Integration', () => {
     // Feedback shows success
     expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
   });
+
+  it('renders Grade 6 Design Atelier Lv.6 Problem 3 with drawn faces B, C, D, E, F and uses 面 terminology', () => {
+    render(<App />);
+
+    // Switch to Grade 6
+    const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(gradeSelect, { target: { value: '6' } });
+
+    // Open Design Temple (デザイン神殿)
+    fireEvent.click(screen.getByText('デザイン神殿'));
+
+    // Start Lv.6 (index 5)
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[5]);
+
+    // Switch to 第3問
+    const prob3Tab = screen.getByText('第3問');
+    fireEvent.click(prob3Tab);
+
+    // Question uses 面 instead of 頂点
+    expect(screen.getByText('【立体図形レジェンド認定】この展開図で、面「A」と向かい合う面はどれかな？')).toBeInTheDocument();
+
+    // Verify all faces A, B, C, D, E, F are drawn
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByText('D')).toBeInTheDocument();
+    expect(screen.getByText('E')).toBeInTheDocument();
+    expect(screen.getByText('F')).toBeInTheDocument();
+
+    // Answer "面D"
+    const faceDBtn = screen.getByRole('button', { name: '面D' });
+    fireEvent.click(faceDBtn);
+
+    // Feedback shows success
+    expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
+  });
 });
+
 
 
 

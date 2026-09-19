@@ -2756,15 +2756,15 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
     "5": [
       {
         "question": "2-2-2型ギザギザ展開図で、面「A」と向かい合う面はどれかな？",
-        "correctAnswer": "E",
+        "correctAnswer": "D",
         "options": [
           "B",
           "C",
           "D",
           "E"
         ],
-        "explanation": "2-2-2型を組み立てると、「A」と向かい合うのは「E」です！",
-        "examTip": "2-2-2型の対面ペア：AとE、BとF、CとD！",
+        "explanation": "2-2-2型を組み立てると、「A」と向かい合うのは「D」です！",
+        "examTip": "2-2-2型の対面ペア：AとD、BとE、CとF！",
         "gridCols": 4,
         "grid": [
           {
@@ -2790,18 +2790,18 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "D",
-            "bg": "bg-sky-300",
-            "border": "border-sky-500",
-            "textClass": "text-sky-950"
+            "bg": "bg-emerald-400",
+            "border": "border-emerald-600",
+            "textClass": "text-emerald-950"
           },
           null,
           null,
           null,
           {
             "label": "E",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-200",
+            "border": "border-sky-400",
+            "textClass": "text-sky-950"
           },
           {
             "label": "F",
@@ -2813,15 +2813,15 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
       },
       {
         "question": "2-2-2型ギザギザ展開図で、面「B」と向かい合う面はどれかな？",
-        "correctAnswer": "F",
+        "correctAnswer": "E",
         "options": [
           "A",
           "C",
           "D",
-          "F"
+          "E"
         ],
-        "explanation": "「B」と向かい合うのは一番右下の「F」です！",
-        "examTip": "対角線のように離れた面どうしが平行になります！",
+        "explanation": "「B」と向かい合うのは下段左の「E」です！",
+        "examTip": "それぞれの段差で互い違いに向かい合います！",
         "gridCols": 4,
         "grid": [
           {
@@ -2856,28 +2856,28 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "E",
-            "bg": "bg-sky-200",
-            "border": "border-sky-400",
-            "textClass": "text-sky-950"
-          },
-          {
-            "label": "F",
             "bg": "bg-emerald-400",
             "border": "border-emerald-600",
             "textClass": "text-emerald-950"
+          },
+          {
+            "label": "F",
+            "bg": "bg-sky-200",
+            "border": "border-sky-400",
+            "textClass": "text-sky-950"
           }
         ]
       },
       {
         "question": "2-2-2型ギザギザ展開図で、面「C」と向かい合う面はどれかな？",
-        "correctAnswer": "D",
+        "correctAnswer": "F",
         "options": [
           "A",
           "B",
           "D",
-          "E"
+          "F"
         ],
-        "explanation": "中央の段で折れ曲がる「C」と「D」が平行に向かい合います！",
+        "explanation": "中段左の「C」と向かい合うのは一番右下の「F」です！",
         "examTip": "2-2-2型の空間把握を完全マスター！",
         "gridCols": 4,
         "grid": [
@@ -2904,9 +2904,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "D",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           },
           null,
           null,
@@ -2919,9 +2919,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "F",
-            "bg": "bg-sky-200",
-            "border": "border-sky-400",
-            "textClass": "text-sky-950"
+            "bg": "bg-emerald-400",
+            "border": "border-emerald-600",
+            "textClass": "text-emerald-950"
           }
         ]
       }
@@ -2991,7 +2991,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "4",
           "5"
         ],
-        "explanation": "7 - 2 = 5 が正解です！2-2-2型で2と向かい合うのは5です。",
+        "explanation": "7 - 2 = 5 が正解です！上段右の「2」と向かい合うのは下段左の「5」です。",
         "examTip": "2-2-2型サイコロの対面を完全攻略！",
         "gridCols": 4,
         "grid": [
@@ -3017,7 +3017,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-cyan-950"
           },
           {
-            "label": "4",
+            "label": "6",
             "bg": "bg-cyan-300",
             "border": "border-cyan-500",
             "textClass": "text-cyan-950"
@@ -3026,16 +3026,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           null,
           {
-            "label": "6",
-            "bg": "bg-cyan-200",
-            "border": "border-cyan-400",
-            "textClass": "text-cyan-950"
-          },
-          {
             "label": "?",
             "bg": "bg-rose-400",
             "border": "border-rose-600",
             "textClass": "text-white"
+          },
+          {
+            "label": "4",
+            "bg": "bg-cyan-200",
+            "border": "border-cyan-400",
+            "textClass": "text-cyan-950"
           }
         ]
       },
@@ -3048,7 +3048,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "5",
           "6"
         ],
-        "explanation": "7 - 1 = 6 が正解です！1と向かい合うのは6です。",
+        "explanation": "7 - 1 = 6 が正解です！上段左の「1」と向かい合うのは中段右の「6」です。",
         "examTip": "小学5年生の立体展開図を完全制覇！高校数学の空間幾何の基礎もバッチリです！",
         "gridCols": 4,
         "grid": [
@@ -3074,22 +3074,22 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-cyan-950"
           },
           {
-            "label": "4",
-            "bg": "bg-cyan-300",
-            "border": "border-cyan-500",
-            "textClass": "text-cyan-950"
-          },
-          null,
-          null,
-          null,
-          {
             "label": "?",
             "bg": "bg-rose-400",
             "border": "border-rose-600",
             "textClass": "text-white"
           },
+          null,
+          null,
+          null,
           {
             "label": "5",
+            "bg": "bg-cyan-200",
+            "border": "border-cyan-400",
+            "textClass": "text-cyan-950"
+          },
+          {
+            "label": "4",
             "bg": "bg-cyan-200",
             "border": "border-cyan-400",
             "textClass": "text-cyan-950"
@@ -3441,7 +3441,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "4",
           "5"
         ],
-        "explanation": "7 - 2 = 5 が正解です！2-2-2型で2と向かい合うのは5です。",
+        "explanation": "7 - 2 = 5 が正解です！上段右の「2」と向かい合うのは下段左の「5」です。",
         "examTip": "2-2-2型の対面ペア：1と6、2と5、3と4！",
         "gridCols": 4,
         "grid": [
@@ -3467,7 +3467,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-cyan-950"
           },
           {
-            "label": "4",
+            "label": "6",
             "bg": "bg-cyan-300",
             "border": "border-cyan-500",
             "textClass": "text-cyan-950"
@@ -3476,16 +3476,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           null,
           {
-            "label": "6",
-            "bg": "bg-cyan-200",
-            "border": "border-cyan-400",
-            "textClass": "text-cyan-950"
-          },
-          {
             "label": "?",
             "bg": "bg-rose-400",
             "border": "border-rose-600",
             "textClass": "text-white"
+          },
+          {
+            "label": "4",
+            "bg": "bg-cyan-200",
+            "border": "border-cyan-400",
+            "textClass": "text-cyan-950"
           }
         ]
       },
@@ -3498,8 +3498,8 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "5",
           "6"
         ],
-        "explanation": "7 - 3 = 4 が正解です！中段の3と4が向かい合います。",
-        "examTip": "中央段の2枚が平行に対面します！",
+        "explanation": "7 - 3 = 4 が正解です！中段左の「3」と向かい合うのは一番右下の「4」です。",
+        "examTip": "段差をまたいで互い違いに対面します！",
         "gridCols": 4,
         "grid": [
           {
@@ -3524,25 +3524,25 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-amber-950"
           },
           {
-            "label": "?",
-            "bg": "bg-rose-400",
-            "border": "border-rose-600",
-            "textClass": "text-white"
-          },
-          null,
-          null,
-          null,
-          {
             "label": "6",
-            "bg": "bg-cyan-200",
-            "border": "border-cyan-400",
+            "bg": "bg-cyan-300",
+            "border": "border-cyan-500",
             "textClass": "text-cyan-950"
           },
+          null,
+          null,
+          null,
           {
             "label": "5",
             "bg": "bg-cyan-200",
             "border": "border-cyan-400",
             "textClass": "text-cyan-950"
+          },
+          {
+            "label": "?",
+            "bg": "bg-rose-400",
+            "border": "border-rose-600",
+            "textClass": "text-white"
           }
         ]
       },
@@ -3555,7 +3555,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "5",
           "6"
         ],
-        "explanation": "7 - 1 = 6 が正解です！1と向かい合うのは6です。",
+        "explanation": "7 - 1 = 6 が正解です！上段左の「1」と向かい合うのは中段右の「6」です。",
         "examTip": "2-2-2型の全パターンを完全制覇！",
         "gridCols": 4,
         "grid": [
@@ -3581,22 +3581,22 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-cyan-950"
           },
           {
-            "label": "4",
-            "bg": "bg-cyan-300",
-            "border": "border-cyan-500",
-            "textClass": "text-cyan-950"
-          },
-          null,
-          null,
-          null,
-          {
             "label": "?",
             "bg": "bg-rose-400",
             "border": "border-rose-600",
             "textClass": "text-white"
           },
+          null,
+          null,
+          null,
           {
             "label": "5",
+            "bg": "bg-cyan-200",
+            "border": "border-cyan-400",
+            "textClass": "text-cyan-950"
+          },
+          {
+            "label": "4",
             "bg": "bg-cyan-200",
             "border": "border-cyan-400",
             "textClass": "text-cyan-950"
@@ -4062,26 +4062,26 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
         ]
       },
       {
-        "question": "【立体図形レジェンド認定】この展開図で「頂点A」と重なる頂点はどれかな？",
-        "correctAnswer": "頂点E",
+        "question": "【立体図形レジェンド認定】この展開図で、面「A」と向かい合う面はどれかな？",
+        "correctAnswer": "面D",
         "options": [
-          "頂点B",
-          "頂点C",
-          "頂点D",
-          "頂点E"
+          "面B",
+          "面C",
+          "面D",
+          "面E"
         ],
-        "explanation": "正解は「頂点E」！組み立てると頂点Aと頂点Eが完璧に一致します！空間把握能力は全国トップレベルです！",
-        "examTip": "【立体空間の達人】展開図・回転体・切断面のすべての空間図形分野を制覇しました！",
+        "explanation": "正解は「面D」！2-2-2型（ギザギザ階段型）を組み立てると、上段左の面「A」と平行に向かい合うのは中段右の面「D」です！",
+        "examTip": "【2-2-2型の対面ペア】AとD、BとE、CとF！階段の段差を挟んで互い違いに向かい合う3組のペアになります！",
         "gridCols": 4,
         "grid": [
           {
             "label": "A",
-            "bg": "bg-rose-500",
-            "border": "border-rose-700",
-            "textClass": "text-white"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
-            "label": "面",
+            "label": "B",
             "bg": "bg-cyan-400",
             "border": "border-cyan-600",
             "textClass": "text-cyan-950"
@@ -4090,31 +4090,31 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           null,
           {
-            "label": "面",
+            "label": "C",
             "bg": "bg-cyan-300",
             "border": "border-cyan-500",
             "textClass": "text-cyan-950"
           },
           {
-            "label": "面",
-            "bg": "bg-cyan-300",
-            "border": "border-cyan-500",
-            "textClass": "text-cyan-950"
+            "label": "D",
+            "bg": "bg-emerald-400",
+            "border": "border-emerald-600",
+            "textClass": "text-emerald-950"
           },
           null,
           null,
           null,
           {
-            "label": "面",
+            "label": "E",
             "bg": "bg-cyan-200",
             "border": "border-cyan-400",
             "textClass": "text-cyan-950"
           },
           {
-            "label": "E",
-            "bg": "bg-emerald-500",
-            "border": "border-emerald-700",
-            "textClass": "text-white"
+            "label": "F",
+            "bg": "bg-cyan-200",
+            "border": "border-cyan-400",
+            "textClass": "text-cyan-950"
           }
         ]
       }
