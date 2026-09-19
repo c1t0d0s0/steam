@@ -19,6 +19,9 @@ describe('App Component Integration', () => {
     // Grade selector defaults to 3 (小学3年)
     const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
     expect(gradeSelect.value).toBe('3');
+
+    // Footer copyright
+    expect(screen.getByText(/© 2026 c1t0d0s0/)).toBeInTheDocument();
   });
 
   it('can open stamp book modal and displays stamp text without breaking', () => {

@@ -458,7 +458,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
       {/* Footer */}
       <footer className="py-4 px-6 text-center text-xs text-slate-500 border-t border-amber-200/60 mt-8 flex flex-col sm:flex-row items-center justify-between max-w-6xl mx-auto w-full gap-2">
         <p className="font-bold">
-          © 2026 STEAM探検隊 〜めざせ！ひらめきマスター〜（小学校3〜6年・中学受験対策）
+          © 2026 c1t0d0s0
         </p>
         <div className="flex items-center gap-4">
           <button
