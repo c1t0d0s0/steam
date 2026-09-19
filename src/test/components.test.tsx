@@ -266,7 +266,10 @@ describe('App Component Integration', () => {
     expect(screen.getByText('A')).toBeInTheDocument();
     expect(screen.getByText('B')).toBeInTheDocument();
     expect(screen.getByText('C')).toBeInTheDocument();
-    expect(screen.getByText('D')).toBeInTheDocument();
+    const faceDCell = screen.getByText('D');
+    expect(faceDCell).toBeInTheDocument();
+    expect(faceDCell).not.toHaveClass('bg-emerald-400');
+    expect(faceDCell).toHaveClass('bg-cyan-300');
     expect(screen.getByText('E')).toBeInTheDocument();
     expect(screen.getByText('F')).toBeInTheDocument();
 
@@ -276,6 +279,108 @@ describe('App Component Integration', () => {
 
     // Feedback shows success
     expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
+  });
+
+  it('shows EX island locked when stamps < 7 and allows navigating to stamp book from notice', () => {
+    localStorage.clear();
+    render(<App />);
+
+    // EX Island card should be visible on map
+    expect(screen.getByText('EXアイランド')).toBeInTheDocument();
+    expect(screen.getByText(/累計スタンプ 7個 で解放！/)).toBeInTheDocument();
+
+    // Clicking locked EX island opens notice dialog
+    fireEvent.click(screen.getByText('EXアイランド'));
+    expect(screen.getByText('裏ステージ「EXアイランド」は封印中！')).toBeInTheDocument();
+    expect(screen.getByText('累計スタンプ 7個 達成')).toBeInTheDocument();
+
+    // Clicking button in notice opens Stamp Book
+    const openStampsFromNotice = screen.getByText('💮 スタンプ帳を開いて押印する');
+    fireEvent.click(openStampsFromNotice);
+    expect(screen.getByText('💮 ひらめきスタンプ帳')).toBeInTheDocument();
+  });
+
+  it('unlocks EX island when stamps >= 7 and launches EX puzzle', () => {
+    localStorage.clear();
+    const mockStamps = [
+      '2026-09-01', '2026-09-02', '2026-09-03',
+      '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07'
+    ];
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({
+        stamps: mockStamps,
+        coins: 200,
+        xp: 150
+      })
+    );
+
+    render(<App />);
+
+    // EX Island is unlocked!
+    expect(screen.getByText('EXアイランド')).toBeInTheDocument();
+    expect(screen.getByText('解放中！')).toBeInTheDocument();
+    expect(screen.getAllByText('裏ステージへ').length).toBeGreaterThanOrEqual(1);
+
+    // Click EX island to open stage select
+    fireEvent.click(screen.getByText('EXアイランド'));
+    expect(screen.getByText('【EX裏】多重モーメント・連鎖天秤パズル')).toBeInTheDocument();
+    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(6);
+
+    // Launch EX Level 1
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[0]);
+
+    // EX Game launched with EX puzzle
+    expect(screen.getByText(/EX島（裏ステージ）/)).toBeInTheDocument();
+    expect(screen.getByText(/多重モーメント・連鎖天秤パズル \(EX Lv\.1\)/)).toBeInTheDocument();
+    expect(screen.getByText('EX裏 Lv.1')).toBeInTheDocument();
+  });
+
+  it('allows opening ProfileModal from Header, equips avatar and title', () => {
+    localStorage.clear();
+    const mockStamps = [
+      '2026-09-01', '2026-09-02', '2026-09-03',
+      '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07'
+    ];
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({
+        stamps: mockStamps,
+        selectedAvatar: 'a_rocket'
+      })
+    );
+
+    render(<App />);
+
+    // Open profile modal by clicking the avatar button in header
+    const avatarHeaderBtn = screen.getByTitle('プロフィール・アバター設定を変更');
+    fireEvent.click(avatarHeaderBtn);
+
+    expect(screen.getByText('探検隊プロフィール設定')).toBeInTheDocument();
+    expect(screen.getByText('アバター')).toBeInTheDocument();
+    expect(screen.getByText('限定称号')).toBeInTheDocument();
+    expect(screen.getByText('スタンプ特典')).toBeInTheDocument();
+
+    // Robot avatar is unlocked (7 stamps)
+    const equipButtons = screen.getAllByText('装備する');
+    fireEvent.click(equipButtons[0]);
+
+    // Switch to titles tab
+    const titleTab = screen.getByText('限定称号');
+    fireEvent.click(titleTab);
+
+    // Equip "ひらめきマスター" title
+    const equipTitleButtons = screen.getAllByText('設定する');
+    fireEvent.click(equipTitleButtons[0]);
+
+    // Close profile modal
+    const allButtons = screen.getAllByRole('button');
+    const xButton = allButtons.find((btn) => btn.querySelector('svg.lucide-x'));
+    if (xButton) fireEvent.click(xButton);
+
+    // Profile modal is closed
+    expect(screen.queryByText('探検隊プロフィール設定')).not.toBeInTheDocument();
   });
 });
 

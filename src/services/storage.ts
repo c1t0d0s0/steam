@@ -35,6 +35,35 @@ export interface DailyChallengeState {
   completedAt?: string;
 }
 
+export interface AvatarItem {
+  id: string;
+  name: string;
+  icon: string;
+  requiredStamps: number;
+  description: string;
+  bgGradient: string;
+}
+
+export interface TitleItem {
+  id: string;
+  title: string;
+  requiredStamps: number;
+  description: string;
+}
+
+export interface StampMilestone {
+  stampsRequired: number;
+  title: string;
+  avatarId: string;
+  avatarIcon: string;
+  titleName: string;
+  bonusCoins: number;
+  bonusXp: number;
+  unlockExIsland?: boolean;
+  badgeId?: string;
+  description: string;
+}
+
 export interface UserProgress {
   name: string;
   grade: number; // 3 to 6
@@ -54,6 +83,8 @@ export interface UserProgress {
   dailyStreak: number;
   maxDailyStreak: number;
   lastDailyCompletedDate?: string;
+  selectedAvatar?: string;
+  selectedTitle?: string;
 }
 
 export const ITEMS: CollectibleItem[] = [
@@ -383,8 +414,165 @@ export const BADGES: Badge[] = [
     description: 'デイリーミッションを1週間（7日連続）完全制覇！',
     icon: '🥇',
     category: 'mastery'
+  },
+  {
+    id: 'b_ex_island_unlocked',
+    title: '次元の扉を開きし者',
+    description: 'スタンプを7個集めて裏ステージ「EX島」を解放した！',
+    icon: '🌌',
+    category: 'progress'
+  },
+  {
+    id: 'b_stamp_complete',
+    title: 'スタンプ帳の大覇者',
+    description: 'スタンプ帳（14個）を完全コンプリートした！',
+    icon: '👑',
+    category: 'collection'
   }
 ];
+
+export const AVATARS: AvatarItem[] = [
+  {
+    id: 'a_rocket',
+    name: 'ロケット研究員',
+    icon: '🚀',
+    requiredStamps: 0,
+    description: '未知なる知恵の世界へ飛び立つ探検ロケット！',
+    bgGradient: 'from-amber-400 to-yellow-300'
+  },
+  {
+    id: 'a_student',
+    name: 'わくわく小学生',
+    icon: '🎒',
+    requiredStamps: 0,
+    description: '好奇心いっぱいのSTEAM探検隊員！',
+    bgGradient: 'from-sky-400 to-blue-500'
+  },
+  {
+    id: 'a_scientist',
+    name: 'ミクロ博士',
+    icon: '🔬',
+    requiredStamps: 0,
+    description: '身の回りのふしぎを解き明かす若き科学者！',
+    bgGradient: 'from-emerald-400 to-teal-500'
+  },
+  {
+    id: 'a_seedling',
+    name: '新米エクスプローラー',
+    icon: '🌱',
+    requiredStamps: 3,
+    description: '【スタンプ3個達成】まいにち学びの芽を育てる探検隊！',
+    bgGradient: 'from-emerald-400 to-lime-500'
+  },
+  {
+    id: 'a_robot',
+    name: 'メカロボ研究員',
+    icon: '🤖',
+    requiredStamps: 7,
+    description: '【スタンプ7個達成】論理的思考とからくりを極めたAIロボ！',
+    bgGradient: 'from-cyan-400 to-blue-600'
+  },
+  {
+    id: 'a_cosmic',
+    name: 'コズミックパイロット',
+    icon: '🛸',
+    requiredStamps: 10,
+    description: '【スタンプ10個達成】銀河の星々を駆け巡る宇宙航海士！',
+    bgGradient: 'from-purple-500 to-indigo-700'
+  },
+  {
+    id: 'a_crown',
+    name: '銀河のひらめき王',
+    icon: '👑',
+    requiredStamps: 14,
+    description: '【スタンプ14個達成】スタンプ帳を完全制覇した伝説の王者！',
+    bgGradient: 'from-amber-400 via-rose-500 to-yellow-300'
+  }
+];
+
+export const TITLES: TitleItem[] = [
+  {
+    id: 't_starter',
+    title: '見習い研究員',
+    requiredStamps: 0,
+    description: '探検の第一歩を踏み出したばかりの研究員。'
+  },
+  {
+    id: 't_daily_explorer',
+    title: 'まいにち探検隊',
+    requiredStamps: 3,
+    description: '【スタンプ3個達成】毎日の継続学習を習慣づけた証。'
+  },
+  {
+    id: 't_inspiration_master',
+    title: 'ひらめきマスター',
+    requiredStamps: 7,
+    description: '【スタンプ7個達成】1週間の努力を積み重ねたひらめきの達人。'
+  },
+  {
+    id: 't_nebula_nav',
+    title: '星雲のナビゲーター',
+    requiredStamps: 10,
+    description: '【スタンプ10個達成】広大な知識の海を迷わず導く者。'
+  },
+  {
+    id: 't_transcendent',
+    title: '時空を超えし大賢者',
+    requiredStamps: 14,
+    description: '【スタンプ14個達成】スタンプ帳を全制覇し、真理に到達した最高峰の賢者。'
+  }
+];
+
+export const STAMP_MILESTONES: StampMilestone[] = [
+  {
+    stampsRequired: 3,
+    title: '3日連続の芽生え',
+    avatarId: 'a_seedling',
+    avatarIcon: '🌱',
+    titleName: 'まいにち探検隊',
+    bonusCoins: 50,
+    bonusXp: 30,
+    badgeId: 'b_stamp_3',
+    description: '限定称号「まいにち探検隊」＆ アバター「🌱」解放！'
+  },
+  {
+    stampsRequired: 7,
+    title: '1週間継続の金字塔',
+    avatarId: 'a_robot',
+    avatarIcon: '🤖',
+    titleName: 'ひらめきマスター',
+    bonusCoins: 100,
+    bonusXp: 80,
+    unlockExIsland: true,
+    badgeId: 'b_ex_island_unlocked',
+    description: '★裏ステージ【EX島】完全解放！★ 限定称号＆アバター解放！'
+  },
+  {
+    stampsRequired: 10,
+    title: '星雲の到達者',
+    avatarId: 'a_cosmic',
+    avatarIcon: '🛸',
+    titleName: '星雲のナビゲーター',
+    bonusCoins: 150,
+    bonusXp: 120,
+    description: '限定称号「星雲のナビゲーター」＆ アバター「🛸」解放！'
+  },
+  {
+    stampsRequired: 14,
+    title: 'スタンプ帳完全制覇！',
+    avatarId: 'a_crown',
+    avatarIcon: '👑',
+    titleName: '時空を超えし大賢者',
+    bonusCoins: 300,
+    bonusXp: 200,
+    badgeId: 'b_stamp_complete',
+    description: '限定称号「時空を超えし大賢者」＆ アバター「👑」解放！'
+  }
+];
+
+export const isExIslandUnlocked = (stampsCount: number): boolean => {
+  return stampsCount >= 7;
+};
 
 const STORAGE_KEY = 'steam_lab_adventure_user_v1';
 
@@ -403,7 +591,9 @@ export const INITIAL_USER_PROGRESS: UserProgress = {
   stageProgress: {},
   solvedDailySignatures: [],
   dailyStreak: 0,
-  maxDailyStreak: 0
+  maxDailyStreak: 0,
+  selectedAvatar: 'a_rocket',
+  selectedTitle: undefined
 };
 
 export const getStoredProgress = (): UserProgress => {
@@ -423,7 +613,9 @@ export const getStoredProgress = (): UserProgress => {
       lastDailyPromptDate: parsed.lastDailyPromptDate || undefined,
       dailyStreak: typeof parsed.dailyStreak === 'number' ? parsed.dailyStreak : 0,
       maxDailyStreak: typeof parsed.maxDailyStreak === 'number' ? parsed.maxDailyStreak : 0,
-      lastDailyCompletedDate: parsed.lastDailyCompletedDate || undefined
+      lastDailyCompletedDate: parsed.lastDailyCompletedDate || undefined,
+      selectedAvatar: parsed.selectedAvatar || 'a_rocket',
+      selectedTitle: parsed.selectedTitle || undefined
     };
   } catch (e) {
     console.error('Failed to load progress from localStorage', e);
@@ -622,6 +814,16 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
 
   if (progress.dailyStreak >= 7 && !current.has('b_daily_streak_7')) {
     newlyUnlocked.push('b_daily_streak_7');
+  }
+
+  // EX Island Unlock Badge (7 stamps)
+  if (progress.stamps.length >= 7 && !current.has('b_ex_island_unlocked')) {
+    newlyUnlocked.push('b_ex_island_unlocked');
+  }
+
+  // Stamp Complete Badge (14 stamps)
+  if (progress.stamps.length >= 14 && !current.has('b_stamp_complete')) {
+    newlyUnlocked.push('b_stamp_complete');
   }
 
   return newlyUnlocked;

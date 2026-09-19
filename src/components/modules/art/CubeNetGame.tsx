@@ -83,9 +83,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -140,9 +140,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -197,9 +197,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -590,9 +590,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -647,9 +647,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -672,16 +672,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "A",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           {
             "label": "B",
-            "bg": "bg-sky-400",
-            "border": "border-sky-600",
-            "textClass": "text-sky-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "C",
@@ -704,9 +704,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -730,9 +730,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "3",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null,
@@ -744,9 +744,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "4",
-            "bg": "bg-sky-300",
-            "border": "border-sky-500",
-            "textClass": "text-sky-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "5",
@@ -764,9 +764,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "6",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null
         ]
@@ -821,9 +821,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "6",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null
         ]
@@ -844,17 +844,17 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "3",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null,
           {
             "label": "1",
-            "bg": "bg-sky-400",
-            "border": "border-sky-600",
-            "textClass": "text-sky-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "4",
@@ -878,9 +878,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "6",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null
         ]
@@ -1071,9 +1071,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "A",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           {
@@ -1084,9 +1084,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "C",
-            "bg": "bg-sky-300",
-            "border": "border-sky-500",
-            "textClass": "text-sky-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "D",
@@ -1103,9 +1103,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -1128,16 +1128,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "A",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           {
             "label": "B",
-            "bg": "bg-sky-400",
-            "border": "border-sky-600",
-            "textClass": "text-sky-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "C",
@@ -1160,9 +1160,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -1217,9 +1217,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null
@@ -1782,9 +1782,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "E",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null,
@@ -1833,9 +1833,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "D",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           {
             "label": "E",
@@ -1904,9 +1904,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           },
           null
         ]
@@ -2614,9 +2614,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "C",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           null,
@@ -2685,9 +2685,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "E",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           },
           {
             "label": "F",
@@ -2746,9 +2746,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           }
         ]
       }
@@ -2790,9 +2790,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "D",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           },
           null,
           null,
@@ -2856,9 +2856,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "E",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-200",
+            "border": "border-sky-400",
+            "textClass": "text-sky-950"
           },
           {
             "label": "F",
@@ -2919,9 +2919,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "F",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-200",
+            "border": "border-sky-400",
+            "textClass": "text-sky-950"
           }
         ]
       }
@@ -3647,9 +3647,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "S",
-            "bg": "bg-emerald-500",
-            "border": "border-emerald-700",
-            "textClass": "text-white"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           null,
           {
@@ -3692,9 +3692,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           null,
           {
             "label": "T",
-            "bg": "bg-emerald-500",
-            "border": "border-emerald-700",
-            "textClass": "text-white"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           {
             "label": "面",
@@ -3755,9 +3755,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "C",
-            "bg": "bg-emerald-500",
-            "border": "border-emerald-700",
-            "textClass": "text-white"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
           {
             "label": "面",
@@ -4097,9 +4097,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "D",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-cyan-300",
+            "border": "border-cyan-500",
+            "textClass": "text-cyan-950"
           },
           null,
           null,

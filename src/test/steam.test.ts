@@ -147,7 +147,8 @@ describe('STEAM Lab Core Logic & Calculations', () => {
   describe('Stage Map Expansion Verification', () => {
     it('provides 6 levels across all 6 game modules totaling 36 stages', async () => {
       const { ISLANDS } = await import('../components/home/IslandMap');
-      const allGames = ISLANDS.flatMap((island) => island.games);
+      const standardIslands = ISLANDS.filter((island) => !island.isEX);
+      const allGames = standardIslands.flatMap((island) => island.games);
       expect(allGames.length).toBe(6);
 
       let totalStages = 0;
@@ -156,6 +157,17 @@ describe('STEAM Lab Core Logic & Calculations', () => {
         totalStages += game.levels.length;
       }
       expect(totalStages).toBe(36);
+    });
+
+    it('provides EX secret island with 3 levels across all 6 game modules', async () => {
+      const { ISLANDS } = await import('../components/home/IslandMap');
+      const exIsland = ISLANDS.find((island) => island.isEX);
+      expect(exIsland).toBeDefined();
+      expect(exIsland?.id).toBe('ex_island');
+      expect(exIsland?.games.length).toBe(6);
+      for (const game of exIsland!.games) {
+        expect(game.levels).toEqual([1, 2, 3]);
+      }
     });
   });
 });

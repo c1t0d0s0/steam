@@ -1,6 +1,6 @@
 import React from 'react';
 import { Volume2, VolumeX, Award, BookOpen, Gift } from 'lucide-react';
-import { UserProgress, calculateLevel } from '../../services/storage';
+import { UserProgress, calculateLevel, AVATARS } from '../../services/storage';
 import { sound } from '../../services/audio';
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   onOpenGacha: () => void;
   onOpenMuseum: () => void;
   onOpenBadges: () => void;
+  onOpenProfile: () => void;
   onToggleSound: () => void;
   onChangeGrade: (grade: number) => void;
 }
@@ -21,20 +22,41 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGacha,
   onOpenMuseum,
   onOpenBadges,
+  onOpenProfile,
   onToggleSound,
   onChangeGrade
 }) => {
   const { level, currentXp, nextLevelXp, title } = calculateLevel(progress.xp);
   const xpPercent = Math.min(100, Math.round((currentXp / nextLevelXp) * 100));
 
+  const currentAvatarId = progress.selectedAvatar || 'a_rocket';
+  const currentAvatar = AVATARS.find((a) => a.id === currentAvatarId) || AVATARS[0];
+  const currentTitle = progress.selectedTitle || title;
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b-2 border-amber-200 shadow-sm px-3 py-2 sm:px-6 sm:py-2.5">
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-4">
         {/* Left: App Brand & User Level */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-amber-500 shadow flex items-center justify-center text-2xl">
-            🚀
-          </div>
+          {/* Clickable Avatar Button */}
+          <button
+            onClick={() => {
+              sound.playClick();
+              onOpenProfile();
+            }}
+            title="プロフィール・アバター設定を変更"
+            className="group relative cursor-pointer active:scale-95 transition-transform"
+          >
+            <div
+              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr ${currentAvatar.bgGradient} border-2 border-amber-500 shadow flex items-center justify-center text-2xl group-hover:scale-105 transition-transform`}
+            >
+              {currentAvatar.icon}
+            </div>
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-400 border border-white rounded-full text-[9px] flex items-center justify-center font-black shadow">
+              ✏️
+            </span>
+          </button>
+
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs sm:text-sm font-black text-slate-800 tracking-tight">
@@ -55,11 +77,18 @@ export const Header: React.FC<HeaderProps> = ({
               </select>
             </div>
 
-            {/* Level & XP bar */}
+            {/* Level & XP bar & Custom Title */}
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="px-1.5 py-0.2 bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-md text-[10px] font-black">
-                Lv.{level} {title}
-              </span>
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  onOpenProfile();
+                }}
+                title="称号・アバターを変更"
+                className="px-1.5 py-0.2 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border border-indigo-200 rounded-md text-[10px] font-black transition-colors cursor-pointer truncate max-w-[130px]"
+              >
+                Lv.{level} {currentTitle}
+              </button>
               <div className="w-16 sm:w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-indigo-500 rounded-full transition-all duration-500"

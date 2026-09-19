@@ -8,6 +8,7 @@ import { GearChainGame } from './components/modules/engineering/GearChainGame';
 import { CubeNetGame } from './components/modules/art/CubeNetGame';
 import { AlgoMazeGame } from './components/modules/tech/AlgoMazeGame';
 import { StampBookModal } from './components/gamification/StampBookModal';
+import { ProfileModal } from './components/gamification/ProfileModal';
 import { GachaModal } from './components/gamification/GachaModal';
 import { MuseumModal } from './components/gamification/MuseumModal';
 import { BadgeListModal } from './components/gamification/BadgeListModal';
@@ -26,6 +27,7 @@ import {
   getStageProgressData
 } from './services/storage';
 import { generateDailyChallenge } from './services/problemGenerator';
+import { getExPuzzle } from './services/exPuzzles';
 import { sound } from './services/audio';
 
 interface AppProps {
@@ -40,6 +42,8 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
     level: number;
     isDaily?: boolean;
     dailyIndex?: number;
+    isEX?: boolean;
+    stagePrefix?: string;
     customPuzzle?: any;
     customTitle?: string;
     customBadge?: string;
@@ -48,6 +52,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
   // Modals
   const [isDailyOpen, setIsDailyOpen] = useState(false);
   const [isStampOpen, setIsStampOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isGachaOpen, setIsGachaOpen] = useState(false);
   const [isMuseumOpen, setIsMuseumOpen] = useState(false);
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
@@ -220,13 +225,16 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
 
     // Standard Stage Map Game Completion
     const currentGrade = progress.grade || 3;
-    const stageKey = getStageKey(activeGame.type, activeGame.level, currentGrade);
-    const stageData = getStageProgressData(progress.stageProgress, activeGame.type, activeGame.level, currentGrade);
+    const stagePrefix = activeGame.isEX
+      ? (activeGame.stagePrefix || `ex_${activeGame.type}`)
+      : activeGame.type;
+    const stageKey = getStageKey(stagePrefix, activeGame.level, currentGrade);
+    const stageData = getStageProgressData(progress.stageProgress, stagePrefix, activeGame.level, currentGrade);
     const existingStars = stageData.stars;
     const isFirstClear = !stageData.cleared;
 
-    const earnedCoins = isFirstClear ? 30 : 10;
-    const earnedXp = isFirstClear ? 50 : 15;
+    const earnedCoins = isFirstClear ? (activeGame.isEX ? 50 : 30) : 10;
+    const earnedXp = isFirstClear ? (activeGame.isEX ? 80 : 50) : 15;
 
     const newStageProgress = {
       ...progress.stageProgress,
@@ -234,9 +242,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
         stars: Math.max(existingStars, stars),
         cleared: true
       },
-      // If grade is 3, also update legacy key for backward compatibility
-      ...(currentGrade === 3 ? {
-        [getLegacyStageKey(activeGame.type, activeGame.level)]: {
+      // If grade is 3 and not EX, also update legacy key for backward compatibility
+      ...(currentGrade === 3 && !activeGame.isEX ? {
+        [getLegacyStageKey(stagePrefix, activeGame.level)]: {
           stars: Math.max(existingStars, stars),
           cleared: true
         }
@@ -255,10 +263,28 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
 
   const handleNextLevel = () => {
     if (!activeGame) return;
-    if (activeGame.level < 6) {
-      setActiveGame({ type: activeGame.type, level: activeGame.level + 1 });
+    const maxLevel = activeGame.isEX ? 3 : 6;
+    if (activeGame.level < maxLevel) {
+      const nextLevel = activeGame.level + 1;
+      if (activeGame.isEX) {
+        const exDef = getExPuzzle(activeGame.type, nextLevel);
+        setActiveGame({
+          type: activeGame.type,
+          level: nextLevel,
+          isEX: true,
+          stagePrefix: activeGame.stagePrefix,
+          customPuzzle: exDef?.puzzle,
+          customTitle: exDef ? `🌌 EX島（裏ステージ）: ${exDef.title}` : `🌌 EX島（裏ステージ）`,
+          customBadge: exDef?.badge || `EX裏 Lv.${nextLevel}`
+        });
+      } else {
+        setActiveGame({ type: activeGame.type, level: nextLevel });
+      }
     } else {
       setActiveGame(null);
+      if (activeGame.isEX) {
+        setSelectedIslandId('ex_island');
+      }
     }
   };
 
@@ -272,6 +298,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
         onOpenGacha={() => setIsGachaOpen(true)}
         onOpenMuseum={() => setIsMuseumOpen(true)}
         onOpenBadges={() => setIsBadgeOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
         onToggleSound={() => {
           const toggled = !progress.soundEnabled;
           sound.enabled = toggled;
@@ -293,7 +320,31 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           selectedIslandId={selectedIslandId}
           onSelectIslandId={setSelectedIslandId}
           onOpenDaily={() => setIsDailyOpen(true)}
-          onLaunchGame={(type, level) => {
+          onOpenStamps={() => setIsStampOpen(true)}
+          onLaunchGame={(type, level, options) => {
+            if (options?.isEX) {
+              const exPrefixMap: Record<GameModuleType, string> = {
+                lever: 'ex_lever',
+                block: 'ex_block',
+                tsurukame: 'ex_tsuru',
+                gear: 'ex_gear',
+                cube_net: 'ex_net',
+                algo_maze: 'ex_algo'
+              };
+              const exDef = getExPuzzle(type, level);
+              setSelectedIslandId('ex_island');
+              setActiveGame({
+                type,
+                level,
+                isEX: true,
+                stagePrefix: exPrefixMap[type],
+                customPuzzle: exDef?.puzzle,
+                customTitle: exDef ? `🌌 EX島（裏ステージ）: ${exDef.title}` : `🌌 EX島（裏ステージ）`,
+                customBadge: exDef?.badge || `EX裏 Lv.${level}`
+              });
+              return;
+            }
+
             const gameToIsland: Record<GameModuleType, string> = {
               lever: 'science',
               block: 'math',
@@ -319,8 +370,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -335,8 +387,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -351,8 +404,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -367,8 +421,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -383,8 +438,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -399,8 +455,9 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               onBack={() => {
                 setActiveGame(null);
                 if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
               }}
-              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
@@ -423,6 +480,22 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           progress={progress}
           onUpdateProgress={updateProgressState}
           onClose={() => setIsStampOpen(false)}
+          onOpenProfile={() => {
+            setIsStampOpen(false);
+            setIsProfileOpen(true);
+          }}
+        />
+      )}
+
+      {isProfileOpen && (
+        <ProfileModal
+          progress={progress}
+          onUpdateProgress={updateProgressState}
+          onClose={() => setIsProfileOpen(false)}
+          onOpenStamps={() => {
+            setIsProfileOpen(false);
+            setIsStampOpen(true);
+          }}
         />
       )}
 
