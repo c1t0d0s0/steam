@@ -8,6 +8,9 @@ interface LeverBalanceGameProps {
   onComplete: (stars: number) => void;
   onBack: () => void;
   onNextLevel?: () => void;
+  customPuzzles?: PuzzleData[];
+  customTitle?: string;
+  customBadge?: string;
 }
 
 interface WeightSlot {
@@ -16,61 +19,257 @@ interface WeightSlot {
   locked?: boolean;
 }
 
+interface PuzzleData {
+  targetPos: number;
+  initialWeights: WeightSlot[];
+  explanation: string;
+  examTip: string;
+  availableWeights: number[];
+}
+
 export const LeverBalanceGame: React.FC<LeverBalanceGameProps> = ({
   level,
   onComplete,
   onBack,
-  onNextLevel
+  onNextLevel,
+  customPuzzles,
+  customTitle,
+  customBadge
 }) => {
-  // Preset puzzles per level
-  const getInitialPuzzle = () => {
-    if (level === 1) {
-      // Left: pos -3, 20g (Torque = 60). Right needs at pos 2 -> 30g
-      return {
-        targetPos: 2,
-        initialWeights: [{ pos: -3, weight: 20, locked: true }],
-        explanation: '左の力は「きょり 3 × 重さ 20g = 60」。右のきょり 2 には「30g」を置くと「2 × 30g = 60」でピタリと釣り合います！',
-        examTip: 'てこの基本公式：【支点からの距離 × おもりの重さ】が左右で同じになると釣り合います！',
-        availableWeights: [10, 20, 30, 40, 50]
-      };
-    } else if (level === 2) {
-      // Left: pos -4, 10g (Torque 40) + pos -1, 30g (Torque 30). Total Left = 70.
-      // Right target: needs weights at pos 1 and pos 3. e.g. pos 1 has 10g (10), pos 3 needs 20g (60) => 70
-      return {
-        targetPos: 3,
-        initialWeights: [
-          { pos: -4, weight: 10, locked: true },
-          { pos: -1, weight: 30, locked: true },
-          { pos: 1, weight: 10, locked: true }
-        ],
-        explanation: '左側の力の合計は (4×10g) + (1×30g) = 70。右側は (1×10g) + (3×20g) = 70 で左右の力がぴったり一致します！',
-        examTip: '複数の場所におもりがある時は、それぞれの【距離 × 重さ】を計算して全部「足し算」します！',
-        availableWeights: [10, 20, 30, 40]
-      };
-    } else {
-      // Level 3 (Advanced):
-      // Left: pos -3, 30g (90). Right has empty slot at 2 and 4. Total = 90.
-      // User can put 15g at 2 (30) and 15g at 4 (60) => 90 or 25g/10g etc.
-      // Let's set: Left: pos -2 (20g = 40) + pos -4 (20g = 80) = 120. Right pos 3 needs 40g (120)
-      return {
-        targetPos: 3,
-        initialWeights: [
-          { pos: -4, weight: 20, locked: true },
-          { pos: -2, weight: 20, locked: true }
-        ],
-        explanation: '左の力は (4×20g) + (2×20g) = 120。右のきょり 3 の位置に「40g」を置くと、3 × 40g = 120 となり大成功です！',
-        examTip: '中学入試頻出！左右のつり合いだけでなく「支点にかかる全体の重さ」も問われることがあります（今回は20+20+40=80g）。',
-        availableWeights: [10, 20, 30, 40, 50, 60]
-      };
+  // Preset puzzles per level (3 variations per level = 18 problems total)
+  const getLevelPuzzles = (lvl: number): PuzzleData[] => {
+    switch (lvl) {
+      case 1:
+        return [
+          {
+            targetPos: 2,
+            initialWeights: [{ pos: -3, weight: 20, locked: true }],
+            explanation: '左の力は「きょり 3 × 重さ 20g = 60」。右のきょり 2 には「30g」を置くと「2 × 30g = 60」でピタリと釣り合います！',
+            examTip: 'てこの基本公式：【支点からの距離 × おもりの重さ】が左右で同じになると釣り合います！',
+            availableWeights: [10, 20, 30, 40, 50]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [{ pos: -2, weight: 30, locked: true }],
+            explanation: '左の力は「きょり 2 × 重さ 30g = 60」。右のきょり 3 には「20g」を置くと「3 × 20g = 60」で釣り合います！',
+            examTip: '支点からの距離が1.5倍になると、釣り合うために必要なおもりは2/3の重さで済みます！',
+            availableWeights: [10, 20, 30, 40, 50]
+          },
+          {
+            targetPos: 2,
+            initialWeights: [{ pos: -4, weight: 10, locked: true }],
+            explanation: '左の力は「きょり 4 × 重さ 10g = 40」。右のきょり 2 に「20g」を置くと「2 × 20g = 40」で釣り合います！',
+            examTip: '支点からの距離が半分（4から2）なら、必要な重さは2倍（10gから20g）になります！',
+            availableWeights: [10, 20, 30, 40, 50]
+          }
+        ];
+      case 2:
+        return [
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -4, weight: 10, locked: true },
+              { pos: -1, weight: 30, locked: true },
+              { pos: 1, weight: 10, locked: true }
+            ],
+            explanation: '左側の力の合計は (4×10g) + (1×30g) = 70。右側は (1×10g) + (3×20g) = 70 で左右の力がぴったり一致します！',
+            examTip: '複数の場所におもりがある時は、それぞれの【距離 × 重さ】を計算して全部「足し算」します！',
+            availableWeights: [10, 20, 30, 40]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -3, weight: 20, locked: true },
+              { pos: -2, weight: 10, locked: true },
+              { pos: 1, weight: 20, locked: true }
+            ],
+            explanation: '左の力は (3×20g) + (2×10g) = 80。右側は (1×20g) + (3×20g) = 80 で完璧に水平になります！',
+            examTip: '左右どちらにも複数のおもりがある場合も、左右それぞれの合計トルクを出して引き算で不足分を求めます！',
+            availableWeights: [10, 20, 30, 40]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -4, weight: 10, locked: true },
+              { pos: -2, weight: 20, locked: true },
+              { pos: 2, weight: 10, locked: true }
+            ],
+            explanation: '左の力は (4×10g) + (2×20g) = 80。右側は (2×10g) + (3×20g) = 80 で左右が釣り合います！',
+            examTip: '試験では「あと何gのおもりをどこに吊るせばよいか」という逆算形式で出題されます。',
+            availableWeights: [10, 20, 30, 40]
+          }
+        ];
+      case 3:
+        return [
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -4, weight: 20, locked: true },
+              { pos: -2, weight: 20, locked: true }
+            ],
+            explanation: '左の力は (4×20g) + (2×20g) = 120。右のきょり 3 の位置に「40g」を置くと、3 × 40g = 120 となり大成功です！',
+            examTip: '中学入試頻出！左右のつり合いだけでなく「支点にかかる全体の重さ」も問われることがあります（今回は20+20+40=80g）。',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -3, weight: 30, locked: true },
+              { pos: -1, weight: 30, locked: true }
+            ],
+            explanation: '左の力は (3×30g) + (1×30g) = 120。右のきょり 4 に「30g」を置くと 4 × 30g = 120 で釣り合います！',
+            examTip: '支点からの距離が遠いフックを使うと、より小さなおもりで重いものを釣り合わせることができます。',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -3, weight: 40, locked: true },
+              { pos: 2, weight: 20, locked: true }
+            ],
+            explanation: '左の力は 3×40g = 120。右は既に 2×20g = 40 あるので残り 80。きょり 4 に 20g (4×20=80) で釣り合います！',
+            examTip: '右側にある既知のおもりのモーメントを左から差し引く「逆算の立式」を身につけましょう！',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          }
+        ];
+      case 4:
+        return [
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -1, weight: 60, locked: true },
+              { pos: -3, weight: 30, locked: true },
+              { pos: 2, weight: 15, locked: true }
+            ],
+            explanation: '左の力は (1×60g) + (3×30g) = 150。右側は (2×15g) + (4×30g) = 150 でピタリ一致！',
+            examTip: '支点近くの重いおもりと遠くの軽いおもり。釘抜きやハサミなど、身の回りの道具に応用されている原理です！',
+            availableWeights: [15, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -2, weight: 50, locked: true },
+              { pos: -1, weight: 40, locked: true },
+              { pos: 1, weight: 20, locked: true }
+            ],
+            explanation: '左の力は (2×50g) + (1×40g) = 140。右側は (1×20g) + (3×40g) = 140 で見事水平！',
+            examTip: '入試問題では支点の位置が端にある「第2種・第3種のてこ（栓抜きやピンセット）」も出題されます。',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -4, weight: 20, locked: true },
+              { pos: -3, weight: 20, locked: true },
+              { pos: -1, weight: 20, locked: true },
+              { pos: 2, weight: 20, locked: true }
+            ],
+            explanation: '左の力は 80 + 60 + 20 = 160。右側は 40 + (4×30g) = 160 で釣り合います！',
+            examTip: 'おもりの数が増えても慌てず、左側のモーメントの和 ＝ 右側のモーメントの和 と立式しましょう。',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          }
+        ];
+      case 5:
+        return [
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -4, weight: 30, locked: true },
+              { pos: -2, weight: 30, locked: true },
+              { pos: 2, weight: 30, locked: true }
+            ],
+            explanation: '左の力は (4×30) + (2×30) = 180。右側は (2×30) + (4×30) = 180 で釣り合います！',
+            examTip: '【難関中の逆算てこ】未知のおもりを□とおいて、180 = 60 + (4×□) から □=30g を求めます！',
+            availableWeights: [15, 20, 25, 30, 40, 50]
+          },
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -4, weight: 40, locked: true },
+              { pos: -1, weight: 40, locked: true },
+              { pos: 1, weight: 20, locked: true },
+              { pos: 3, weight: 20, locked: true }
+            ],
+            explanation: '左は 160 + 40 = 200。右は (1×20) + (3×20) = 80。不足する 120 を きょり4 に「30g」置くことで 80 + 120 = 200！',
+            examTip: '複数のフックにおもりが吊るされた状態からの逆算は、御三家・難関校の頻出パターンです！',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -3, weight: 50, locked: true },
+              { pos: -2, weight: 30, locked: true },
+              { pos: 1, weight: 30, locked: true },
+              { pos: 2, weight: 30, locked: true }
+            ],
+            explanation: '左は 150 + 60 = 210。右は 30 + 60 = 90。不足する 120 を きょり3 に「40g」置いて 90 + 120 = 210！',
+            examTip: '左右のつり合いだけでなく、支点を吊り下げる糸の張力（全体の重さの和）も計算できるようにしましょう！',
+            availableWeights: [20, 30, 40, 50, 60]
+          }
+        ];
+      case 6:
+      default:
+        return [
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -4, weight: 20, locked: true },
+              { pos: -3, weight: 30, locked: true },
+              { pos: -2, weight: 20, locked: true },
+              { pos: 1, weight: 10, locked: true },
+              { pos: 2, weight: 40, locked: true }
+            ],
+            explanation: '左の力は 80 + 90 + 40 = 210。右は 10 + 80 = 90。残り 120 を きょり4 に「30g」で 210 に完全一致！',
+            examTip: '【達人級・力のモーメント】最難関校の物理分野で出題される複雑な重心・てこ問題も、この原理の応用です！',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 3,
+            initialWeights: [
+              { pos: -4, weight: 30, locked: true },
+              { pos: -3, weight: 20, locked: true },
+              { pos: -1, weight: 50, locked: true },
+              { pos: 1, weight: 30, locked: true },
+              { pos: 2, weight: 40, locked: true }
+            ],
+            explanation: '左の力は 120 + 60 + 50 = 230。右は 30 + 80 = 110。不足 120 を きょり3 に「40g」で 230 の完璧な釣り合い！',
+            examTip: '支点からの距離とおもりの重さの関係を完全にマスターしました。中学理科の物理基礎は完璧です！',
+            availableWeights: [10, 20, 30, 40, 50, 60]
+          },
+          {
+            targetPos: 4,
+            initialWeights: [
+              { pos: -4, weight: 25, locked: true },
+              { pos: -2, weight: 50, locked: true },
+              { pos: 1, weight: 20, locked: true },
+              { pos: 3, weight: 20, locked: true }
+            ],
+            explanation: '左の力は 100 + 100 = 200。右は 20 + 60 = 80。残り 120 を きょり4 に「30g」置いて 200 で見事バランス！',
+            examTip: '入試本番でも、てこの問題を見たらまず左右それぞれの「距離×重さ」をメモする習慣を続けましょう！',
+            availableWeights: [10, 20, 25, 30, 40, 50]
+          }
+        ];
     }
   };
 
-  const puzzle = getInitialPuzzle();
+  const puzzles = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level);
+  const [problemIndex, setProblemIndex] = useState(0);
+  const puzzle = puzzles[problemIndex % puzzles.length];
+
   const [weights, setWeights] = useState<WeightSlot[]>(puzzle.initialWeights);
   const [selectedWeight, setSelectedWeight] = useState<number>(puzzle.availableWeights[0]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<string>('右側のフックにおもりを置いて天秤を釣り合わせよう！');
   const [showHint, setShowHint] = useState(false);
+
+  const switchProblem = (idx: number) => {
+    const nextPuzzle = puzzles[idx % puzzles.length];
+    setProblemIndex(idx % puzzles.length);
+    setWeights(nextPuzzle.initialWeights);
+    setSelectedWeight(nextPuzzle.availableWeights[0]);
+    setIsCompleted(false);
+    setFeedbackMsg('右側のフックにおもりを置いて天秤を釣り合わせよう！');
+  };
 
   // Calculate torque (distance from pivot * weight)
   const leftTorque = weights
@@ -121,14 +320,18 @@ export const LeverBalanceGame: React.FC<LeverBalanceGameProps> = ({
 
   return (
     <GameModalWrapper
-      title="てこ天秤の釣り合いパズル"
-      badgeTag={`理科ラボ Lv.${level}`}
+      title={customTitle || "てこ天秤の釣り合いパズル"}
+      badgeTag={customBadge || `理科ラボ Lv.${level}`}
       level={level}
       isCompleted={isCompleted}
       explanation={puzzle.explanation}
       examTip={puzzle.examTip}
       onBack={onBack}
       onNextLevel={onNextLevel}
+      problemIndex={problemIndex}
+      totalProblems={puzzles.length}
+      onSwitchProblem={switchProblem}
+      onNextProblem={() => switchProblem(problemIndex + 1)}
       onRetry={() => {
         setWeights(puzzle.initialWeights);
         setIsCompleted(false);

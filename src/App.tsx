@@ -11,22 +11,39 @@ import { StampBookModal } from './components/gamification/StampBookModal';
 import { GachaModal } from './components/gamification/GachaModal';
 import { MuseumModal } from './components/gamification/MuseumModal';
 import { BadgeListModal } from './components/gamification/BadgeListModal';
+import { DailyChallengeModal } from './components/gamification/DailyChallengeModal';
 import {
   UserProgress,
   getStoredProgress,
   saveUserProgress,
   calculateLevel,
   checkNewBadges,
+  calculateUpdatedDailyStreak,
+  DailyChallengeState,
   BADGES
 } from './services/storage';
+import { generateDailyChallenge } from './services/problemGenerator';
 import { sound } from './services/audio';
 
-export const App: React.FC = () => {
+interface AppProps {
+  autoPromptDaily?: boolean;
+}
+
+export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
   const [progress, setProgress] = useState<UserProgress>(getStoredProgress);
   const [selectedIslandId, setSelectedIslandId] = useState<string | null>(null);
-  const [activeGame, setActiveGame] = useState<{ type: GameModuleType; level: number } | null>(null);
+  const [activeGame, setActiveGame] = useState<{
+    type: GameModuleType;
+    level: number;
+    isDaily?: boolean;
+    dailyIndex?: number;
+    customPuzzle?: any;
+    customTitle?: string;
+    customBadge?: string;
+  } | null>(null);
 
   // Modals
+  const [isDailyOpen, setIsDailyOpen] = useState(false);
   const [isStampOpen, setIsStampOpen] = useState(false);
   const [isGachaOpen, setIsGachaOpen] = useState(false);
   const [isMuseumOpen, setIsMuseumOpen] = useState(false);
@@ -38,6 +55,47 @@ export const App: React.FC = () => {
   useEffect(() => {
     sound.enabled = progress.soundEnabled;
   }, [progress.soundEnabled]);
+
+  // Daily Challenge initialization & Auto-popup on first visit of the day
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    let currentProgress = progress;
+    let needsSave = false;
+
+    // Check or generate today's daily challenge
+    if (!currentProgress.dailyChallenge || currentProgress.dailyChallenge.date !== today) {
+      const newDaily = generateDailyChallenge(
+        currentProgress.solvedDailySignatures || [],
+        today,
+        currentProgress.grade
+      );
+      currentProgress = {
+        ...currentProgress,
+        dailyChallenge: newDaily
+      };
+      needsSave = true;
+    }
+
+    // First visit of the day: automatically open Daily Challenge popup!
+    const shouldPrompt =
+      autoPromptDaily !== undefined
+        ? autoPromptDaily
+        : typeof process === 'undefined' || process.env?.NODE_ENV !== 'test';
+
+    if (shouldPrompt && currentProgress.lastDailyPromptDate !== today) {
+      currentProgress = {
+        ...currentProgress,
+        lastDailyPromptDate: today
+      };
+      needsSave = true;
+      setIsDailyOpen(true);
+    }
+
+    if (needsSave) {
+      setProgress(currentProgress);
+      saveUserProgress(currentProgress);
+    }
+  }, []);
 
   const updateProgressState = (newProgress: UserProgress) => {
     // Check level up
@@ -80,8 +138,101 @@ export const App: React.FC = () => {
     }
   };
 
+  const handlePlayDailyQuestion = (questionIndex: number) => {
+    if (!progress.dailyChallenge) return;
+    const q = progress.dailyChallenge.questions[questionIndex];
+    if (!q) return;
+
+    setIsDailyOpen(false);
+    setActiveGame({
+      type: q.gameType,
+      level: 1,
+      isDaily: true,
+      dailyIndex: questionIndex,
+      customPuzzle: q.puzzle,
+      customTitle: `📅 デイリー 第${questionIndex + 1}問 / 全5問`,
+      customBadge: `第${questionIndex + 1}問 (${q.islandName})`
+    });
+  };
+
+  const handleDailyNext = () => {
+    if (!activeGame || !activeGame.isDaily || typeof activeGame.dailyIndex !== 'number') return;
+    const nextIdx = activeGame.dailyIndex + 1;
+    if (nextIdx < 5) {
+      handlePlayDailyQuestion(nextIdx);
+    } else {
+      setActiveGame(null);
+      setIsDailyOpen(true);
+    }
+  };
+
   const handleGameComplete = (stars: number) => {
     if (!activeGame) return;
+
+    // Handle Daily Challenge game completion
+    if (activeGame.isDaily && typeof activeGame.dailyIndex === 'number' && progress.dailyChallenge) {
+      const idx = activeGame.dailyIndex;
+      const currentDaily = progress.dailyChallenge;
+      const clearedSet = new Set(currentDaily.clearedIndices);
+      clearedSet.add(idx);
+      const newClearedIndices = Array.from(clearedSet).sort((a, b) => a - b);
+      const isNowAllCleared = newClearedIndices.length >= 5;
+
+      // Add signature to solved list (never repeat)
+      const solvedSig = currentDaily.questions[idx]?.signature;
+      const newSolvedSigs = solvedSig
+        ? Array.from(new Set([...progress.solvedDailySignatures, solvedSig]))
+        : progress.solvedDailySignatures;
+
+      let extraCoins = 20; // 20 coins per daily question
+      let extraXp = 25;
+      let newStreak = progress.dailyStreak;
+      let newMaxStreak = progress.maxDailyStreak;
+      let lastDailyCompletedDate = progress.lastDailyCompletedDate;
+
+      if (isNowAllCleared && !currentDaily.completed) {
+        // Grand reward for completing all 5 questions
+        extraCoins += 100;
+        extraXp += 80;
+        const today = currentDaily.date;
+        const streakRes = calculateUpdatedDailyStreak(
+          progress.dailyStreak,
+          progress.maxDailyStreak,
+          progress.lastDailyCompletedDate,
+          today
+        );
+        newStreak = streakRes.newStreak;
+        newMaxStreak = streakRes.newMaxStreak;
+        lastDailyCompletedDate = today;
+
+        if (streakRes.isSevenDayStreakEarned) {
+          extraCoins += 200; // 7-day streak medal bonus!
+        }
+      }
+
+      const updatedDaily: DailyChallengeState = {
+        ...currentDaily,
+        clearedIndices: newClearedIndices,
+        completed: currentDaily.completed || isNowAllCleared,
+        completedAt: isNowAllCleared ? new Date().toISOString() : currentDaily.completedAt
+      };
+
+      const newProgress: UserProgress = {
+        ...progress,
+        coins: progress.coins + extraCoins,
+        xp: progress.xp + extraXp,
+        solvedDailySignatures: newSolvedSigs,
+        dailyChallenge: updatedDaily,
+        dailyStreak: newStreak,
+        maxDailyStreak: newMaxStreak,
+        lastDailyCompletedDate
+      };
+
+      updateProgressState(newProgress);
+      return;
+    }
+
+    // Standard Stage Map Game Completion
     const stageKey = getStageKey(activeGame.type, activeGame.level);
     const existingStars = progress.stageProgress[stageKey]?.stars || 0;
     const isFirstClear = !progress.stageProgress[stageKey]?.cleared;
@@ -109,7 +260,7 @@ export const App: React.FC = () => {
 
   const handleNextLevel = () => {
     if (!activeGame) return;
-    if (activeGame.level < 3) {
+    if (activeGame.level < 6) {
       setActiveGame({ type: activeGame.type, level: activeGame.level + 1 });
     } else {
       setActiveGame(null);
@@ -121,6 +272,7 @@ export const App: React.FC = () => {
       {/* Header */}
       <Header
         progress={progress}
+        onOpenDaily={() => setIsDailyOpen(true)}
         onOpenStamps={() => setIsStampOpen(true)}
         onOpenGacha={() => setIsGachaOpen(true)}
         onOpenMuseum={() => setIsMuseumOpen(true)}
@@ -145,6 +297,7 @@ export const App: React.FC = () => {
           progress={progress}
           selectedIslandId={selectedIslandId}
           onSelectIslandId={setSelectedIslandId}
+          onOpenDaily={() => setIsDailyOpen(true)}
           onLaunchGame={(type, level) => {
             const gameToIsland: Record<GameModuleType, string> = {
               lever: 'science',
@@ -167,8 +320,14 @@ export const App: React.FC = () => {
             <LeverBalanceGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
 
@@ -176,8 +335,14 @@ export const App: React.FC = () => {
             <BlockCountGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
 
@@ -185,8 +350,14 @@ export const App: React.FC = () => {
             <TsurukameGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
 
@@ -194,8 +365,14 @@ export const App: React.FC = () => {
             <GearChainGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
 
@@ -203,8 +380,14 @@ export const App: React.FC = () => {
             <CubeNetGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
 
@@ -212,14 +395,28 @@ export const App: React.FC = () => {
             <AlgoMazeGame
               level={activeGame.level}
               onComplete={handleGameComplete}
-              onBack={() => setActiveGame(null)}
-              onNextLevel={activeGame.level < 3 ? handleNextLevel : undefined}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < 6 ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
             />
           )}
         </>
       )}
 
       {/* Gamification Modals */}
+      {isDailyOpen && (
+        <DailyChallengeModal
+          progress={progress}
+          onPlayQuestion={handlePlayDailyQuestion}
+          onClose={() => setIsDailyOpen(false)}
+        />
+      )}
+
       {isStampOpen && (
         <StampBookModal
           progress={progress}

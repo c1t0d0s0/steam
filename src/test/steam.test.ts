@@ -113,6 +113,24 @@ describe('STEAM Lab Core Logic & Calculations', () => {
       expect(newBadges).toContain('b_lever_master');
     });
 
+    it('unlocks grand explorer badge when all 6 modules reach level 6', () => {
+      const progress: UserProgress = {
+        ...INITIAL_USER_PROGRESS,
+        unlockedBadges: ['b_first_step'],
+        stageProgress: {
+          lever_6: { stars: 3, cleared: true },
+          block_6: { stars: 3, cleared: true },
+          tsuru_6: { stars: 3, cleared: true },
+          gear_6: { stars: 3, cleared: true },
+          net_6: { stars: 3, cleared: true },
+          algo_6: { stars: 3, cleared: true }
+        }
+      };
+
+      const newBadges = checkNewBadges(progress);
+      expect(newBadges).toContain('b_grand_explorer');
+    });
+
     it('catalogs exist and are rich in educational value', () => {
       expect(ITEMS.length).toBeGreaterThanOrEqual(15);
       expect(BADGES.length).toBeGreaterThanOrEqual(8);
@@ -125,4 +143,20 @@ describe('STEAM Lab Core Logic & Calculations', () => {
       });
     });
   });
+
+  describe('Stage Map Expansion Verification', () => {
+    it('provides 6 levels across all 6 game modules totaling 36 stages', async () => {
+      const { ISLANDS } = await import('../components/home/IslandMap');
+      const allGames = ISLANDS.flatMap((island) => island.games);
+      expect(allGames.length).toBe(6);
+
+      let totalStages = 0;
+      for (const game of allGames) {
+        expect(game.levels).toEqual([1, 2, 3, 4, 5, 6]);
+        totalStages += game.levels.length;
+      }
+      expect(totalStages).toBe(36);
+    });
+  });
 });
+

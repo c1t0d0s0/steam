@@ -17,6 +17,24 @@ export interface Badge {
   category: 'progress' | 'mastery' | 'collection';
 }
 
+export interface DailyChallengeQuestion {
+  islandId: 'science' | 'math' | 'engineering' | 'art' | 'tech';
+  islandName: string;
+  islandIcon: string;
+  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze';
+  title: string;
+  signature: string;
+  puzzle: any;
+}
+
+export interface DailyChallengeState {
+  date: string; // YYYY-MM-DD
+  questions: DailyChallengeQuestion[];
+  clearedIndices: number[]; // e.g. [0, 1]
+  completed: boolean;
+  completedAt?: string;
+}
+
 export interface UserProgress {
   name: string;
   grade: number; // 3 to 6
@@ -30,6 +48,12 @@ export interface UserProgress {
   unlockedItems: string[]; // item ids
   unlockedBadges: string[]; // badge ids
   stageProgress: Record<string, { stars: number; cleared: boolean; bestScore?: number }>;
+  solvedDailySignatures: string[];
+  dailyChallenge?: DailyChallengeState;
+  lastDailyPromptDate?: string;
+  dailyStreak: number;
+  maxDailyStreak: number;
+  lastDailyCompletedDate?: string;
 }
 
 export const ITEMS: CollectibleItem[] = [
@@ -331,6 +355,34 @@ export const BADGES: Badge[] = [
     description: '研究員レベル5に到達した！',
     icon: '🎓',
     category: 'mastery'
+  },
+  {
+    id: 'b_grand_explorer',
+    title: '全知全能の探検マスター',
+    description: '全モジュールのLv.6（達人級）まで完全制覇！',
+    icon: '👑',
+    category: 'mastery'
+  },
+  {
+    id: 'b_daily_first',
+    title: 'デイリーチャレンジャー',
+    description: '本日のデイリーミッション（5島横断）を全問クリア！',
+    icon: '🥉',
+    category: 'progress'
+  },
+  {
+    id: 'b_daily_streak_3',
+    title: 'ひらめきスプリンター',
+    description: 'デイリーミッションを3日連続で完全達成！',
+    icon: '🥈',
+    category: 'progress'
+  },
+  {
+    id: 'b_daily_streak_7',
+    title: '1週間マスターメダル',
+    description: 'デイリーミッションを1週間（7日連続）完全制覇！',
+    icon: '🥇',
+    category: 'mastery'
   }
 ];
 
@@ -348,7 +400,10 @@ export const INITIAL_USER_PROGRESS: UserProgress = {
   lastStampDate: null,
   unlockedItems: ['s_prism', 'm_soroban'], // 2 initial starter items
   unlockedBadges: [],
-  stageProgress: {}
+  stageProgress: {},
+  solvedDailySignatures: [],
+  dailyStreak: 0,
+  maxDailyStreak: 0
 };
 
 export const getStoredProgress = (): UserProgress => {
@@ -362,7 +417,13 @@ export const getStoredProgress = (): UserProgress => {
       stageProgress: parsed.stageProgress || {},
       unlockedItems: Array.isArray(parsed.unlockedItems) ? parsed.unlockedItems : INITIAL_USER_PROGRESS.unlockedItems,
       unlockedBadges: Array.isArray(parsed.unlockedBadges) ? parsed.unlockedBadges : [],
-      stamps: Array.isArray(parsed.stamps) ? parsed.stamps : []
+      stamps: Array.isArray(parsed.stamps) ? parsed.stamps : [],
+      solvedDailySignatures: Array.isArray(parsed.solvedDailySignatures) ? parsed.solvedDailySignatures : [],
+      dailyChallenge: parsed.dailyChallenge || undefined,
+      lastDailyPromptDate: parsed.lastDailyPromptDate || undefined,
+      dailyStreak: typeof parsed.dailyStreak === 'number' ? parsed.dailyStreak : 0,
+      maxDailyStreak: typeof parsed.maxDailyStreak === 'number' ? parsed.maxDailyStreak : 0,
+      lastDailyCompletedDate: parsed.lastDailyCompletedDate || undefined
     };
   } catch (e) {
     console.error('Failed to load progress from localStorage', e);
@@ -472,5 +533,60 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
     newlyUnlocked.push('b_steam_master');
   }
 
+  // Grand Explorer: clear all 6 modules at Lv.6
+  const maxStages = ['lever_6', 'block_6', 'tsuru_6', 'gear_6', 'net_6', 'algo_6'];
+  if (maxStages.every(k => progress.stageProgress[k]?.cleared) && !current.has('b_grand_explorer')) {
+    newlyUnlocked.push('b_grand_explorer');
+  }
+
+  // Daily Challenge Badges
+  if ((progress.dailyStreak >= 1 || progress.lastDailyCompletedDate) && !current.has('b_daily_first')) {
+    newlyUnlocked.push('b_daily_first');
+  }
+
+  if (progress.dailyStreak >= 3 && !current.has('b_daily_streak_3')) {
+    newlyUnlocked.push('b_daily_streak_3');
+  }
+
+  if (progress.dailyStreak >= 7 && !current.has('b_daily_streak_7')) {
+    newlyUnlocked.push('b_daily_streak_7');
+  }
+
   return newlyUnlocked;
+};
+
+/**
+ * Calculates updated streak count when a daily challenge is completed.
+ */
+export const calculateUpdatedDailyStreak = (
+  currentStreak: number,
+  maxStreak: number,
+  lastCompletedDate: string | undefined,
+  todayStr: string
+): { newStreak: number; newMaxStreak: number; isSevenDayStreakEarned: boolean } => {
+  if (lastCompletedDate === todayStr) {
+    // Already completed today
+    return {
+      newStreak: currentStreak,
+      newMaxStreak: maxStreak,
+      isSevenDayStreakEarned: false
+    };
+  }
+
+  // Use UTC arithmetic to avoid local timezone offset skew
+  const [y, m, d] = todayStr.split('-').map(Number);
+  const todayUtc = new Date(Date.UTC(y, m - 1, d));
+  const yesterdayUtc = new Date(todayUtc);
+  yesterdayUtc.setUTCDate(yesterdayUtc.getUTCDate() - 1);
+  const yesterdayStr = yesterdayUtc.toISOString().split('T')[0];
+
+  let newStreak = 1;
+  if (lastCompletedDate === yesterdayStr) {
+    newStreak = currentStreak + 1;
+  }
+
+  const newMaxStreak = Math.max(maxStreak, newStreak);
+  const isSevenDayStreakEarned = newStreak % 7 === 0;
+
+  return { newStreak, newMaxStreak, isSevenDayStreakEarned };
 };

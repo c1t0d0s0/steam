@@ -5,6 +5,7 @@ import { sound } from '../../services/audio';
 
 interface HeaderProps {
   progress: UserProgress;
+  onOpenDaily: () => void;
   onOpenStamps: () => void;
   onOpenGacha: () => void;
   onOpenMuseum: () => void;
@@ -15,6 +16,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   progress,
+  onOpenDaily,
   onOpenStamps,
   onOpenGacha,
   onOpenMuseum,
@@ -75,6 +77,24 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-amber-500 text-base">⭐</span>
             <span>{progress.coins}</span>
           </div>
+
+          {/* Daily Challenge Button */}
+          <button
+            onClick={() => {
+              sound.playClick();
+              onOpenDaily();
+            }}
+            title="本日のデイリーチャレンジ"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-xs shadow-sm active:scale-95 transition-all"
+          >
+            <span>🎯</span>
+            <span className="hidden sm:inline">デイリー</span>
+            {progress.dailyStreak > 0 && (
+              <span className="px-1.5 py-0.2 bg-black/20 rounded-full text-[10px] font-black">
+                {progress.dailyStreak}日
+              </span>
+            )}
+          </button>
 
           {/* Stamp book button */}
           <button

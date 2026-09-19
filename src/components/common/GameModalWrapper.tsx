@@ -13,6 +13,10 @@ interface GameModalWrapperProps {
   onNextLevel?: () => void;
   onRetry?: () => void;
   onOpenHelp?: () => void;
+  problemIndex?: number;
+  totalProblems?: number;
+  onSwitchProblem?: (index: number) => void;
+  onNextProblem?: () => void;
   children: React.ReactNode;
 }
 
@@ -28,6 +32,10 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
   onNextLevel,
   onRetry,
   onOpenHelp,
+  problemIndex,
+  totalProblems,
+  onSwitchProblem,
+  onNextProblem,
   children
 }) => {
   return (
@@ -70,6 +78,33 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
           )}
         </div>
       </header>
+
+      {/* Problem Variation Selector */}
+      {totalProblems && totalProblems > 1 && onSwitchProblem && (
+        <div className="bg-amber-50/90 border-b border-amber-200 px-3 py-1.5 flex items-center justify-center gap-2 shrink-0">
+          <span className="text-xs font-black text-amber-900">
+            もんだい選たく:
+          </span>
+          <div className="flex gap-1.5">
+            {Array.from({ length: totalProblems }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  sound.playClick();
+                  onSwitchProblem(idx);
+                }}
+                className={`px-2.5 py-0.5 rounded-lg text-xs font-black transition-all ${
+                  problemIndex === idx
+                    ? 'bg-amber-500 text-white shadow-sm scale-105'
+                    : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
+                }`}
+              >
+                第{idx + 1}問
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Game Screen Canvas */}
       <main className="flex-1 overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-center relative">
@@ -147,6 +182,22 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
                 <LayoutGrid className="w-4 h-4 text-slate-600" />
                 <span>ステージ選択へ</span>
               </button>
+
+              {problemIndex !== undefined &&
+                totalProblems &&
+                problemIndex < totalProblems - 1 &&
+                onNextProblem && (
+                  <button
+                    onClick={() => {
+                      sound.playClick();
+                      onNextProblem();
+                    }}
+                    className="flex-1 py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black shadow-md active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5"
+                  >
+                    <span>第{problemIndex + 2}問へ</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
 
               {onRetry && (
                 <button

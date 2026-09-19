@@ -9,6 +9,9 @@ interface BlockCountGameProps {
   onComplete: (stars: number) => void;
   onBack: () => void;
   onNextLevel?: () => void;
+  customPuzzles?: BlockPuzzle[];
+  customTitle?: string;
+  customBadge?: string;
 }
 
 interface BlockCoord {
@@ -17,98 +20,485 @@ interface BlockCoord {
   z: number; // 0 to 2 (height)
 }
 
+interface BlockPuzzle {
+  blocks: BlockCoord[];
+  answer: number;
+  options: number[];
+  explanation: string;
+  examTip: string;
+}
+
 export const BlockCountGame: React.FC<BlockCountGameProps> = ({
   level,
   onComplete,
   onBack,
-  onNextLevel
+  onNextLevel,
+  customPuzzles,
+  customTitle,
+  customBadge
 }) => {
-  // Preset block structures per level
-  const getPuzzleData = () => {
-    if (level === 1) {
-      // 7 blocks
-      // Base: (0,0), (1,0), (2,0), (0,1), (1,1) -> 5
-      // Layer 2: (0,0), (1,0) -> 2
-      const blocks: BlockCoord[] = [
-        { x: 0, y: 0, z: 0 },
-        { x: 1, y: 0, z: 0 },
-        { x: 2, y: 0, z: 0 },
-        { x: 0, y: 1, z: 0 },
-        { x: 1, y: 1, z: 0 },
-        { x: 0, y: 0, z: 1 },
-        { x: 1, y: 0, z: 1 }
-      ];
-      return {
-        blocks,
-        answer: 7,
-        options: [5, 6, 7, 8],
-        explanation: '1段目（底）に 5個、2段目に 2個で、合計「5 + 2 = 7個」です！',
-        examTip: '【受験の必勝技】積み木は「1段目、2段目、3段目…」と段ごとにスライスして数えると、隠れたブロックも見落としません！'
-      };
-    } else if (level === 2) {
-      // 11 blocks with hidden block underneath
-      // Layer 1 (z=0): (0,0), (1,0), (2,0), (0,1), (1,1), (2,1) -> 6
-      // Layer 2 (z=1): (0,0), (1,0), (0,1), (1,1) -> 4
-      // Layer 3 (z=2): (0,0) -> 1
-      const blocks: BlockCoord[] = [
-        { x: 0, y: 0, z: 0 },
-        { x: 1, y: 0, z: 0 },
-        { x: 2, y: 0, z: 0 },
-        { x: 0, y: 1, z: 0 },
-        { x: 1, y: 1, z: 0 },
-        { x: 2, y: 1, z: 0 },
-        { x: 0, y: 0, z: 1 },
-        { x: 1, y: 0, z: 1 },
-        { x: 0, y: 1, z: 1 },
-        { x: 1, y: 1, z: 1 },
-        { x: 0, y: 0, z: 2 }
-      ];
-      return {
-        blocks,
-        answer: 11,
-        options: [9, 10, 11, 12],
-        explanation: '1段目に 6個、2段目に 4個、3段目に 1個あります。合計「6 + 4 + 1 = 11個」です！見えない一番奥の下にも土台ブロックが存在します。',
-        examTip: '【中学受験の常識】上の段にブロックが乗っているなら、その真下には必ず支えるブロックが存在します！宙には浮きません。'
-      };
-    } else {
-      // Level 3 (16 blocks - staircase & pillar)
-      // Layer 1 (z=0): (0,0),(1,0),(2,0),(0,1),(1,1),(2,1),(0,2),(1,2) -> 8
-      // Layer 2 (z=1): (0,0),(1,0),(2,0),(0,1),(1,1) -> 5
-      // Layer 3 (z=2): (0,0),(1,0),(0,1) -> 3
-      const blocks: BlockCoord[] = [
-        { x: 0, y: 0, z: 0 },
-        { x: 1, y: 0, z: 0 },
-        { x: 2, y: 0, z: 0 },
-        { x: 0, y: 1, z: 0 },
-        { x: 1, y: 1, z: 0 },
-        { x: 2, y: 1, z: 0 },
-        { x: 0, y: 2, z: 0 },
-        { x: 1, y: 2, z: 0 },
-        { x: 0, y: 0, z: 1 },
-        { x: 1, y: 0, z: 1 },
-        { x: 2, y: 0, z: 1 },
-        { x: 0, y: 1, z: 1 },
-        { x: 1, y: 1, z: 1 },
-        { x: 0, y: 0, z: 2 },
-        { x: 1, y: 0, z: 2 },
-        { x: 0, y: 1, z: 2 }
-      ];
-      return {
-        blocks,
-        answer: 16,
-        options: [14, 15, 16, 18],
-        explanation: '1段目: 8個、2段目: 5個、3段目: 3個。8 + 5 + 3 = 16個です！上から見た図に各タワーの高さを書き込むと瞬時に解けます。',
-        examTip: '難関校の積み木問題は「上から見た図」の各マスに高さを「3, 3, 2…」と数字で記入して合計するのが最も速く正確な解き方です！'
-      };
+  // Preset block structures per level (3 variations per level = 18 problems total)
+  const getLevelPuzzles = (lvl: number): BlockPuzzle[] => {
+    switch (lvl) {
+      case 1:
+        return [
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 }
+            ],
+            answer: 7,
+            options: [5, 6, 7, 8],
+            explanation: '1段目（底）に 5個、2段目に 2個で、合計「5 + 2 = 7個」です！',
+            examTip: '【受験の必勝技】積み木は「1段目、2段目、3段目…」と段ごとにスライスして数えると、隠れたブロックも見落としません！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 }
+            ],
+            answer: 6,
+            options: [4, 5, 6, 7],
+            explanation: '1段目に 4個、2段目に 2個で、合計「4 + 2 = 6個」です！',
+            examTip: 'まずは底面にブロックが何個敷き詰められているかを確認しましょう！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 }
+            ],
+            answer: 8,
+            options: [6, 7, 8, 9],
+            explanation: '1段目に 6個、2段目に 2個で、合計「6 + 2 = 8個」です！',
+            examTip: '段ごとに色分けや数字で整理すると、数え間違いを防げます！'
+          }
+        ];
+      case 2:
+        return [
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 }
+            ],
+            answer: 11,
+            options: [9, 10, 11, 12],
+            explanation: '1段目に 6個、2段目に 4個、3段目に 1個あります。合計「6 + 4 + 1 = 11個」です！見えない一番奥の下にも土台ブロックが存在します。',
+            examTip: '【中学受験の常識】上の段にブロックが乗っているなら、その真下には必ず支えるブロックが存在します！宙には浮きません。'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 }
+            ],
+            answer: 10,
+            options: [8, 9, 10, 12],
+            explanation: '1段目に 5個、2段目に 4個、3段目に 1個。合計「5 + 4 + 1 = 10個」です！',
+            examTip: '奥の高いタワーの足元にあるブロックを忘れないようにしましょう！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 }
+            ],
+            answer: 12,
+            options: [10, 11, 12, 13],
+            explanation: '1段目: 6個、2段目: 5個、3段目: 1個。6 + 5 + 1 = 12個です！',
+            examTip: '「真上からの高さ図」ボタンを押すと、各マスの積み重なり段数が一目で分かります！'
+          }
+        ];
+      case 3:
+        return [
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 }
+            ],
+            answer: 16,
+            options: [14, 15, 16, 18],
+            explanation: '1段目: 8個、2段目: 5個、3段目: 3個。8 + 5 + 3 = 16個です！上から見た図に各タワーの高さを書き込むと瞬時に解けます。',
+            examTip: '難関校の積み木問題は「上から見た図」の各マスに高さを「3, 3, 2…」と数字で記入して合計するのが最も速く正確な解き方です！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 }
+            ],
+            answer: 15,
+            options: [13, 14, 15, 16],
+            explanation: '1段目: 8個、2段目: 5個、3段目: 2個で合計 15個です！',
+            examTip: '階段状に積み上がったブロックは段ごとの法則性を意識しましょう。'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 }
+            ],
+            answer: 17,
+            options: [15, 16, 17, 18],
+            explanation: '1段目: 9個、2段目: 5個、3段目: 3個。9 + 5 + 3 = 17個です！',
+            examTip: '底面が3×3の9個すべて埋まっているパターンです！'
+          }
+        ];
+      case 4:
+        return [
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 2, y: 2, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 2, y: 2, z: 2 }
+            ],
+            answer: 13,
+            options: [11, 12, 13, 14],
+            explanation: 'くぼみのあるU字型の立体。1段目: 7個、2段目: 4個、3段目: 2個。合計 7 + 4 + 2 = 13個です！',
+            examTip: '【見えない死角の注意点】中央が空洞になっている形では、向こう側の柱の高さを確認することが大切です！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 2, y: 2, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 2, y: 2, z: 2 }
+            ],
+            answer: 14,
+            options: [12, 13, 14, 15],
+            explanation: '真ん中(1,1)が穴になったドーナツ型ベース。1段目: 8個、2段目: 4個、3段目: 2個で 8 + 4 + 2 = 14個！',
+            examTip: '穴の空いた立体は、3×3=9個のベースから穴の1個を引いて8個と計算するとスピーディーです。'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 }
+            ],
+            answer: 12,
+            options: [10, 11, 12, 14],
+            explanation: 'L字型に広がる立体。1段目: 6個、2段目: 4個、3段目: 2個で 6 + 4 + 2 = 12個！',
+            examTip: '上から見た図に「3, 2, 0」のように列ごとに高さを書くとミスゼロになります！'
+          }
+        ];
+      case 5:
+        return [
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 }
+            ],
+            answer: 18,
+            options: [16, 17, 18, 20],
+            explanation: '密集ピラミッドタワー。1段目: 9個、2段目: 6個、3段目: 3個。9 + 6 + 3 = 18個！',
+            examTip: '【ピラミッド数列】段が増えるごとにブロックの数が一定の規則で増えていく関係に着目しましょう！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 }
+            ],
+            answer: 19,
+            options: [17, 18, 19, 21],
+            explanation: '1段目: 9個、2段目: 7個、3段目: 3個。9 + 7 + 3 = 19個です！',
+            examTip: '階層ごとのブロックの数を足し算する基本をしっかり守りましょう！'
+          },
+          {
+            blocks: [
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 },
+              { x: 1, y: 1, z: 2 }
+            ],
+            answer: 20,
+            options: [18, 19, 20, 22],
+            explanation: '1段目: 9個、2段目: 7個、3段目: 4個。9 + 7 + 4 = 20個です！',
+            examTip: '上から見た図の各列の合計が全体の個数と一致するか検算しましょう。'
+          }
+        ];
+      case 6:
+      default:
+        return [
+          {
+            blocks: [
+              // 3x3x3 cube (27) with 6 missing -> 21 blocks
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              // Layer 2: 7 blocks (missing (1,1) and (2,2))
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 1, y: 2, z: 1 },
+              // Layer 3: 5 blocks
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 2, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 },
+              { x: 0, y: 2, z: 2 }
+            ],
+            answer: 21,
+            options: [19, 20, 21, 23],
+            explanation: '1段目: 9個、2段目: 7個、3段目: 5個。合計 21個！「3×3×3=27個 から欠けている6個を引く」余事象のワザを使うと 27 - 6 = 21個 と瞬時に求まります！',
+            examTip: '【達人技・全体から引く】難関校入試では、数えるより「欠けている穴の数」を数えて引き算する方が圧倒的に速くミスも防げます！'
+          },
+          {
+            blocks: [
+              // 3x3x3 cube with 5 missing -> 22 blocks
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              // Layer 2: 8 blocks (missing (1,1))
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 1, y: 2, z: 1 },
+              { x: 2, y: 2, z: 1 },
+              // Layer 3: 5 blocks
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 2, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 },
+              { x: 0, y: 2, z: 2 }
+            ],
+            answer: 22,
+            options: [20, 21, 22, 24],
+            explanation: '1段目: 9個、2段目: 8個、3段目: 5個で合計 22個！全体 27 - 欠け 5 = 22個です！',
+            examTip: '大きな立方体からの引き算ワザを使いこなせれば、最難関中の空間図形問題も怖くありません！'
+          },
+          {
+            blocks: [
+              // 3x3x3 cube with 3 missing -> 24 blocks
+              { x: 0, y: 0, z: 0 },
+              { x: 1, y: 0, z: 0 },
+              { x: 2, y: 0, z: 0 },
+              { x: 0, y: 1, z: 0 },
+              { x: 1, y: 1, z: 0 },
+              { x: 2, y: 1, z: 0 },
+              { x: 0, y: 2, z: 0 },
+              { x: 1, y: 2, z: 0 },
+              { x: 2, y: 2, z: 0 },
+              // Layer 2: 8 blocks
+              { x: 0, y: 0, z: 1 },
+              { x: 1, y: 0, z: 1 },
+              { x: 2, y: 0, z: 1 },
+              { x: 0, y: 1, z: 1 },
+              { x: 1, y: 1, z: 1 },
+              { x: 2, y: 1, z: 1 },
+              { x: 0, y: 2, z: 1 },
+              { x: 1, y: 2, z: 1 },
+              // Layer 3: 7 blocks
+              { x: 0, y: 0, z: 2 },
+              { x: 1, y: 0, z: 2 },
+              { x: 2, y: 0, z: 2 },
+              { x: 0, y: 1, z: 2 },
+              { x: 1, y: 1, z: 2 },
+              { x: 0, y: 2, z: 2 },
+              { x: 1, y: 2, z: 2 }
+            ],
+            answer: 24,
+            options: [21, 22, 24, 25],
+            explanation: '1段目: 9個、2段目: 8個、3段目: 7個。合計 24個！全体 27 - 欠け 3 = 24個です！',
+            examTip: '空間認識能力は、実際にブロックを頭の中で組み立てたり削ったりするイメージトレーニングで鍛えられます！'
+          }
+        ];
     }
   };
 
-  const puzzle = getPuzzleData();
+  const puzzles = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level);
+  const [problemIndex, setProblemIndex] = useState(0);
+  const puzzle = puzzles[problemIndex % puzzles.length];
+
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [feedback, setFeedback] = useState<string>('立方体のブロックは全部で何個あるかな？');
   const [activeLayerFilter, setActiveLayerFilter] = useState<number | null>(null); // null = all layers
   const [showHeightMap, setShowHeightMap] = useState(false);
+
+  const switchProblem = (idx: number) => {
+    const nextIdx = idx % puzzles.length;
+    setProblemIndex(nextIdx);
+    setSelectedAnswer(null);
+    setIsCompleted(false);
+    setActiveLayerFilter(null);
+    setShowHeightMap(false);
+    setFeedback('立方体のブロックは全部で何個あるかな？');
+  };
 
   // Isometric 2D projection parameters
   const isoX = (x: number, y: number) => (x - y) * 36;
@@ -142,14 +532,18 @@ export const BlockCountGame: React.FC<BlockCountGameProps> = ({
 
   return (
     <GameModalWrapper
-      title="立体ブロック積み木数え"
-      badgeTag={`算数アリーナ Lv.${level}`}
+      title={customTitle || "立体ブロック積み木数え"}
+      badgeTag={customBadge || `算数アリーナ Lv.${level}`}
       level={level}
       isCompleted={isCompleted}
       explanation={puzzle.explanation}
       examTip={puzzle.examTip}
       onBack={onBack}
       onNextLevel={onNextLevel}
+      problemIndex={problemIndex}
+      totalProblems={puzzles.length}
+      onSwitchProblem={switchProblem}
+      onNextProblem={() => switchProblem(problemIndex + 1)}
       onRetry={() => {
         setSelectedAnswer(null);
         setIsCompleted(false);
