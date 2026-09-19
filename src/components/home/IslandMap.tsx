@@ -300,9 +300,12 @@ export const IslandMap: React.FC<IslandMapProps> = ({
               </div>
             </div>
 
-            {/* Info Banner */}
-            <div className="mb-3 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-900 flex items-center justify-between">
-              <span>✨ 全6ステージ × 各3問（計18問）に挑戦できるよ！</span>
+            {/* Info Banner with Grade Indication */}
+            <div className="mb-3 px-3 py-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-950 flex items-center justify-between gap-2">
+              <span>✨ 全6ステージ × 各3問（計18問）</span>
+              <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900 font-black text-xs shadow-sm shrink-0">
+                🎒 小学{progress.grade}年生レベル
+              </span>
             </div>
 
             {/* Games and Levels */}

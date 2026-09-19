@@ -115,30 +115,84 @@ export const generateTsurukamePuzzle = (
   solvedSignatures: Set<string>,
   grade: number = 4
 ): { puzzle: any; signature: string } => {
-  const minAnimal = grade <= 3 ? 2 : 3;
-  const maxAnimal = grade <= 4 ? 8 : 14;
+  const minAnimal = grade <= 3 ? 2 : grade <= 4 ? 3 : 5;
+  const maxAnimal = grade <= 3 ? 5 : grade <= 4 ? 8 : grade <= 5 ? 12 : 16;
+
+  // Grade-adaptive theme selection
+  const themes = [
+    {
+      themeName: 'ツルとカメ',
+      itemA: { name: 'ツル', emoji: '🦩', unit: '羽', value: 2 },
+      itemB: { name: 'カメ', emoji: '🐢', unit: '匹', value: 4 },
+      totalLabel: 'あたまの数（合計匹数）',
+      valueLabel: 'めざす足の合計',
+      valueUnit: '本'
+    }
+  ];
+
+  if (grade >= 4) {
+    themes.push({
+      themeName: '乗り物の車輪算',
+      itemA: { name: '自転車', emoji: '🚲', unit: '台', value: 2 },
+      itemB: { name: '自動車', emoji: '🚗', unit: '台', value: 4 },
+      totalLabel: '乗り物の台数（合計）',
+      valueLabel: 'めざすタイヤ・車輪の合計',
+      valueUnit: '輪'
+    });
+  }
+
+  if (grade >= 5) {
+    themes.push({
+      themeName: '切手算（金額つるかめ算）',
+      itemA: { name: '50円切手', emoji: '💌', unit: '枚', value: 50 },
+      itemB: { name: '80円切手', emoji: '📮', unit: '枚', value: 80 },
+      totalLabel: '切手の合計枚数',
+      valueLabel: 'めざす合計金額',
+      valueUnit: '円'
+    });
+  }
+
+  if (grade >= 6) {
+    themes.push({
+      themeName: '昆虫つるかめ算（カブトムシとクモ）',
+      itemA: { name: 'カブトムシ', emoji: '🪲', unit: '匹', value: 6 },
+      itemB: { name: 'クモ', emoji: '🕷️', unit: '匹', value: 8 },
+      totalLabel: '虫の匹数（合計）',
+      valueLabel: 'めざす足の合計',
+      valueUnit: '本'
+    });
+  }
+
+  const selectedTheme = pickRandom(themes);
 
   for (let attempt = 0; attempt < 100; attempt++) {
-    const cranes = randInt(minAnimal, maxAnimal);
-    const turtles = randInt(minAnimal, maxAnimal);
-    const totalHeads = cranes + turtles;
-    const totalLegs = cranes * 2 + turtles * 4;
+    const countA = randInt(minAnimal, maxAnimal);
+    const countB = randInt(minAnimal, maxAnimal);
+    const totalCount = countA + countB;
+    const totalVal = countA * selectedTheme.itemA.value + countB * selectedTheme.itemB.value;
 
-    const signature = `tsuru:h${totalHeads}_l${totalLegs}_c${cranes}_t${turtles}`;
+    const signature = `tsuru:${selectedTheme.itemA.name}_h${totalCount}_v${totalVal}_a${countA}_b${countB}`;
     if (!solvedSignatures.has(signature)) {
-      const assumedLegs = totalHeads * 2;
-      const missingLegs = totalLegs - assumedLegs;
+      const assumedVal = totalCount * selectedTheme.itemA.value;
+      const missingVal = totalVal - assumedVal;
+      const diffVal = selectedTheme.itemB.value - selectedTheme.itemA.value;
 
-      const explanation = `もし全員ツル（足2本）なら ${totalHeads}匹 × 2本 = ${assumedLegs}本。足りない足は ${totalLegs} - ${assumedLegs} = ${missingLegs}本。ツルをカメに変えると足が2本ずつ増えるので、${missingLegs}本 ÷ 2 = ${turtles}匹がカメ！ツルは ${totalHeads} - ${turtles} = ${cranes}羽です。`;
-      const examTip = '【中学受験のツボ】「もし全員が足の少ない方（ツル）だったら」と仮定し、足りない足を「足の数の差（2本）」で割ることでカメの数を求められます！';
+      const explanation = `もし全部${selectedTheme.itemA.name}なら ${totalCount}${selectedTheme.itemB.unit} × ${selectedTheme.itemA.value}${selectedTheme.valueUnit} = ${assumedVal}${selectedTheme.valueUnit}。足りない分は ${totalVal} - ${assumedVal} = ${missingVal}${selectedTheme.valueUnit}。${selectedTheme.itemA.name}を${selectedTheme.itemB.name}に変えると「1${selectedTheme.itemB.unit}あたり${diffVal}${selectedTheme.valueUnit}」増えるので、${missingVal}${selectedTheme.valueUnit} ÷ ${diffVal} = ${countB}${selectedTheme.itemB.unit}が${selectedTheme.itemB.name}！${selectedTheme.itemA.name}は ${totalCount} - ${countB} = ${countA}${selectedTheme.itemA.unit}です。`;
+      const examTip = '【中学受験のツボ】「もし全員が少ない方だったら」と仮定し、不足分を「1つあたりの差」で割ることで多い方の数が求まります！';
 
       return {
         signature,
         puzzle: {
-          totalHeads,
-          totalLegs,
-          correctCranes: cranes,
-          correctTurtles: turtles,
+          totalHeads: totalCount,
+          totalLegs: totalVal,
+          correctCranes: countA,
+          correctTurtles: countB,
+          themeName: selectedTheme.themeName,
+          itemA: selectedTheme.itemA,
+          itemB: selectedTheme.itemB,
+          totalLabel: selectedTheme.totalLabel,
+          valueLabel: selectedTheme.valueLabel,
+          valueUnit: selectedTheme.valueUnit,
           explanation,
           examTip
         }
@@ -153,6 +207,12 @@ export const generateTsurukamePuzzle = (
       totalLegs: 18,
       correctCranes: 3,
       correctTurtles: 3,
+      themeName: 'ツルとカメ',
+      itemA: { name: 'ツル', emoji: '🦩', unit: '羽', value: 2 },
+      itemB: { name: 'カメ', emoji: '🐢', unit: '匹', value: 4 },
+      totalLabel: 'あたまの数（合計匹数）',
+      valueLabel: 'めざす足の合計',
+      valueUnit: '本',
       explanation: 'もし全員ツルなら 6×2=12本。差の6本÷2=3匹がカメ。ツルは 6-3=3羽です。',
       examTip: 'つるかめ算の基本公式をしっかりマスターしよう！'
     }
@@ -264,48 +324,91 @@ export const generateGearPuzzle = (
     const isRatio = grade >= 4 && Math.random() > 0.45;
 
     if (isRatio) {
-      // 2 or 3 gears ratio problem
-      const teethChoices = [8, 12, 16, 20, 24];
-      const teethA = pickRandom(teethChoices);
-      const turnsA = pickRandom([2, 3, 4, 6]);
+      // 2 or 3 gears ratio problem (grade >= 5 introduces 3-gear idler trains)
+      const teethChoices = [8, 10, 12, 15, 16, 20, 24, 30];
+      const teethA = pickRandom([8, 10, 12, 14, 15, 16, 20]);
+      const turnsA = pickRandom([3, 4, 5, 6]);
       const totalMoved = teethA * turnsA;
 
-      // Pick gear B teeth that divides totalMoved
-      const validTeethB = teethChoices.filter((t) => t !== teethA && totalMoved % t === 0);
-      if (validTeethB.length === 0) continue;
-      const teethB = pickRandom(validTeethB);
-      const correctTurns = totalMoved / teethB;
+      const isIdler = grade >= 5 && Math.random() > 0.4;
+      if (isIdler) {
+        // 3-gear train with middle idler gear
+        const teethB = pickRandom([10, 12, 16, 18, 20]); // intermediate idler
+        const validTeethC = teethChoices.filter((t) => t !== teethA && totalMoved % t === 0);
+        if (validTeethC.length === 0) continue;
+        const teethC = pickRandom(validTeethC);
+        const correctTurns = totalMoved / teethC;
 
-      const signature = `gear:ratio_ta${teethA}_na${turnsA}_tb${teethB}`;
-      if (!solvedSignatures.has(signature)) {
-        const gears = [
-          { label: 'A', teeth: teethA, radius: teethA * 3, isCW: true, speedSec: 4, color: colors[0] },
-          { label: 'B', teeth: teethB, radius: teethB * 3, isCW: false, speedSec: 4 * (teethB / teethA), color: colors[1] }
-        ];
+        const signature = `gear:idler_ta${teethA}_na${turnsA}_tb${teethB}_tc${teethC}`;
+        if (!solvedSignatures.has(signature)) {
+          const gears = [
+            { label: 'A', teeth: teethA, radius: Math.max(24, Math.min(48, teethA * 2.2)), isCW: true, speedSec: 3, color: colors[0] },
+            { label: 'B (中間)', teeth: teethB, radius: Math.max(24, Math.min(48, teethB * 2.2)), isCW: false, speedSec: 3 * (teethB / teethA), color: '#94a3b8' },
+            { label: 'C', teeth: teethC, radius: Math.max(24, Math.min(48, teethC * 2.2)), isCW: true, speedSec: 3 * (teethC / teethA), color: colors[2] }
+          ];
 
-        const optionsSet = new Set<number>([correctTurns]);
-        while (optionsSet.size < 4) {
-          const offset = pickRandom([-3, -2, -1, 1, 2, 3]);
-          const c = correctTurns + offset;
-          if (c > 0) optionsSet.add(c);
-        }
-        const options = Array.from(optionsSet).sort((a, b) => a - b);
-
-        const explanation = `ギアAが${turnsA}回転するときに進む歯数は「${teethA}枚 × ${turnsA}回転 = ${totalMoved}枚」です。ギアBの歯数は${teethB}枚なので、「${totalMoved}枚 ÷ ${teethB}枚 = ${correctTurns}回転」回ります！`;
-        const examTip = '【中学受験のツボ】「歯数 × 回転数 ＝ 移動した歯の数（一定）」です。歯数が半分になれば回転数は2倍（反比例関係）になります！';
-
-        return {
-          signature,
-          puzzle: {
-            question: `ギアA（歯数${teethA}枚）が時計回りに【${turnsA}回転】するとき、噛み合っているギアB（歯数${teethB}枚）は何回転する？`,
-            isRatioPuzzle: true,
-            correctTurns,
-            options,
-            gears,
-            explanation,
-            examTip
+          const optionsSet = new Set<number>([correctTurns]);
+          while (optionsSet.size < 4) {
+            const offset = pickRandom([-3, -2, -1, 1, 2, 3]);
+            const c = correctTurns + offset;
+            if (c > 0) optionsSet.add(c);
           }
-        };
+          const options = Array.from(optionsSet).sort((a, b) => a - b);
+
+          const explanation = `中間の歯車Bの歯数に関わらず、最初と最後の歯数積だけで決まります！1つの歯車が送る歯数は「${teethA}枚 × ${turnsA}回転 = ${totalMoved}枚」。最後の歯車Cは「${totalMoved} ÷ ${teethC} = ${correctTurns}回転」回ります！`;
+          const examTip = '【アイドラギアの定理】中間に挟まれた歯車は向きを変えるだけで、回転数比には影響しません！';
+
+          return {
+            signature,
+            puzzle: {
+              question: `歯車A（${teethA}枚）が時計回りに【${turnsA}回転】するとき、中間ギアB（${teethB}枚）を経由してつながる歯車C（${teethC}枚）は何回転する？`,
+              isRatioPuzzle: true,
+              correctTurns,
+              options,
+              gears,
+              explanation,
+              examTip
+            }
+          };
+        }
+      } else {
+        // Standard 2-gear ratio
+        const validTeethB = teethChoices.filter((t) => t !== teethA && totalMoved % t === 0);
+        if (validTeethB.length === 0) continue;
+        const teethB = pickRandom(validTeethB);
+        const correctTurns = totalMoved / teethB;
+
+        const signature = `gear:ratio_ta${teethA}_na${turnsA}_tb${teethB}`;
+        if (!solvedSignatures.has(signature)) {
+          const gears = [
+            { label: 'A', teeth: teethA, radius: Math.max(24, Math.min(48, teethA * 2.2)), isCW: true, speedSec: 3, color: colors[0] },
+            { label: 'B', teeth: teethB, radius: Math.max(24, Math.min(48, teethB * 2.2)), isCW: false, speedSec: 3 * (teethB / teethA), color: colors[1] }
+          ];
+
+          const optionsSet = new Set<number>([correctTurns]);
+          while (optionsSet.size < 4) {
+            const offset = pickRandom([-3, -2, -1, 1, 2, 3]);
+            const c = correctTurns + offset;
+            if (c > 0) optionsSet.add(c);
+          }
+          const options = Array.from(optionsSet).sort((a, b) => a - b);
+
+          const explanation = `ギアAが進む歯数は「${teethA}枚 × ${turnsA}回転 = ${totalMoved}枚」です。ギアBの歯数は${teethB}枚なので、「${totalMoved} ÷ ${teethB} = ${correctTurns}回転」回ります！`;
+          const examTip = '【中学受験のツボ】「歯数 × 回転数 ＝ 一定」！歯数が半分になれば回転数は2倍（反比例関係）になります！';
+
+          return {
+            signature,
+            puzzle: {
+              question: `ギアA（歯数${teethA}枚）が時計回りに【${turnsA}回転】するとき、噛み合っているギアB（歯数${teethB}枚）は何回転する？`,
+              isRatioPuzzle: true,
+              correctTurns,
+              options,
+              gears,
+              explanation,
+              examTip
+            }
+          };
+        }
       }
     } else {
       // Direction puzzle with 3 or 4 gears

@@ -319,6 +319,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'lever' && (
             <LeverBalanceGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);
@@ -334,6 +335,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'block' && (
             <BlockCountGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);
@@ -349,6 +351,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'tsurukame' && (
             <TsurukameGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);
@@ -364,6 +367,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'gear' && (
             <GearChainGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);
@@ -379,6 +383,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'cube_net' && (
             <CubeNetGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);
@@ -394,6 +399,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
           {activeGame.type === 'algo_maze' && (
             <AlgoMazeGame
               level={activeGame.level}
+              grade={progress.grade}
               onComplete={handleGameComplete}
               onBack={() => {
                 setActiveGame(null);

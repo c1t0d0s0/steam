@@ -97,5 +97,33 @@ describe('App Component Integration', () => {
     expect(screen.getByText('てこ天秤の釣り合いパズル')).toBeInTheDocument();
     expect(screen.getByText('Lv.1 (初級)')).toBeInTheDocument();
   });
+
+  it('renders all 6 gears including Gear A driver in Engineering Mine Level 5 without clipping', () => {
+    render(<App />);
+
+    // Click on Engineering island
+    fireEvent.click(screen.getByText('エンジニア鉱山'));
+
+    // Find Lv.5 (応用) card
+    expect(screen.getByText('Lv.5 (応用)')).toBeInTheDocument();
+    
+    // Click start on Lv.5 (index 4)
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[4]);
+
+    // Check game header
+    expect(screen.getAllByText('歯車（ギア）伝達パズル').length).toBeGreaterThanOrEqual(1);
+
+    // Check driver badge on first gear (Gear A)
+    expect(screen.getByText('時計回り')).toBeInTheDocument();
+
+    // Verify all 6 gears (A to F) are rendered
+    expect(screen.getByText(/ギア A/)).toBeInTheDocument();
+    expect(screen.getByText(/ギア B/)).toBeInTheDocument();
+    expect(screen.getByText(/ギア C/)).toBeInTheDocument();
+    expect(screen.getByText(/ギア D/)).toBeInTheDocument();
+    expect(screen.getByText(/ギア E/)).toBeInTheDocument();
+    expect(screen.getByText(/ギア F/)).toBeInTheDocument();
+  });
 });
 

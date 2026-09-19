@@ -4,7 +4,8 @@ import { sound } from '../../../services/audio';
 import { fireConfetti } from '../../../services/confetti';
 
 interface LeverBalanceGameProps {
-  level: number; // 1, 2, 3
+  level: number; // 1 to 6
+  grade?: number; // 3 to 6
   onComplete: (stars: number) => void;
   onBack: () => void;
   onNextLevel?: () => void;
@@ -27,8 +28,2082 @@ interface PuzzleData {
   availableWeights: number[];
 }
 
+const GRADE_PUZZLES: Record<number, Record<number, PuzzleData[]>> = {
+  "3": {
+    "1": [
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左の力は「きょり 3 × 重さ 20g = 60」。右のきょり 2 には「30g」を置くと「2 × 30g = 60」でピタリと釣り合います！",
+        "examTip": "てこの基本公式：【支点からの距離 × おもりの重さ】が左右で同じになると釣り合います！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左の力は「きょり 2 × 重さ 30g = 60」。右のきょり 3 には「20g」を置くと「3 × 20g = 60」で釣り合います！",
+        "examTip": "支点からの距離が1.5倍になると、釣り合うために必要なおもりは2/3の重さで済みます！"
+      },
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左の力は「きょり 4 × 重さ 10g = 40」。右のきょり 2 には「20g」を置くと「2 × 20g = 40」で釣り合います！",
+        "examTip": "支点からの距離が半分なら、必要な重さは2倍になります！"
+      }
+    ],
+    "2": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30
+        ],
+        "explanation": "左は 2 × 20g = 40。右のきょり 4 に「10g」を置くと 4 × 10g = 40 で釣り合います！",
+        "examTip": "遠いフックにおもりをかけると、小さな重さでも大きな力を生み出せます！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30
+        ],
+        "explanation": "左は 1 × 30g = 30。右のきょり 3 に「10g」で 3 × 10g = 30 です！",
+        "examTip": "支点からの距離が3倍遠い場所なら、1/3の軽さで釣り合います！"
+      },
+      {
+        "targetPos": 1,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 4 × 10g = 40。右のきょり 1 に「40g」を置くと 1 × 40g = 40 です！",
+        "examTip": "支点のすぐ近くは、釣り合わせるためにとても重い力が必要です！"
+      }
+    ],
+    "3": [
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左の力は (1×20) + (2×10) = 40。右のきょり 2 に「20g」で 2 × 20 = 40！",
+        "examTip": "左側に2つおもりがある時は、それぞれの【距離×重さ】を足し算しましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左の力は (3×10) + (1×10) = 40。右のきょり 4 に「10g」で 4 × 10 = 40！",
+        "examTip": "合計の力を計算してから、右側のフックの距離で割り算すると正解が出ます！"
+      },
+      {
+        "targetPos": 1,
+        "initialWeights": [
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左の力は (2×20) + (1×10) = 50。右のきょり 1 に「50g」で 1 × 50 = 50！",
+        "examTip": "支点からの距離が1なら、おもりの重さがそのまま「まわす力」になります！"
+      }
+    ],
+    "4": [
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左の力は 60 + 20 = 80。右のきょり 2 に「40g」で 2 × 40 = 80！",
+        "examTip": "左側の合計力80を、右側の距離2で割ると 80÷2=40g が導けます！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 15,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          15,
+          20,
+          30
+        ],
+        "explanation": "左の力は 60 + 20 = 80。右のきょり 4 に「20g」で 4 × 20 = 80！",
+        "examTip": "15gのような半端な数字でも、かけ算と足し算を丁寧に行えば安心です！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 60 + 10 = 70。右は既に 1×10 = 10 あるので残り60。きょり 3 に「20g」(3×20=60)で 70 に一致！",
+        "examTip": "右側にすでにおもりがある時は、左の合計から右の分を引き算します！"
+      }
+    ],
+    "5": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 40 + 40 = 80。右は既に 2×10 = 20 あるので残り60。きょり 3 に「20g」で釣り合います！",
+        "examTip": "【逆算思考】80 - 20 = 60、60 ÷ 3 = 20g と順を追って計算しましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30
+        ],
+        "explanation": "左は 3×30 = 90。右は既に 1×10 = 10 あるので残り80。きょり 4 に「20g」(4×20=80)で釣り合います！",
+        "examTip": "左右のつり合いの式をメモして不足分を割り算しましょう！"
+      },
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 4×20 = 80。右は 1×20 = 20 あるので残り60。きょり 2 に「30g」(2×30=60)で 80！",
+        "examTip": "未知のおもりを□とおいて、80 = 20 + 2×□ を解く方程式の芽生えです！"
+      }
+    ],
+    "6": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "explanation": "左は 80 + 20 = 100。右のきょり 4 に「25g」で 4 × 25 = 100！",
+        "examTip": "小3マスター！25gなど小数の感覚も混ざる発展計算をクリアしました！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 90 + 20 = 110。右は 1×20 = 20。残り90を きょり 3 に「30g」で 110！",
+        "examTip": "左右の力のモーメントの合計を合わせる感覚が完全に身につきました！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 80 + 40 = 120。右のきょり 4 に「30g」で 4 × 30 = 120！",
+        "examTip": "てこ天秤の達人！中学受験の理科物理分野の基本はパーフェクトです！"
+      }
+    ]
+  },
+  "4": {
+    "1": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 3×30g = 90。右のきょり 3 に「30g」で 3×30g = 90！",
+        "examTip": "小4ではより大きなおもりの力（トルク）を正確に計算していきます！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 2×40g = 80。右のきょり 4 に「20g」で 4×20g = 80！",
+        "examTip": "距離が2倍（2から4）なら、重さは半分（40gから20g）で釣り合います！"
+      },
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 4×20g = 80。右のきょり 2 に「40g」で 2×40g = 80！",
+        "examTip": "距離と重さの反比例の関係を意識しましょう。"
+      }
+    ],
+    "2": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は (4×10) + (1×30) = 70。右は 1×10 = 10。残り60を きょり 3 に「20g」で 70！",
+        "examTip": "左右におもりがあるときは、左右それぞれのモーメントの合計を比較します！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 60 + 20 = 80。右は 1×20 = 20。残り60を きょり 3 に「20g」で 80！",
+        "examTip": "入試問題では引き算してから割り算する逆算手順が頻出です！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 10,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 40 + 40 = 80。右は 2×10 = 20。残り60を きょり 3 に「20g」で 80！",
+        "examTip": "複数のフックがある場合でも、一つひとつ「距離×重さ」をメモすれば確実です。"
+      }
+    ],
+    "3": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 80 + 40 = 120。右のきょり 3 に「40g」で 3×40 = 120！",
+        "examTip": "支点にかかる全体の重さ（20+20+40=80g）も中学入試でよく問われます！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 90 + 30 = 120。右のきょり 4 に「30g」で 4×30 = 120！",
+        "examTip": "モーメントが120になる組み合わせを素早く見つけましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          25,
+          30,
+          40
+        ],
+        "explanation": "左は 3×40 = 120。右は 2×20 = 40。不足する 80 を きょり 4 に「20g」で 120！",
+        "examTip": "右側の既知モーメントを差し引いて残りを求める逆算立式をマスターしよう！"
+      }
+    ],
+    "4": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -1,
+            "weight": 60,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 15,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          15,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 60 + 90 = 150。右は 2×15 = 30。残り120を きょり 4 に「30g」で 150！",
+        "examTip": "支点近くの重いものと遠くの軽いもの。釘抜きやハサミに応用されています。"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -2,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 100 + 40 = 140。右は 1×20 = 20。残り120を きょり 3 に「40g」で 140！",
+        "examTip": "左右それぞれを整理して 140 = 20 + 3×□ から □=40g を求めます！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          25,
+          30
+        ],
+        "explanation": "左は 80 + 60 = 140。右は 2×20 = 40。残り100を きょり 4 に「25g」で 140！",
+        "examTip": "25gのようにおもりのバリエーションが増えても計算は同じです！"
+      }
+    ],
+    "5": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          15,
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 120 + 60 = 180。右は 2×30 = 60。残り120を きょり 4 に「30g」で 180！",
+        "examTip": "【難関中の逆算てこ】180 = 60 + (4×□) から □=30g を求めます！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 40 = 160。右は 2×20 = 40。残り120を きょり 3 に「40g」で 160！",
+        "examTip": "複雑な問題でも、ステップに分解して確実に正解を導きましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          15,
+          20,
+          25,
+          30
+        ],
+        "explanation": "左は 80 + 80 = 160。右は 1×40 = 40。残り120を きょり 4 に「30g」で 160！",
+        "examTip": "左右どちらも同じ重さのおもりがあっても、距離が違えば力は異なります！"
+      }
+    ],
+    "6": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50,
+          60
+        ],
+        "explanation": "左は 140 + 60 = 200。右は 1×20 = 20。残り180を きょり 3 に「60g」で 200！",
+        "examTip": "小4トップレベル！200の大きなモーメントも見事に釣り合わせました！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 80 = 200。右は 2×20 = 40。残り160を きょり 4 に「40g」で 200！",
+        "examTip": "中学入試頻出の左右複数加重問題もスムーズに解けるようになりました！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 150 + 30 = 180。右は 2×30 = 60。残り120を きょり 4 に「30g」で 180！",
+        "examTip": "てこ天秤の力の釣り合いマスター！高学年レベルの応用力があります！"
+      }
+    ]
+  },
+  "5": {
+    "1": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 80 + 60 = 140。右は 1×20 = 20。残り120を きょり 3 に「40g」で 140！",
+        "examTip": "【小5応用てこ】左右のトルク計算に加えて、支点に加わる全荷重も意識しましょう。"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 15,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 120 + 30 = 150。右は 1×30 = 30。残り120を きょり 4 に「30g」で 150！",
+        "examTip": "複数のおもりのモーメント計算を暗算で行うスピードを鍛えましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 25,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 100 + 60 = 160。右のきょり 4 に「40g」で 4×40 = 160！",
+        "examTip": "端のフックにかかる大きな力と支点側の力の合成を正確に！"
+      }
+    ],
+    "2": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 30 = 150。右は 1×30 = 30。残り120を きょり 3 に「40g」で 150！",
+        "examTip": "150 - 30 = 120、120 ÷ 3 = 40g！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 120 + 40 = 160。右は 2×20 = 40。残り120を きょり 4 に「30g」で 160！",
+        "examTip": "【逆比例の直感】フック位置と必要重量の積が常に等しいことを確認。"
+      },
+      {
+        "targetPos": 2,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 3,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 150 + 20 = 170。右は 3×30 = 90。残り80を きょり 2 に「40g」で 170！",
+        "examTip": "右側のフックに既知の重いおもりがある場合も、引き算で冷静に対処！"
+      }
+    ],
+    "3": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 60 = 180。右は 2×30 = 60。残り120を きょり 3 に「40g」で 180！",
+        "examTip": "未知のおもりを□とする方程式の解き方を確実に。"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 160 + 20 = 180。右は 1×20 = 20。残り160を きょり 4 に「40g」で 180！",
+        "examTip": "中学入試頻出！左右の複雑なモーメント合成問題です。"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 150 + 40 = 190。右は 1×30 = 30。残り160を きょり 4 に「40g」で 190！",
+        "examTip": "合計190の高トルクバランス！正確な四則演算が合否を分けます。"
+      }
+    ],
+    "4": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 3,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 160 + 40 = 200。右は (1×20) + (3×20) = 80。不足する 120 を きょり 4 に「30g」で 200！",
+        "examTip": "【多重モーメント】右側に2つのおもりがある場合も、全部足してから引き算します！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 150 + 60 = 210。右は 30 + 60 = 90。不足する 120 を きょり 3 に「40g」で 210！",
+        "examTip": "左右ともに複数のおもりが配置された難関校定番の良問です！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          25,
+          30,
+          40
+        ],
+        "explanation": "左は 120 + 80 = 200。右は 20 + 60 = 80。不足する 120 を きょり 4 に「30g」で 200！",
+        "examTip": "200 = 80 + 4×□ → □ = 30g！"
+      }
+    ],
+    "5": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 140 + 70 = 210。右は 30 + 60 = 90。残り120を きょり 4 に「30g」で 210！",
+        "examTip": "35gなど非典型的な重さでも、基本に忠実に計算すれば絶対に解けます！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 90 = 210。右は 20 + 40 = 60。残り150を きょり 3 に「50g」で 210！",
+        "examTip": "難関校の物理分野で問われる「重心移動」の感覚が身についています！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 160 + 60 = 220。右は 2×30 = 60。残り160を きょり 4 に「40g」で 220！",
+        "examTip": "220の高トルク！支点にかかる合計重量（40+30+30+40=140g）も計算できます。"
+      }
+    ],
+    "6": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 90 + 30 = 240。右は 2×40 = 80。残り160を きょり 4 に「40g」で 240！",
+        "examTip": "小5最高峰！3箇所のおもりモーメント合成を完全攻略しました！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 90 + 40 = 250。右は 20 + 80 = 100。残り150を きょり 3 に「50g」で 250！",
+        "examTip": "左右合計5つのおもりが絡む入試最難関問題もこれで完璧です！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 140 + 80 + 20 = 240。右は 2×40 = 80。残り160を きょり 4 に「40g」で 240！",
+        "examTip": "完璧な物理演算力！どんな中学校のてこ・天秤問題にも通用する実力です！"
+      }
+    ]
+  },
+  "6": {
+    "1": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          15,
+          20,
+          25,
+          30,
+          40
+        ],
+        "explanation": "左は (4×30) + (2×30) = 180。右は (2×30) + (4×30) = 180 で釣り合います！",
+        "examTip": "【難関中の逆算てこ】180 = 60 + (4×□) から □=30g を求めます！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 60 = 180。右は 1×30 = 30。残り150を きょり 3 に「50g」で 180！",
+        "examTip": "難関校受験生は左右のモーメント計算を暗算で10秒以内に処理します！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 25,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 140 + 50 = 190。右は 1×30 = 30。残り160を きょり 4 に「40g」で 190！",
+        "examTip": "25gや35gといった端数のおもりも落ち着いて暗算・筆算しましょう。"
+      }
+    ],
+    "2": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 3,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 160 + 40 = 200。右は (1×20) + (3×20) = 80。不足する 120 を きょり 4 に「30g」で 200！",
+        "examTip": "複数のフックにおもりが吊るされた状態からの逆算は、御三家・難関校の頻出パターンです！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 60 + 20 = 200。右は 2×40 = 80。残り120を きょり 3 に「40g」で 200！",
+        "examTip": "左辺3項、右辺2項の等式を瞬時に組み立てられるようにしましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 150 + 60 = 210。右は 10 + 80 = 90。残り120を きょり 4 に「30g」で 210！",
+        "examTip": "左右合計4箇所のモーメントの和を正確に一致させます！"
+      }
+    ],
+    "3": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -3,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40,
+          50,
+          60
+        ],
+        "explanation": "左は 150 + 60 = 210。右は 30 + 60 = 90。不足する 120 を きょり 3 に「40g」で 210！",
+        "examTip": "左右のつり合いだけでなく、支点を吊り下げる糸の張力（全体の重さの和）も計算できるようにしましょう！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          40
+        ],
+        "explanation": "左は 140 + 80 = 220。右は 20 + 80 = 100。残り120を きょり 4 に「30g」で 220！",
+        "examTip": "最難関校対策：てこ自体の重さ（重心）を考慮する応用問題の基礎になります！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 30,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 100 = 220。右は 40 + 60 = 100。残り120を きょり 3 に「40g」で 220！",
+        "examTip": "重いおもりを中心近くに置くか端に置くかでモーメントが激変します！"
+      }
+    ],
+    "4": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 10,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 80 + 90 + 40 = 210。右は 10 + 80 = 90。残り120を きょり 4 に「30g」で 210！",
+        "examTip": "【達人級・力のモーメント】最難関校の物理分野で出題される複雑な重心・てこ問題も、この原理の応用です！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 120 + 60 + 50 = 230。右は 30 + 80 = 110。残り120を きょり 3 に「40g」で 230！",
+        "examTip": "左右で5つのおもりが拮抗するスーパーハイレベルバランス！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 25,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 3,
+            "weight": 20,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          25,
+          30,
+          40
+        ],
+        "explanation": "左は 100 + 100 = 200。右は 20 + 60 = 80。残り120を きょり 4 に「30g」で 200！",
+        "examTip": "入試本番でも、てこの問題を見たらまず左右それぞれの「距離×重さ」をメモする習慣を続けましょう！"
+      }
+    ],
+    "5": [
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 50,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60
+        ],
+        "explanation": "左の力は 120 + 60 + 50 = 230。右は 30 + 80 = 110。不足120を きょり 3 に「40g」で 230 の完璧な釣り合い！",
+        "examTip": "支点からの距離とおもりの重さの関係を完全にマスターしました。中学理科の物理基礎は完璧です！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          30,
+          35,
+          40
+        ],
+        "explanation": "左は 140 + 60 + 60 = 260。右は 40 + 80 = 120。残り140を きょり 4 に「35g」で 260！",
+        "examTip": "35gのおもりを使った合計260の超高難度モーメント！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 3,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          20,
+          25,
+          30
+        ],
+        "explanation": "左は 160 + 60 + 20 = 240。右は 20 + 120 = 140。残り100を きょり 4 に「25g」で 240！",
+        "examTip": "御三家中受験レベル！両側に合計6個のおもりが並ぶ壮観なつり合いです。"
+      }
+    ],
+    "6": [
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 50,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          35,
+          40,
+          45
+        ],
+        "explanation": "左は 140 + 90 + 60 = 290。右は 30 + 100 = 130。残り160を きょり 4 に「40g」で 290！",
+        "examTip": "【全国模試トップ級】290の巨大モーメントを釣り合わせる計算力！"
+      },
+      {
+        "targetPos": 3,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 35,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -1,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 20,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 50,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 140 + 90 + 40 = 270。右は 20 + 100 = 120。残り150を きょり 3 に「50g」で 270！",
+        "examTip": "中学入試の理科・物理計算はすべて制覇しました。自信を持って受験に臨めます！"
+      },
+      {
+        "targetPos": 4,
+        "initialWeights": [
+          {
+            "pos": -4,
+            "weight": 40,
+            "locked": true
+          },
+          {
+            "pos": -3,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": -2,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 1,
+            "weight": 30,
+            "locked": true
+          },
+          {
+            "pos": 2,
+            "weight": 40,
+            "locked": true
+          }
+        ],
+        "availableWeights": [
+          30,
+          40,
+          50
+        ],
+        "explanation": "左は 160 + 90 + 60 = 310。右は 30 + 80 = 110。残り200を きょり 4 に「50g」で 310！",
+        "examTip": "【天秤の最高峰マスター】310モーメントの完全制圧！STEAM探検隊の物理レジェンドです！"
+      }
+    ]
+  }
+};
+
 export const LeverBalanceGame: React.FC<LeverBalanceGameProps> = ({
   level,
+  grade = 3,
   onComplete,
   onBack,
   onNextLevel,
@@ -36,223 +2111,12 @@ export const LeverBalanceGame: React.FC<LeverBalanceGameProps> = ({
   customTitle,
   customBadge
 }) => {
-  // Preset puzzles per level (3 variations per level = 18 problems total)
-  const getLevelPuzzles = (lvl: number): PuzzleData[] => {
-    switch (lvl) {
-      case 1:
-        return [
-          {
-            targetPos: 2,
-            initialWeights: [{ pos: -3, weight: 20, locked: true }],
-            explanation: '左の力は「きょり 3 × 重さ 20g = 60」。右のきょり 2 には「30g」を置くと「2 × 30g = 60」でピタリと釣り合います！',
-            examTip: 'てこの基本公式：【支点からの距離 × おもりの重さ】が左右で同じになると釣り合います！',
-            availableWeights: [10, 20, 30, 40, 50]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [{ pos: -2, weight: 30, locked: true }],
-            explanation: '左の力は「きょり 2 × 重さ 30g = 60」。右のきょり 3 には「20g」を置くと「3 × 20g = 60」で釣り合います！',
-            examTip: '支点からの距離が1.5倍になると、釣り合うために必要なおもりは2/3の重さで済みます！',
-            availableWeights: [10, 20, 30, 40, 50]
-          },
-          {
-            targetPos: 2,
-            initialWeights: [{ pos: -4, weight: 10, locked: true }],
-            explanation: '左の力は「きょり 4 × 重さ 10g = 40」。右のきょり 2 に「20g」を置くと「2 × 20g = 40」で釣り合います！',
-            examTip: '支点からの距離が半分（4から2）なら、必要な重さは2倍（10gから20g）になります！',
-            availableWeights: [10, 20, 30, 40, 50]
-          }
-        ];
-      case 2:
-        return [
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -4, weight: 10, locked: true },
-              { pos: -1, weight: 30, locked: true },
-              { pos: 1, weight: 10, locked: true }
-            ],
-            explanation: '左側の力の合計は (4×10g) + (1×30g) = 70。右側は (1×10g) + (3×20g) = 70 で左右の力がぴったり一致します！',
-            examTip: '複数の場所におもりがある時は、それぞれの【距離 × 重さ】を計算して全部「足し算」します！',
-            availableWeights: [10, 20, 30, 40]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -3, weight: 20, locked: true },
-              { pos: -2, weight: 10, locked: true },
-              { pos: 1, weight: 20, locked: true }
-            ],
-            explanation: '左の力は (3×20g) + (2×10g) = 80。右側は (1×20g) + (3×20g) = 80 で完璧に水平になります！',
-            examTip: '左右どちらにも複数のおもりがある場合も、左右それぞれの合計トルクを出して引き算で不足分を求めます！',
-            availableWeights: [10, 20, 30, 40]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -4, weight: 10, locked: true },
-              { pos: -2, weight: 20, locked: true },
-              { pos: 2, weight: 10, locked: true }
-            ],
-            explanation: '左の力は (4×10g) + (2×20g) = 80。右側は (2×10g) + (3×20g) = 80 で左右が釣り合います！',
-            examTip: '試験では「あと何gのおもりをどこに吊るせばよいか」という逆算形式で出題されます。',
-            availableWeights: [10, 20, 30, 40]
-          }
-        ];
-      case 3:
-        return [
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -4, weight: 20, locked: true },
-              { pos: -2, weight: 20, locked: true }
-            ],
-            explanation: '左の力は (4×20g) + (2×20g) = 120。右のきょり 3 の位置に「40g」を置くと、3 × 40g = 120 となり大成功です！',
-            examTip: '中学入試頻出！左右のつり合いだけでなく「支点にかかる全体の重さ」も問われることがあります（今回は20+20+40=80g）。',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -3, weight: 30, locked: true },
-              { pos: -1, weight: 30, locked: true }
-            ],
-            explanation: '左の力は (3×30g) + (1×30g) = 120。右のきょり 4 に「30g」を置くと 4 × 30g = 120 で釣り合います！',
-            examTip: '支点からの距離が遠いフックを使うと、より小さなおもりで重いものを釣り合わせることができます。',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -3, weight: 40, locked: true },
-              { pos: 2, weight: 20, locked: true }
-            ],
-            explanation: '左の力は 3×40g = 120。右は既に 2×20g = 40 あるので残り 80。きょり 4 に 20g (4×20=80) で釣り合います！',
-            examTip: '右側にある既知のおもりのモーメントを左から差し引く「逆算の立式」を身につけましょう！',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          }
-        ];
-      case 4:
-        return [
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -1, weight: 60, locked: true },
-              { pos: -3, weight: 30, locked: true },
-              { pos: 2, weight: 15, locked: true }
-            ],
-            explanation: '左の力は (1×60g) + (3×30g) = 150。右側は (2×15g) + (4×30g) = 150 でピタリ一致！',
-            examTip: '支点近くの重いおもりと遠くの軽いおもり。釘抜きやハサミなど、身の回りの道具に応用されている原理です！',
-            availableWeights: [15, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -2, weight: 50, locked: true },
-              { pos: -1, weight: 40, locked: true },
-              { pos: 1, weight: 20, locked: true }
-            ],
-            explanation: '左の力は (2×50g) + (1×40g) = 140。右側は (1×20g) + (3×40g) = 140 で見事水平！',
-            examTip: '入試問題では支点の位置が端にある「第2種・第3種のてこ（栓抜きやピンセット）」も出題されます。',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -4, weight: 20, locked: true },
-              { pos: -3, weight: 20, locked: true },
-              { pos: -1, weight: 20, locked: true },
-              { pos: 2, weight: 20, locked: true }
-            ],
-            explanation: '左の力は 80 + 60 + 20 = 160。右側は 40 + (4×30g) = 160 で釣り合います！',
-            examTip: 'おもりの数が増えても慌てず、左側のモーメントの和 ＝ 右側のモーメントの和 と立式しましょう。',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          }
-        ];
-      case 5:
-        return [
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -4, weight: 30, locked: true },
-              { pos: -2, weight: 30, locked: true },
-              { pos: 2, weight: 30, locked: true }
-            ],
-            explanation: '左の力は (4×30) + (2×30) = 180。右側は (2×30) + (4×30) = 180 で釣り合います！',
-            examTip: '【難関中の逆算てこ】未知のおもりを□とおいて、180 = 60 + (4×□) から □=30g を求めます！',
-            availableWeights: [15, 20, 25, 30, 40, 50]
-          },
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -4, weight: 40, locked: true },
-              { pos: -1, weight: 40, locked: true },
-              { pos: 1, weight: 20, locked: true },
-              { pos: 3, weight: 20, locked: true }
-            ],
-            explanation: '左は 160 + 40 = 200。右は (1×20) + (3×20) = 80。不足する 120 を きょり4 に「30g」置くことで 80 + 120 = 200！',
-            examTip: '複数のフックにおもりが吊るされた状態からの逆算は、御三家・難関校の頻出パターンです！',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -3, weight: 50, locked: true },
-              { pos: -2, weight: 30, locked: true },
-              { pos: 1, weight: 30, locked: true },
-              { pos: 2, weight: 30, locked: true }
-            ],
-            explanation: '左は 150 + 60 = 210。右は 30 + 60 = 90。不足する 120 を きょり3 に「40g」置いて 90 + 120 = 210！',
-            examTip: '左右のつり合いだけでなく、支点を吊り下げる糸の張力（全体の重さの和）も計算できるようにしましょう！',
-            availableWeights: [20, 30, 40, 50, 60]
-          }
-        ];
-      case 6:
-      default:
-        return [
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -4, weight: 20, locked: true },
-              { pos: -3, weight: 30, locked: true },
-              { pos: -2, weight: 20, locked: true },
-              { pos: 1, weight: 10, locked: true },
-              { pos: 2, weight: 40, locked: true }
-            ],
-            explanation: '左の力は 80 + 90 + 40 = 210。右は 10 + 80 = 90。残り 120 を きょり4 に「30g」で 210 に完全一致！',
-            examTip: '【達人級・力のモーメント】最難関校の物理分野で出題される複雑な重心・てこ問題も、この原理の応用です！',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 3,
-            initialWeights: [
-              { pos: -4, weight: 30, locked: true },
-              { pos: -3, weight: 20, locked: true },
-              { pos: -1, weight: 50, locked: true },
-              { pos: 1, weight: 30, locked: true },
-              { pos: 2, weight: 40, locked: true }
-            ],
-            explanation: '左の力は 120 + 60 + 50 = 230。右は 30 + 80 = 110。不足 120 を きょり3 に「40g」で 230 の完璧な釣り合い！',
-            examTip: '支点からの距離とおもりの重さの関係を完全にマスターしました。中学理科の物理基礎は完璧です！',
-            availableWeights: [10, 20, 30, 40, 50, 60]
-          },
-          {
-            targetPos: 4,
-            initialWeights: [
-              { pos: -4, weight: 25, locked: true },
-              { pos: -2, weight: 50, locked: true },
-              { pos: 1, weight: 20, locked: true },
-              { pos: 3, weight: 20, locked: true }
-            ],
-            explanation: '左の力は 100 + 100 = 200。右は 20 + 60 = 80。残り 120 を きょり4 に「30g」置いて 200 で見事バランス！',
-            examTip: '入試本番でも、てこの問題を見たらまず左右それぞれの「距離×重さ」をメモする習慣を続けましょう！',
-            availableWeights: [10, 20, 25, 30, 40, 50]
-          }
-        ];
-    }
+  const getLevelPuzzles = (lvl: number, gNum: number = 3): PuzzleData[] => {
+    const gradeData = GRADE_PUZZLES[gNum] || GRADE_PUZZLES[3];
+    return gradeData[lvl] || gradeData[1];
   };
 
-  const puzzles = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level);
+  const puzzles = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level, grade);
   const [problemIndex, setProblemIndex] = useState(0);
   const puzzle = puzzles[problemIndex % puzzles.length];
 
@@ -321,7 +2185,7 @@ export const LeverBalanceGame: React.FC<LeverBalanceGameProps> = ({
   return (
     <GameModalWrapper
       title={customTitle || "てこ天秤の釣り合いパズル"}
-      badgeTag={customBadge || `理科ラボ Lv.${level}`}
+      badgeTag={customBadge || `サイエンス島 小${grade}・Lv.${level}`}
       level={level}
       isCompleted={isCompleted}
       explanation={puzzle.explanation}
