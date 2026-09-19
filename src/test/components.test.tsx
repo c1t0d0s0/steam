@@ -215,6 +215,32 @@ describe('App Component Integration', () => {
     // Feedback shows success
     expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
   });
+
+  it('correctly validates Grade 6 Design Atelier Lv.6 Problem 0 answer as できない due to 2x2 square block', () => {
+    render(<App />);
+
+    // Switch to Grade 6
+    const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(gradeSelect, { target: { value: '6' } });
+
+    // Open Design Temple (デザイン神殿)
+    fireEvent.click(screen.getByText('デザイン神殿'));
+
+    // Start Lv.6 (index 5)
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[5]);
+
+    // Problem 1 of Lv.6
+    expect(screen.getByText('【最難関・展開図の完全制覇】この超変形型展開図は、正しく組み立てて立方体にできるかな？')).toBeInTheDocument();
+
+    // Answer "できない"
+    const cannotBtn = screen.getByRole('button', { name: 'できない' });
+    fireEvent.click(cannotBtn);
+
+    // Feedback shows success
+    expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
+  });
 });
+
 
 
