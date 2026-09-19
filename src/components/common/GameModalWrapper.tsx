@@ -116,7 +116,7 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
       {/* Completion / Victory Modal Overlay */}
       {isCompleted && (
         <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center border-4 border-amber-400 shadow-2xl animate-bounce-slow relative">
+          <div className="bg-white rounded-3xl p-5 sm:p-7 max-w-lg w-full text-center border-4 border-amber-400 shadow-2xl animate-bounce-slow relative max-h-[92vh] overflow-y-auto">
             <div className="w-20 h-20 mx-auto -mt-14 mb-3 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 border-4 border-white shadow-lg flex items-center justify-center text-4xl">
               🎉
             </div>
@@ -170,61 +170,89 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
               </div>
             )}
 
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-2.5 justify-center w-full mt-2">
-              <button
-                onClick={() => {
-                  sound.playClick();
-                  onBack();
-                }}
-                className="flex-1 py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5 border border-slate-300 shadow-sm"
-              >
-                <LayoutGrid className="w-4 h-4 text-slate-600" />
-                <span>ステージ選択へ</span>
-              </button>
-
-              {problemIndex !== undefined &&
-                totalProblems &&
+            {/* Action buttons: structured to never wrap text vertically on PC or mobile */}
+            {(() => {
+              const hasNextProblem =
+                problemIndex !== undefined &&
+                totalProblems !== undefined &&
                 problemIndex < totalProblems - 1 &&
-                onNextProblem && (
-                  <button
-                    onClick={() => {
-                      sound.playClick();
-                      onNextProblem();
-                    }}
-                    className="flex-1 py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black shadow-md active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5"
+                !!onNextProblem;
+
+              return (
+                <div className="flex flex-col gap-2.5 w-full mt-3">
+                  {/* Primary Forward Action: Next Problem OR Next Level */}
+                  {hasNextProblem ? (
+                    <button
+                      onClick={() => {
+                        sound.playClick();
+                        onNextProblem!();
+                      }}
+                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black shadow-md active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      <span>第{problemIndex! + 2}問へ進む</span>
+                      <ChevronRight className="w-5 h-5 shrink-0" />
+                    </button>
+                  ) : onNextLevel ? (
+                    <button
+                      onClick={() => {
+                        sound.playClick();
+                        onNextLevel();
+                      }}
+                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black shadow-md active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      <span>次のレベルへ進む！</span>
+                      <ChevronRight className="w-5 h-5 shrink-0" />
+                    </button>
+                  ) : null}
+
+                  {/* Secondary Action Grid */}
+                  <div
+                    className={`grid gap-2 w-full ${
+                      hasNextProblem && onNextLevel
+                        ? 'grid-cols-2 sm:grid-cols-3'
+                        : 'grid-cols-2'
+                    }`}
                   >
-                    <span>第{problemIndex + 2}問へ</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                )}
+                    <button
+                      onClick={() => {
+                        sound.playClick();
+                        onBack();
+                      }}
+                      className="py-2.5 sm:py-3 px-2 sm:px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-1 border border-slate-300 shadow-sm whitespace-nowrap"
+                    >
+                      <LayoutGrid className="w-4 h-4 text-slate-600 shrink-0" />
+                      <span>ステージ選択へ</span>
+                    </button>
 
-              {onRetry && (
-                <button
-                  onClick={() => {
-                    sound.playClick();
-                    onRetry();
-                  }}
-                  className="py-3 px-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold active:scale-95 transition-all text-sm flex items-center justify-center gap-1.5 border border-amber-300 shadow-sm"
-                >
-                  <RotateCcw className="w-4 h-4 text-amber-700" />
-                  <span>もう一度</span>
-                </button>
-              )}
+                    {onRetry && (
+                      <button
+                        onClick={() => {
+                          sound.playClick();
+                          onRetry();
+                        }}
+                        className="py-2.5 sm:py-3 px-2 sm:px-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-1 border border-amber-300 shadow-sm whitespace-nowrap"
+                      >
+                        <RotateCcw className="w-4 h-4 text-amber-700 shrink-0" />
+                        <span>もう一度</span>
+                      </button>
+                    )}
 
-              {onNextLevel && (
-                <button
-                  onClick={() => {
-                    sound.playClick();
-                    onNextLevel();
-                  }}
-                  className="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black shadow-md active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-1.5"
-                >
-                  <span>次のレベルへ！</span>
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+                    {hasNextProblem && onNextLevel && (
+                      <button
+                        onClick={() => {
+                          sound.playClick();
+                          onNextLevel();
+                        }}
+                        className="col-span-2 sm:col-span-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-1 border border-emerald-300 shadow-sm whitespace-nowrap"
+                      >
+                        <span>次のレベルへ</span>
+                        <ChevronRight className="w-4 h-4 text-emerald-600 shrink-0" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
