@@ -287,7 +287,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col items-center">
+      <main className="flex-1 flex flex-col items-center w-full">
         <IslandMap
           progress={progress}
           selectedIslandId={selectedIslandId}

@@ -22,7 +22,7 @@ export const MuseumModal: React.FC<MuseumModalProps> = ({ progress, onClose }) =
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-slate-50 rounded-3xl border-4 border-amber-300 shadow-2xl max-w-2xl w-full p-4 sm:p-6 relative flex flex-col max-h-[90vh]">
+      <div className="bg-slate-50 rounded-3xl border-4 border-amber-300 shadow-2xl max-w-3xl w-full p-4 sm:p-6 relative flex flex-col max-h-[90vh]">
         {/* Close button */}
         <button
           onClick={() => {
@@ -105,31 +105,34 @@ export const MuseumModal: React.FC<MuseumModalProps> = ({ progress, onClose }) =
                       setActiveItem(item);
                     }
                   }}
-                  className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all ${
+                  className={`p-2.5 sm:p-3 rounded-2xl border-2 flex flex-col items-center text-center justify-between min-h-[145px] sm:min-h-[160px] transition-all ${
                     isUnlocked
                       ? 'bg-white border-amber-200 hover:border-amber-400 shadow-sm active:scale-95 cursor-pointer'
                       : 'bg-slate-100 border-dashed border-slate-300 opacity-60 cursor-not-allowed'
                   }`}
                 >
-                  <div className="text-3xl sm:text-4xl my-1 filter drop-shadow">
-                    {isUnlocked ? item.icon : '❓'}
+                  <div className="flex flex-col items-center w-full">
+                    <div className="text-3xl sm:text-4xl my-1 filter drop-shadow">
+                      {isUnlocked ? item.icon : '❓'}
+                    </div>
+
+                    <div className="flex gap-0.5 my-0.5">
+                      {Array.from({ length: item.rarity }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-3 h-3 ${
+                            isUnlocked ? 'text-amber-400 fill-amber-400' : 'text-slate-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <span className="text-xs font-black text-slate-800 leading-snug break-words px-1 mt-1 text-center">
+                      {isUnlocked ? item.name : '未発見の発明'}
+                    </span>
                   </div>
 
-                  <div className="flex gap-0.5 my-0.5">
-                    {Array.from({ length: item.rarity }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 ${
-                          isUnlocked ? 'text-amber-400 fill-amber-400' : 'text-slate-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <span className="text-xs font-black text-slate-800 line-clamp-1">
-                    {isUnlocked ? item.name : '未発見の発明'}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-bold">
+                  <span className="text-[10px] text-slate-400 font-bold mt-1">
                     {isUnlocked ? item.category : '???'}
                   </span>
                 </button>

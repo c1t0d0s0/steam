@@ -47,13 +47,16 @@ describe('App Component Integration', () => {
     expect(screen.getByText('🎁 STEAMガチャマシン')).toBeInTheDocument();
   });
 
-  it('can open and close the museum modal', () => {
+  it('can open and close the museum modal and displays full item names without truncation', () => {
     render(<App />);
 
     const museumBtn = screen.getByText('図鑑');
     fireEvent.click(museumBtn);
 
     expect(screen.getByText('🏛️ 発明品・科学図鑑')).toBeInTheDocument();
+    // Default unlocked items should display their full name without truncation
+    expect(screen.getByText('ニュートンの光のプリズム')).toBeInTheDocument();
+    expect(screen.getByText('名人の五つ玉そろばん')).toBeInTheDocument();
   });
 
   it('opens stage select modal when an island is clicked', () => {

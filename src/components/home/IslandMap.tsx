@@ -155,7 +155,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({
   const isDailyCompleted = progress.dailyChallenge?.completed || (progress.dailyChallenge?.clearedIndices?.length || 0) >= 5;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-3 py-4 sm:px-6 sm:py-6">
+    <div className="w-full max-w-6xl mx-auto px-3 py-4 sm:px-6 sm:py-6">
       {/* Daily Challenge Interactive Banner (Only displayed when NOT yet cleared today) */}
       {onOpenDaily && !isDailyCompleted && (
         <div
@@ -209,8 +209,8 @@ export const IslandMap: React.FC<IslandMapProps> = ({
         </p>
       </div>
 
-      {/* Islands Grid: 1 column on Smartphone, 1 horizontal row (5 columns) on PC */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 lg:gap-4">
+      {/* Islands Vertical Stack: 1 column on both Smartphone and PC with full width matching Welcome banner */}
+      <div className="flex flex-col gap-3.5 sm:gap-4 w-full">
         {ISLANDS.map((island) => {
           // Calculate total stars for this island
           let islandEarnedStars = 0;
@@ -229,46 +229,50 @@ export const IslandMap: React.FC<IslandMapProps> = ({
                 sound.playClick();
                 setIslandId(island.id);
               }}
-              className="group bg-white rounded-3xl border-4 border-slate-200 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-300 p-4 sm:p-3 lg:p-4 flex flex-col justify-between cursor-pointer active:scale-[0.98] relative overflow-hidden"
+              className="group bg-white rounded-3xl border-4 border-slate-200 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-300 p-3.5 sm:p-4 lg:p-5 flex flex-col justify-between cursor-pointer active:scale-[0.99] relative overflow-hidden"
             >
               {/* Island Header banner */}
               <div
-                className={`w-full h-24 sm:h-28 rounded-2xl bg-gradient-to-r ${island.bgGradient} p-2.5 sm:p-3 flex items-center justify-between shadow-inner relative overflow-hidden`}
+                className={`w-full rounded-2xl bg-gradient-to-r ${island.bgGradient} p-3.5 sm:p-4 lg:p-5 flex items-center justify-between shadow-inner relative overflow-hidden`}
               >
-                <div className="text-white z-10 min-w-0 pr-1">
-                  <span className="px-1.5 py-0.5 bg-black/20 rounded-lg text-[10px] font-black tracking-wide whitespace-nowrap">
-                    CATEGORY: {island.category}
-                  </span>
-                  <h3 className="text-base sm:text-lg font-black mt-0.5 drop-shadow truncate">{island.title}</h3>
-                  <span className="text-[11px] sm:text-xs text-white/90 font-bold block truncate">{island.subtitle}</span>
+                <div className="text-white z-10 min-w-0 pr-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 bg-black/25 rounded-lg text-[10px] sm:text-xs font-black tracking-wide whitespace-nowrap">
+                      CATEGORY: {island.category}
+                    </span>
+                    <span className="text-xs sm:text-sm text-white/90 font-bold hidden sm:inline">
+                      • {island.subtitle}
+                    </span>
+                  </div>
+                  <h3 className="text-lg sm:text-2xl font-black drop-shadow">{island.title}</h3>
+                  <span className="text-xs text-white/95 font-bold block sm:hidden mt-0.5">{island.subtitle}</span>
                 </div>
-                <div className="text-4xl sm:text-3xl lg:text-4xl filter drop-shadow group-hover:scale-110 transition-transform z-10 shrink-0">
+                <div className="text-4xl sm:text-5xl filter drop-shadow group-hover:scale-110 transition-transform z-10 shrink-0">
                   {island.icon}
                 </div>
 
                 {/* Decorative circle backdrop */}
-                <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full pointer-events-none"></div>
+                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none"></div>
               </div>
 
               {/* Entrance Exam connection */}
-              <div className="mt-2.5 bg-amber-50 rounded-xl p-2 border border-amber-200 text-amber-900 text-[11px] font-bold flex items-start gap-1.5">
-                <Award className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                <span className="line-clamp-2">{island.examTopic}</span>
+              <div className="mt-3 bg-amber-50 rounded-xl p-2.5 sm:p-3 border border-amber-200 text-amber-900 text-xs sm:text-sm font-bold flex items-center gap-2">
+                <Award className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{island.examTopic}</span>
               </div>
 
               {/* Island footer / Stars & Action */}
-              <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-1 text-[11px] sm:text-xs font-black text-amber-600">
-                  <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-600">
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                   <span>
                     {islandEarnedStars} / {islandTotalStars}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-0.5 text-[11px] sm:text-xs font-black text-indigo-600 group-hover:translate-x-1 transition-transform">
-                  <span className="hidden sm:inline">ステージ</span>
-                  <span className="sm:hidden">選択</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1 text-xs sm:text-sm font-black text-indigo-600 group-hover:translate-x-1 transition-transform">
+                  <span>ステージへ</span>
+                  <ChevronRight className="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -278,8 +282,8 @@ export const IslandMap: React.FC<IslandMapProps> = ({
 
       {/* Stage Select Modal */}
       {selectedIsland && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border-4 border-amber-300 shadow-2xl max-w-xl w-full p-5 sm:p-6 relative flex flex-col max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl border-4 border-amber-300 shadow-2xl max-w-2xl sm:max-w-3xl w-full p-4 sm:p-6 relative flex flex-col max-h-[90vh] overflow-y-auto">
             {/* Close button */}
             <button
               onClick={() => {
@@ -311,13 +315,13 @@ export const IslandMap: React.FC<IslandMapProps> = ({
             {/* Games and Levels */}
             <div className="space-y-4">
               {selectedIsland.games.map((game) => (
-                <div key={game.type} className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                <div key={game.type} className="bg-slate-50 p-3 sm:p-4 rounded-2xl border border-slate-200">
                   <h4 className="text-sm font-black text-slate-800 mb-2.5 flex items-center gap-1.5">
                     <span>🎮</span>
                     <span>{game.name}</span>
                   </h4>
 
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-2.5">
                     {game.levels.map((lvl) => {
                       const stars = getStageStars(game.stagePrefix, lvl);
                       const difficultyLabel =
@@ -339,13 +343,13 @@ export const IslandMap: React.FC<IslandMapProps> = ({
                             sound.playClick();
                             onLaunchGame(game.type, lvl);
                           }}
-                          className="p-2 sm:p-2.5 rounded-xl border-2 border-amber-200 bg-white hover:border-amber-400 hover:bg-amber-50 active:scale-95 shadow-sm transition-all flex flex-col items-center text-center"
+                          className="p-2 sm:p-2.5 rounded-xl border-2 border-amber-200 bg-white hover:border-amber-400 hover:bg-amber-50 active:scale-95 shadow-sm transition-all flex flex-col items-center text-center w-full min-w-0"
                         >
                           <span className="text-[11px] sm:text-xs font-black text-amber-900 mb-1 whitespace-nowrap">
                             Lv.{lvl} ({difficultyLabel})
                           </span>
 
-                          <div className="flex gap-0.5 mb-1">
+                          <div className="flex gap-0.5 mb-1 shrink-0">
                             {[1, 2, 3].map((starNum) => (
                               <Star
                                 key={starNum}
@@ -358,9 +362,9 @@ export const IslandMap: React.FC<IslandMapProps> = ({
                             ))}
                           </div>
 
-                          <div className="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md mt-0.5">
-                            <Play className="w-2.5 h-2.5 fill-emerald-600" />
-                            <span>スタート</span>
+                          <div className="w-full flex items-center justify-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 sm:px-2 py-0.5 rounded-md mt-0.5 whitespace-nowrap shrink-0">
+                            <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-emerald-600 shrink-0" />
+                            <span className="whitespace-nowrap">スタート</span>
                           </div>
                         </button>
                       );
