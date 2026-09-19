@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Star, Play, Award, ChevronRight, X } from 'lucide-react';
-import { UserProgress } from '../../services/storage';
+import { UserProgress, getStageProgressData } from '../../services/storage';
 import { sound } from '../../services/audio';
 
 export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze';
@@ -148,8 +148,8 @@ export const IslandMap: React.FC<IslandMapProps> = ({
 
   const selectedIsland = ISLANDS.find((i) => i.id === currentIslandId) || null;
 
-  const getStageStars = (stageKey: string): number => {
-    return progress.stageProgress[stageKey]?.stars || 0;
+  const getStageStars = (stagePrefix: string, lvl: number): number => {
+    return getStageProgressData(progress.stageProgress, stagePrefix, lvl, progress.grade || 3).stars;
   };
 
   const isDailyCompleted = progress.dailyChallenge?.completed || (progress.dailyChallenge?.clearedIndices?.length || 0) >= 5;
@@ -218,7 +218,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({
           island.games.forEach((g) => {
             g.levels.forEach((lvl) => {
               islandTotalStars += 3;
-              islandEarnedStars += getStageStars(`${g.stagePrefix}_${lvl}`);
+              islandEarnedStars += getStageStars(g.stagePrefix, lvl);
             });
           });
 
@@ -319,7 +319,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({
 
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     {game.levels.map((lvl) => {
-                      const stars = getStageStars(`${game.stagePrefix}_${lvl}`);
+                      const stars = getStageStars(game.stagePrefix, lvl);
                       const difficultyLabel =
                         lvl === 1
                           ? '初級'

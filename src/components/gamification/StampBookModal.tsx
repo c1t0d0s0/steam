@@ -81,17 +81,34 @@ export const StampBookModal: React.FC<StampBookModalProps> = ({
                       : 'bg-slate-50 border-dashed border-slate-300 text-slate-300'
                   }`}
                 >
-                  <span className="text-[10px] font-black text-slate-400 absolute top-1 left-1.5">
+                  <span className="text-[10px] font-black text-slate-400 absolute top-1 left-1.5 z-10 select-none">
                     {idx + 1}
                   </span>
                   {isStamped ? (
-                    <div className="w-8 h-8 rounded-full border-2 border-rose-600 flex items-center justify-center text-rose-600 font-black text-[9px] leading-tight rotate-[-10deg] shadow-sm bg-rose-100/50">
-                      たいへん
-                      <br />
-                      よくできました
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rotate-[-8deg] hover:rotate-0 transition-transform select-none">
+                      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
+                        {/* Outer Stamp Circle */}
+                        <circle cx="50" cy="50" r="46" fill="#fff1f2" stroke="#e11d48" strokeWidth="3" />
+                        {/* Inner Decorative Dashed Ring */}
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="#e11d48" strokeWidth="1.2" strokeDasharray="4 2" />
+                        {/* Line 1: たいへん */}
+                        <text x="50" y="38" textAnchor="middle" fill="#e11d48" fontSize="15" fontWeight="900" fontFamily="sans-serif">
+                          たいへん
+                        </text>
+                        {/* Center accent dots */}
+                        <circle cx="50" cy="47" r="2.5" fill="#e11d48" />
+                        <circle cx="41" cy="47" r="1.5" fill="#e11d48" />
+                        <circle cx="59" cy="47" r="1.5" fill="#e11d48" />
+                        {/* Line 2: よくできました */}
+                        <text x="50" y="65" textAnchor="middle" fill="#e11d48" fontSize="10.5" fontWeight="900" letterSpacing="-0.2" fontFamily="sans-serif">
+                          よくできました
+                        </text>
+                        {/* Smile flourish at bottom */}
+                        <path d="M42 75 Q50 78 58 75" fill="none" stroke="#e11d48" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
                     </div>
                   ) : (
-                    <span className="text-xs font-bold text-slate-300">未</span>
+                    <span className="text-xs font-bold text-slate-300 select-none">未</span>
                   )}
                 </div>
               );

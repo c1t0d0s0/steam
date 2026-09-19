@@ -471,6 +471,72 @@ export const calculateLevel = (xp: number): { level: number; currentXp: number; 
   return { level, currentXp, nextLevelXp, title };
 };
 
+export const getStageKey = (stagePrefixOrType: string, lvl: number, grade: number = 3): string => {
+  const prefixMap: Record<string, string> = {
+    lever: 'lever',
+    block: 'block',
+    tsurukame: 'tsuru',
+    tsuru: 'tsuru',
+    gear: 'gear',
+    cube_net: 'net',
+    net: 'net',
+    algo_maze: 'algo',
+    algo: 'algo'
+  };
+  const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
+  return `g${grade}_${prefix}_${lvl}`;
+};
+
+export const getLegacyStageKey = (stagePrefixOrType: string, lvl: number): string => {
+  const prefixMap: Record<string, string> = {
+    lever: 'lever',
+    block: 'block',
+    tsurukame: 'tsuru',
+    tsuru: 'tsuru',
+    gear: 'gear',
+    cube_net: 'net',
+    net: 'net',
+    algo_maze: 'algo',
+    algo: 'algo'
+  };
+  const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
+  return `${prefix}_${lvl}`;
+};
+
+export const getStageProgressData = (
+  stageProgress: UserProgress['stageProgress'],
+  stagePrefixOrType: string,
+  lvl: number,
+  grade: number = 3
+): { stars: number; cleared: boolean } => {
+  if (!stageProgress) return { stars: 0, cleared: false };
+
+  const prefixMap: Record<string, string> = {
+    lever: 'lever',
+    block: 'block',
+    tsurukame: 'tsuru',
+    tsuru: 'tsuru',
+    gear: 'gear',
+    cube_net: 'net',
+    net: 'net',
+    algo_maze: 'algo',
+    algo: 'algo'
+  };
+  const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
+  const gradeKey = `g${grade}_${prefix}_${lvl}`;
+
+  if (stageProgress[gradeKey]) {
+    return stageProgress[gradeKey];
+  }
+
+  // Fallback for grade 3 legacy keys (e.g. "lever_1" saved previously without grade prefix)
+  if (grade === 3 && stageProgress[`${prefix}_${lvl}`]) {
+    return stageProgress[`${prefix}_${lvl}`];
+  }
+
+  return { stars: 0, cleared: false };
+};
+
 export const checkNewBadges = (progress: UserProgress): string[] => {
   const current = new Set(progress.unlockedBadges);
   const newlyUnlocked: string[] = [];
@@ -483,33 +549,39 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
     newlyUnlocked.push('b_first_step');
   }
 
+  // Helper to check if a module stage is cleared in ANY grade or legacy key
+  const isStageCleared = (prefix: string, lvl: number) => {
+    return [3, 4, 5, 6].some(g => progress.stageProgress[`g${g}_${prefix}_${lvl}`]?.cleared) ||
+      Boolean(progress.stageProgress[`${prefix}_${lvl}`]?.cleared);
+  };
+
   // Science Lever: check lever_1, lever_2, lever_3
-  if (['lever_1', 'lever_2', 'lever_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_lever_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('lever', lvl)) && !current.has('b_lever_master')) {
     newlyUnlocked.push('b_lever_master');
   }
 
   // Block count: block_1, block_2, block_3
-  if (['block_1', 'block_2', 'block_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_block_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('block', lvl)) && !current.has('b_block_master')) {
     newlyUnlocked.push('b_block_master');
   }
 
   // Tsurukame: tsuru_1, tsuru_2, tsuru_3
-  if (['tsuru_1', 'tsuru_2', 'tsuru_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_tsurukame_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('tsuru', lvl)) && !current.has('b_tsurukame_master')) {
     newlyUnlocked.push('b_tsurukame_master');
   }
 
   // Gears: gear_1, gear_2, gear_3
-  if (['gear_1', 'gear_2', 'gear_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_gear_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('gear', lvl)) && !current.has('b_gear_master')) {
     newlyUnlocked.push('b_gear_master');
   }
 
   // Cube Net: net_1, net_2, net_3
-  if (['net_1', 'net_2', 'net_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_net_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('net', lvl)) && !current.has('b_net_master')) {
     newlyUnlocked.push('b_net_master');
   }
 
   // Algo: algo_1, algo_2, algo_3
-  if (['algo_1', 'algo_2', 'algo_3'].every(k => progress.stageProgress[k]?.cleared) && !current.has('b_algo_master')) {
+  if ([1, 2, 3].every(lvl => isStageCleared('algo', lvl)) && !current.has('b_algo_master')) {
     newlyUnlocked.push('b_algo_master');
   }
 
@@ -534,8 +606,8 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
   }
 
   // Grand Explorer: clear all 6 modules at Lv.6
-  const maxStages = ['lever_6', 'block_6', 'tsuru_6', 'gear_6', 'net_6', 'algo_6'];
-  if (maxStages.every(k => progress.stageProgress[k]?.cleared) && !current.has('b_grand_explorer')) {
+  const maxModules = ['lever', 'block', 'tsuru', 'gear', 'net', 'algo'];
+  if (maxModules.every(p => isStageCleared(p, 6)) && !current.has('b_grand_explorer')) {
     newlyUnlocked.push('b_grand_explorer');
   }
 

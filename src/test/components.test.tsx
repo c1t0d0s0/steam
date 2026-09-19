@@ -21,13 +21,21 @@ describe('App Component Integration', () => {
     expect(gradeSelect.value).toBe('3');
   });
 
-  it('can open and close the stamp book modal', () => {
+  it('can open stamp book modal and displays stamp text without breaking', () => {
     render(<App />);
 
     const stampBtn = screen.getByText('スタンプ');
     fireEvent.click(stampBtn);
 
     expect(screen.getByText('💮 ひらめきスタンプ帳')).toBeInTheDocument();
+
+    // Press the stamp button to stamp today
+    const stampActionBtn = screen.getByText(/がんばりスタンプを押す/);
+    fireEvent.click(stampActionBtn);
+
+    // Verify the stamp displays "たいへん" and "よくできました"
+    expect(screen.getByText('たいへん')).toBeInTheDocument();
+    expect(screen.getByText('よくできました')).toBeInTheDocument();
   });
 
   it('can open and close the gacha modal', () => {
@@ -124,6 +132,45 @@ describe('App Component Integration', () => {
     expect(screen.getByText(/ギア D/)).toBeInTheDocument();
     expect(screen.getByText(/ギア E/)).toBeInTheDocument();
     expect(screen.getByText(/ギア F/)).toBeInTheDocument();
+  });
+
+  it('isolates stage clear stars per grade: clearing in Grade 3 does not mark Grade 6 as cleared', () => {
+    render(<App />);
+
+    // In default Grade 3, clear Science Island Lv.1
+    fireEvent.click(screen.getByText('サイエンス島'));
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[0]);
+
+    // Clear Lv.1
+    fireEvent.click(screen.getByText('30g'));
+    const hooksPos2 = screen.getAllByTitle('距離 2');
+    fireEvent.click(hooksPos2[1]);
+    fireEvent.click(screen.getByText('⚖️ つり合いを判定する！'));
+
+    // Return to stage select
+    fireEvent.click(screen.getByText('ステージ選択へ'));
+
+    // In Grade 3, Science island earned stars is 3 / 18
+    expect(screen.getByText('🎒 小学3年生レベル')).toBeInTheDocument();
+    expect(screen.getByText('3 / 18')).toBeInTheDocument();
+
+    // Switch grade to Grade 6 via header select
+    const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(gradeSelect, { target: { value: '6' } });
+
+    // Now in Grade 6, stage banner indicates Grade 6 and Science island is 0 / 18 (no island has 3 / 18)
+    expect(screen.getByText('🎒 小学6年生レベル')).toBeInTheDocument();
+    expect(screen.queryByText('3 / 18')).not.toBeInTheDocument();
+    expect(screen.getAllByText('0 / 18')).toHaveLength(4);
+    expect(screen.getByText('0 / 36')).toBeInTheDocument();
+
+    // Switch back to Grade 3
+    fireEvent.change(gradeSelect, { target: { value: '3' } });
+
+    // In Grade 3, previous 3 / 18 stars are preserved
+    expect(screen.getByText('🎒 小学3年生レベル')).toBeInTheDocument();
+    expect(screen.getByText('3 / 18')).toBeInTheDocument();
   });
 });
 

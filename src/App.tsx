@@ -20,7 +20,10 @@ import {
   checkNewBadges,
   calculateUpdatedDailyStreak,
   DailyChallengeState,
-  BADGES
+  BADGES,
+  getStageKey,
+  getLegacyStageKey,
+  getStageProgressData
 } from './services/storage';
 import { generateDailyChallenge } from './services/problemGenerator';
 import { sound } from './services/audio';
@@ -121,23 +124,6 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
     saveUserProgress(newProgress);
   };
 
-  const getStageKey = (type: GameModuleType, lvl: number) => {
-    switch (type) {
-      case 'lever':
-        return `lever_${lvl}`;
-      case 'block':
-        return `block_${lvl}`;
-      case 'tsurukame':
-        return `tsuru_${lvl}`;
-      case 'gear':
-        return `gear_${lvl}`;
-      case 'cube_net':
-        return `net_${lvl}`;
-      case 'algo_maze':
-        return `algo_${lvl}`;
-    }
-  };
-
   const handlePlayDailyQuestion = (questionIndex: number) => {
     if (!progress.dailyChallenge) return;
     const q = progress.dailyChallenge.questions[questionIndex];
@@ -233,9 +219,11 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
     }
 
     // Standard Stage Map Game Completion
-    const stageKey = getStageKey(activeGame.type, activeGame.level);
-    const existingStars = progress.stageProgress[stageKey]?.stars || 0;
-    const isFirstClear = !progress.stageProgress[stageKey]?.cleared;
+    const currentGrade = progress.grade || 3;
+    const stageKey = getStageKey(activeGame.type, activeGame.level, currentGrade);
+    const stageData = getStageProgressData(progress.stageProgress, activeGame.type, activeGame.level, currentGrade);
+    const existingStars = stageData.stars;
+    const isFirstClear = !stageData.cleared;
 
     const earnedCoins = isFirstClear ? 30 : 10;
     const earnedXp = isFirstClear ? 50 : 15;
@@ -245,7 +233,14 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
       [stageKey]: {
         stars: Math.max(existingStars, stars),
         cleared: true
-      }
+      },
+      // If grade is 3, also update legacy key for backward compatibility
+      ...(currentGrade === 3 ? {
+        [getLegacyStageKey(activeGame.type, activeGame.level)]: {
+          stars: Math.max(existingStars, stars),
+          cleared: true
+        }
+      } : {})
     };
 
     const newProgress: UserProgress = {
