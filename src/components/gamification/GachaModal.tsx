@@ -10,7 +10,7 @@ interface GachaModalProps {
   onClose: () => void;
 }
 
-const GACHA_COST = 50;
+const GACHA_COST = 100;
 
 export const GachaModal: React.FC<GachaModalProps> = ({
   progress,
@@ -93,7 +93,7 @@ export const GachaModal: React.FC<GachaModalProps> = ({
           </div>
           <h2 className="text-2xl font-black text-slate-800">🎁 STEAMガチャマシン</h2>
           <div className="flex items-center justify-center gap-1.5 mt-1 font-bold text-sm text-amber-800">
-            <span>持っているコイン:</span>
+            <span>持っている星:</span>
             <span className="text-amber-600 font-black text-base">⭐ {progress.coins}</span>
           </div>
         </div>
@@ -145,7 +145,7 @@ export const GachaModal: React.FC<GachaModalProps> = ({
             <div className="flex flex-col items-center py-4 text-center">
               <div className="text-6xl mb-2">🎰</div>
               <p className="text-sm font-black text-slate-700">
-                1回 50コインで回せるよ！
+                1回 {GACHA_COST}星で回せるよ！
               </p>
               <p className="text-xs text-slate-500 mt-1">
                 歴史的な大発明品や実験器具を集めて図鑑を完成させよう！
@@ -165,7 +165,7 @@ export const GachaModal: React.FC<GachaModalProps> = ({
           }`}
         >
           <Sparkles className="w-5 h-5" />
-          <span>{isSpinning ? 'ガチャ回転中...' : `ガチャを回す！ (50コイン)`}</span>
+          <span>{isSpinning ? 'ガチャ回転中...' : `ガチャを回す！ (${GACHA_COST}星)`}</span>
         </button>
       </div>
     </div>

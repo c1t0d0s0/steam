@@ -63,7 +63,7 @@ export const StampBookModal: React.FC<StampBookModalProps> = ({
           </div>
           <h2 className="text-2xl font-black text-amber-950">💮 ひらめきスタンプ帳</h2>
           <p className="text-xs text-amber-800 font-bold mt-0.5">
-            毎日ログインしてスタンプを押そう！スターコインがもらえるよ！
+            毎日ログインしてスタンプを押そう！星がもらえるよ！
           </p>
         </div>
 
@@ -117,7 +117,7 @@ export const StampBookModal: React.FC<StampBookModalProps> = ({
 
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100 text-xs font-bold text-amber-900">
             <span>あつめたスタンプ: <strong className="text-rose-600 text-sm">{progress.stamps.length}</strong> / {totalSlots} 個</span>
-            <span>スタンプ報酬: +30 ⭐ コイン</span>
+            <span>スタンプ報酬: +30 ⭐ 星</span>
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export const StampBookModal: React.FC<StampBookModalProps> = ({
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              <span>今日のがんばりスタンプを押す！（+30コイン）</span>
+              <span>今日のがんばりスタンプを押す！（+30星）</span>
             </>
           )}
         </button>

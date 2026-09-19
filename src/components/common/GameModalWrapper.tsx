@@ -148,7 +148,7 @@ export const GameModalWrapper: React.FC<GameModalWrapperProps> = ({
               </div>
               <div className="flex items-center gap-1.5 font-bold text-amber-700">
                 <span className="text-lg">⭐</span>
-                <span>+30 コイン</span>
+                <span>+30 星</span>
               </div>
             </div>
 

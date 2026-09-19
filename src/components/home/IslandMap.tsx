@@ -184,7 +184,7 @@ export const IslandMap: React.FC<IslandMapProps> = ({
                 本日のデイリーチャレンジ（5島横断ラリー）
               </h2>
               <p className="text-xs sm:text-sm text-amber-950 font-bold">
-                全5問クリアで ⭐100コイン ＆ 80XP 獲得！（現在: {progress.dailyChallenge?.clearedIndices?.length || 0} / 5 問クリア）
+                全5問クリアで ⭐100星 ＆ 80XP 獲得！（現在: {progress.dailyChallenge?.clearedIndices?.length || 0} / 5 問クリア）
               </p>
             </div>
           </div>

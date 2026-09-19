@@ -48,6 +48,9 @@ describe('App Component Integration', () => {
     fireEvent.click(gachaBtn);
 
     expect(screen.getByText('🎁 STEAMガチャマシン')).toBeInTheDocument();
+    expect(screen.getByText('持っている星:')).toBeInTheDocument();
+    expect(screen.getByText(/1回 100星で回せるよ！/)).toBeInTheDocument();
+    expect(screen.getByText(/ガチャを回す！ \(100星\)/)).toBeInTheDocument();
   });
 
   it('can open and close the museum modal and displays full item names without truncation', () => {
@@ -87,6 +90,9 @@ describe('App Component Integration', () => {
     expect(screen.getByText('ステージ選択')).toBeInTheDocument();
 
     // In Level 1, Left pos -3 has 20g (torque 60). Right needs at pos 2 -> 30g
+    // Left weight (20g) must NOT be present in selectable buttons (cannot copy left side)
+    expect(screen.queryByRole('button', { name: '20g' })).not.toBeInTheDocument();
+
     // Select 30g weight button
     const weight30 = screen.getByText('30g');
     fireEvent.click(weight30);

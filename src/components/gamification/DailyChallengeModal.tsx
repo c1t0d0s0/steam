@@ -210,7 +210,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
               全5問のSTEAMパズルを解き明かしました！今日の努力がひらめきマスターへの大きな一歩です！
             </p>
             <div className="inline-flex items-center gap-3 mt-3 px-4 py-1.5 bg-white/20 rounded-full text-xs font-black text-white">
-              <span>獲得報酬: ⭐+100コイン & +80XP</span>
+              <span>獲得報酬: ⭐+100星 & +80XP</span>
               <span>•</span>
               <span>明日も新しい問題が出題されます</span>
             </div>

@@ -23,11 +23,11 @@ export const generateLeverPuzzle = (
   solvedSignatures: Set<string>,
   grade: number = 4
 ): { puzzle: any; signature: string } => {
-  const availableWeights = [10, 20, 30, 40, 50, 60];
+  const weightPool = [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70];
 
   for (let attempt = 0; attempt < 100; attempt++) {
     const targetPos = randInt(1, 4); // right target position 1 to 4
-    const ansWeight = pickRandom(availableWeights);
+    const ansWeight = pickRandom([15, 20, 25, 30, 35, 40, 50, 60]);
     const targetTorque = targetPos * ansWeight;
 
     // Build left weights whose torques sum to targetTorque
@@ -36,12 +36,13 @@ export const generateLeverPuzzle = (
 
     if (!isMulti) {
       // Single weight on the left
-      // Choose left pos (-1 to -4) such that targetTorque / |pos| is a clean multiple of 10
+      // Choose left pos (-1 to -4) differing from targetPos so it cannot be a symmetric mirror copy
       const validLeftPositions: number[] = [];
       for (let p = 1; p <= 4; p++) {
+        if (p === targetPos) continue; // Different distance!
         if (targetTorque % p === 0) {
           const w = targetTorque / p;
-          if (w >= 10 && w <= 80 && w % 10 === 0) {
+          if (w !== ansWeight && w >= 10 && w <= 80 && (w % 5 === 0)) {
             validLeftPositions.push(p);
           }
         }
@@ -57,19 +58,25 @@ export const generateLeverPuzzle = (
       let pos2 = randInt(1, 4);
       while (pos2 === pos1) pos2 = randInt(1, 4);
 
-      const w1 = pickRandom([10, 20, 30, 40]);
+      const w1 = pickRandom([10, 15, 20, 25, 30, 40].filter((w) => w !== ansWeight));
       const t1 = pos1 * w1;
       const remainingTorque = targetTorque - t1;
 
       if (remainingTorque <= 0 || remainingTorque % pos2 !== 0) continue;
       const w2 = remainingTorque / pos2;
-      if (w2 < 10 || w2 > 60 || w2 % 10 !== 0) continue;
+      if (w2 === ansWeight || w2 < 10 || w2 > 60 || (w2 % 5 !== 0)) continue;
 
       initialWeights = [
         { pos: -pos1, weight: w1, locked: true },
         { pos: -pos2, weight: w2, locked: true }
       ];
     }
+
+    const initWs = initialWeights.map((w) => w.weight);
+    // availableWeights must NOT contain any weight used on the left
+    const allowedPool = weightPool.filter((w) => !initWs.includes(w) && w !== ansWeight);
+    allowedPool.sort((a, b) => Math.abs(a - ansWeight) - Math.abs(b - ansWeight));
+    const puzzleAvailableWeights = [ansWeight, ...allowedPool.slice(0, 4)].sort((a, b) => a - b);
 
     const leftDesc = initialWeights
       .map((w) => `「きょり ${Math.abs(w.pos)} × 重さ ${w.weight}g = ${Math.abs(w.pos) * w.weight}」`)
@@ -88,7 +95,7 @@ export const generateLeverPuzzle = (
           initialWeights,
           explanation,
           examTip,
-          availableWeights
+          availableWeights: puzzleAvailableWeights
         }
       };
     }
@@ -102,7 +109,7 @@ export const generateLeverPuzzle = (
       initialWeights: [{ pos: -3, weight: 20, locked: true }],
       explanation: '左の力は 3 × 20g = 60。右のフック 2 には 30g を置くと 2 × 30g = 60 で釣り合います！',
       examTip: 'てこの規則性：【距離 × 重さ】が左右で一致すると釣り合います！',
-      availableWeights
+      availableWeights: [10, 30, 40, 50, 60] // 20g is excluded!
     }
   };
 };
