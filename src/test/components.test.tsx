@@ -184,5 +184,37 @@ describe('App Component Integration', () => {
     expect(screen.getByText('🎒 小学3年生レベル')).toBeInTheDocument();
     expect(screen.getByText('3 / 18')).toBeInTheDocument();
   });
+
+  it('renders Grade 6 Design Atelier Lv.1 3-3 net with 5 columns and validates folding', () => {
+    render(<App />);
+
+    // Switch to Grade 6
+    const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(gradeSelect, { target: { value: '6' } });
+
+    // Open Design Temple (デザイン神殿)
+    fireEvent.click(screen.getByText('デザイン神殿'));
+
+    // Start Lv.1
+    const startButtons = screen.getAllByText('スタート');
+    fireEvent.click(startButtons[0]);
+
+    // Problem 1 asks about 3-3 net
+    expect(screen.getByText('この階段型（3-3型）の展開図は、正しく組み立てて立方体にできるかな？')).toBeInTheDocument();
+
+    // Verify grid has 5 columns
+    const cell1 = screen.getByText('1');
+    const gridContainer = cell1.parentElement;
+    expect(gridContainer).toBeInTheDocument();
+    expect(gridContainer?.style.gridTemplateColumns).toBe('repeat(5, minmax(0, 1fr))');
+
+    // Answer "できる！"
+    const canBtn = screen.getByRole('button', { name: 'できる！' });
+    fireEvent.click(canBtn);
+
+    // Feedback shows success
+    expect(screen.getByText('大正解！展開図の空間構成を見事にマスターしました！')).toBeInTheDocument();
+  });
 });
+
 

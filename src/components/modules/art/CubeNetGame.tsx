@@ -1977,7 +1977,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
         ],
         "explanation": "「できる！」が大正解！一見重なりそうに見えますが、3枚ずつの階段型（3-3型）は立方体を作ることができる有名な11種類の1つです！",
         "examTip": "【展開図11種類の名問】3-3型は入試で「できない」と誤答しやすいワナ問題として最もよく出題されます！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -1997,6 +1997,8 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "border": "border-fuchsia-600",
             "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -2429,7 +2431,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
         ],
         "explanation": "「できる！」が大正解！3枚ずつの階段型（3-3型）は立方体を作ることができる有名な11種類の1つです！",
         "examTip": "【展開図11種類の名問】3-3型は入試で「できない」と誤答しやすいワナ問題として最もよく出題されます！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -2449,6 +2451,8 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "border": "border-fuchsia-600",
             "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -2585,16 +2589,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
     "4": [
       {
         "question": "この3-3型展開図で、面「A」と向かい合う面はどれかな？",
-        "correctAnswer": "E",
+        "correctAnswer": "C",
         "options": [
           "B",
           "C",
           "D",
           "E"
         ],
-        "explanation": "3-3型を組み立てると、Aの面と向かい合うのは「E」です！",
-        "examTip": "3-3型の対面ペア：AとE、BとF、CとD！",
-        "gridCols": 4,
+        "explanation": "3-3型を組み立てると、3枚並びの両端にある「A」と「C」が向かい合います！",
+        "examTip": "【3-3型の対面ペア】3枚並びの両端（AとC、DとF）、そして真ん中同士（BとE）が向かい合います！",
+        "gridCols": 5,
         "grid": [
           {
             "label": "A",
@@ -2610,10 +2614,12 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "C",
-            "bg": "bg-sky-400",
-            "border": "border-sky-600",
-            "textClass": "text-sky-950"
+            "bg": "bg-emerald-400",
+            "border": "border-emerald-600",
+            "textClass": "text-emerald-950"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -2624,9 +2630,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "E",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           },
           {
             "label": "F",
@@ -2638,16 +2644,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
       },
       {
         "question": "この3-3型展開図で、面「B」と向かい合う面はどれかな？",
-        "correctAnswer": "F",
+        "correctAnswer": "E",
         "options": [
           "A",
           "C",
           "D",
-          "F"
+          "E"
         ],
-        "explanation": "真ん中の「B」と端の「F」が平行に向かい合います！",
-        "examTip": "階段型の折り重なりを正確にトレースしましょう！",
-        "gridCols": 4,
+        "explanation": "上の段の真ん中「B」と、下の段の真ん中「E」が平行に向かい合います！",
+        "examTip": "それぞれの段の真ん中の面同士（BとE）が向かい合うペアになります！",
+        "gridCols": 5,
         "grid": [
           {
             "label": "A",
@@ -2669,6 +2675,8 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           null,
           null,
+          null,
+          null,
           {
             "label": "D",
             "bg": "bg-sky-300",
@@ -2677,30 +2685,30 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "E",
-            "bg": "bg-sky-300",
-            "border": "border-sky-500",
-            "textClass": "text-sky-950"
-          },
-          {
-            "label": "F",
             "bg": "bg-emerald-400",
             "border": "border-emerald-600",
             "textClass": "text-emerald-950"
+          },
+          {
+            "label": "F",
+            "bg": "bg-sky-300",
+            "border": "border-sky-500",
+            "textClass": "text-sky-950"
           }
         ]
       },
       {
-        "question": "この3-3型展開図で、面「C」と向かい合う面はどれかな？",
-        "correctAnswer": "D",
+        "question": "この3-3型展開図で、面「D」と向かい合う面はどれかな？",
+        "correctAnswer": "F",
         "options": [
           "A",
           "B",
-          "D",
-          "E"
+          "E",
+          "F"
         ],
-        "explanation": "段差の境界にある「C」と「D」が互いに底面と上蓋になって向かい合います！",
-        "examTip": "CとDが対面になるのが3-3型の最も意外なポイントです！",
-        "gridCols": 4,
+        "explanation": "下の段も3枚並びの両端である「D」と「F」が向かい合います！",
+        "examTip": "3-3型は、3枚並びの両端同士（AとC、DとF）と真ん中同士（BとE）の3ペアです！",
+        "gridCols": 5,
         "grid": [
           {
             "label": "A",
@@ -2716,17 +2724,19 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "C",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "bg": "bg-sky-400",
+            "border": "border-sky-600",
+            "textClass": "text-sky-950"
           },
+          null,
+          null,
           null,
           null,
           {
             "label": "D",
-            "bg": "bg-emerald-400",
-            "border": "border-emerald-600",
-            "textClass": "text-emerald-950"
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           },
           {
             "label": "E",
@@ -2736,9 +2746,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           },
           {
             "label": "F",
-            "bg": "bg-sky-300",
-            "border": "border-sky-500",
-            "textClass": "text-sky-950"
+            "bg": "bg-emerald-400",
+            "border": "border-emerald-600",
+            "textClass": "text-emerald-950"
           }
         ]
       }
@@ -2926,9 +2936,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "3",
           "5"
         ],
-        "explanation": "7 - 4 = 3 が正解です！3-3型では段差の境界にある「3」と「4」が向かい合います。",
+        "explanation": "7 - 4 = 3 が正解です！3枚並びの両端にある「3」と「4」が向かい合います。",
         "examTip": "【最難関校のサイコロ問題】3-3型展開図でも和が7の法則で素早く解きましょう！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -2943,11 +2953,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "4",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "label": "6",
+            "bg": "bg-fuchsia-400",
+            "border": "border-fuchsia-600",
+            "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -2957,16 +2969,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "6",
+            "label": "5",
             "bg": "bg-fuchsia-300",
             "border": "border-fuchsia-500",
             "textClass": "text-fuchsia-950"
           },
           {
-            "label": "5",
-            "bg": "bg-fuchsia-300",
-            "border": "border-fuchsia-500",
-            "textClass": "text-fuchsia-950"
+            "label": "4",
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           }
         ]
       },
@@ -3097,7 +3109,7 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
         ],
         "explanation": "「できる！」が大正解！3枚ずつの階段型（3-3型）は立方体を作ることができる有名な11種類の1つです！",
         "examTip": "【展開図11種類の名問】3-3型は入試で「できない」と誤答しやすいワナ問題として最もよく出題されます！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -3117,6 +3129,8 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "border": "border-fuchsia-600",
             "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -3260,9 +3274,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "3",
           "5"
         ],
-        "explanation": "7 - 4 = 3 が正解です！3-3型では段差の境界にある「3」と「4」が向かい合います。",
+        "explanation": "7 - 4 = 3 が正解です！3枚並びの両端にある「3」と「4」が向かい合います。",
         "examTip": "【最難関校のサイコロ問題】3-3型展開図でも和が7の法則で素早く解きましょう！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -3277,11 +3291,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "4",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "label": "6",
+            "bg": "bg-fuchsia-400",
+            "border": "border-fuchsia-600",
+            "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -3291,16 +3307,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "6",
+            "label": "5",
             "bg": "bg-fuchsia-300",
             "border": "border-fuchsia-500",
             "textClass": "text-fuchsia-950"
           },
           {
-            "label": "5",
-            "bg": "bg-fuchsia-300",
-            "border": "border-fuchsia-500",
-            "textClass": "text-fuchsia-950"
+            "label": "4",
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           }
         ]
       },
@@ -3313,9 +3329,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "4",
           "5"
         ],
-        "explanation": "7 - 2 = 5 が正解です！2の対面は5です。",
-        "examTip": "3-3型の対面ペア：1と6、2と5、4と3！",
-        "gridCols": 4,
+        "explanation": "7 - 2 = 5 が正解です！それぞれの段の真ん中にある「2」と「5」が向かい合います。",
+        "examTip": "3-3型の対面ペア：1と6、2と5、3と4！",
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -3330,11 +3346,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-amber-950"
           },
           {
-            "label": "4",
+            "label": "6",
             "bg": "bg-fuchsia-400",
             "border": "border-fuchsia-600",
             "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -3344,16 +3362,16 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-fuchsia-950"
           },
           {
-            "label": "6",
-            "bg": "bg-fuchsia-300",
-            "border": "border-fuchsia-500",
-            "textClass": "text-fuchsia-950"
-          },
-          {
             "label": "?",
             "bg": "bg-rose-400",
             "border": "border-rose-600",
             "textClass": "text-white"
+          },
+          {
+            "label": "4",
+            "bg": "bg-fuchsia-300",
+            "border": "border-fuchsia-500",
+            "textClass": "text-fuchsia-950"
           }
         ]
       },
@@ -3366,9 +3384,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "5",
           "6"
         ],
-        "explanation": "7 - 1 = 6 が正解です！1の対面は6です。",
+        "explanation": "7 - 1 = 6 が正解です！上の段の両端にある「1」と「6」が向かい合います。",
         "examTip": "難関中学入試頻出の3-3型サイコロを完全制覇！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -3383,11 +3401,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "4",
-            "bg": "bg-fuchsia-400",
-            "border": "border-fuchsia-600",
+            "label": "?",
+            "bg": "bg-rose-400",
+            "border": "border-rose-600",
             "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -3397,13 +3417,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-fuchsia-950"
           },
           {
-            "label": "?",
-            "bg": "bg-rose-400",
-            "border": "border-rose-600",
-            "textClass": "text-white"
+            "label": "5",
+            "bg": "bg-fuchsia-300",
+            "border": "border-fuchsia-500",
+            "textClass": "text-fuchsia-950"
           },
           {
-            "label": "5",
+            "label": "4",
             "bg": "bg-fuchsia-300",
             "border": "border-fuchsia-500",
             "textClass": "text-fuchsia-950"
@@ -3995,9 +4015,9 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
           "6",
           "10"
         ],
-        "explanation": "30 ÷ 5 = 6 が正解です！3-3型で5の対面は6になります。",
+        "explanation": "30 ÷ 5 = 6 が正解です！3-3型で3枚並びの両端にある5と向かい合うのは「6」になります。",
         "examTip": "【空間認識力の頂点】難関中学の幾何・立体問題で無類の強さを発揮できます！",
-        "gridCols": 4,
+        "gridCols": 5,
         "grid": [
           {
             "label": "1",
@@ -4012,11 +4032,13 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-white"
           },
           {
-            "label": "5",
-            "bg": "bg-amber-400",
-            "border": "border-amber-600",
-            "textClass": "text-amber-950"
+            "label": "30",
+            "bg": "bg-fuchsia-400",
+            "border": "border-fuchsia-600",
+            "textClass": "text-white"
           },
+          null,
+          null,
           null,
           null,
           {
@@ -4032,10 +4054,10 @@ const GRADE_CUBE_NET_PUZZLES: Record<number, Record<number, CubeNetPuzzle[]>> = 
             "textClass": "text-fuchsia-950"
           },
           {
-            "label": "30",
-            "bg": "bg-fuchsia-300",
-            "border": "border-fuchsia-500",
-            "textClass": "text-fuchsia-950"
+            "label": "5",
+            "bg": "bg-amber-400",
+            "border": "border-amber-600",
+            "textClass": "text-amber-950"
           }
         ]
       },
