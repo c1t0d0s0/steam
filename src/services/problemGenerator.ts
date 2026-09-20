@@ -951,6 +951,111 @@ export const generateCircuitPuzzle = (
 };
 
 // =============================================================================
+// Contraption Puzzle Generator (Daily Challenge / Procedural)
+// =============================================================================
+
+export const generateContraptionPuzzle = (
+  solvedSignatures: Set<string>,
+  grade: number = 4
+): { puzzle: any; signature: string } => {
+  const g = Math.min(Math.max(grade, 3), 6);
+
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const seed = randInt(1000, 9999);
+    const signature = `contraption:g${g}_seed${seed}`;
+    if (solvedSignatures.has(signature)) continue;
+
+    let puzzle: any;
+    if (g === 3) {
+      puzzle = {
+        id: `daily_ct_${seed}`,
+        title: '坂道とスピードのひみつ',
+        subtitle: '急な坂とゆるやかな坂',
+        question: '斜面レールを急にすると、球が転がり落ちる速さはどうなる？',
+        puzzleType: 'physics_quiz',
+        options: [
+          { id: 'opt1', text: 'とても速くなる！', correct: true },
+          { id: 'opt2', text: 'とても遅くなる', correct: false },
+          { id: 'opt3', text: 'まったく変わらない', correct: false }
+        ],
+        hint: '滑り台が急なとき、スピードがどうなるか思い出してみよう！',
+        explanation: '正解！坂道が急になるほど、重力によって球を引っ張る力が大きくなり、スピードが一気に加速します！',
+        examTip: '【斜面の基本】傾きが急なほど球は速く加速します！'
+      };
+    } else if (g === 4) {
+      puzzle = {
+        id: `daily_ct_${seed}`,
+        title: 'バネの跳躍と角度の科学',
+        subtitle: '一番遠くまで飛ばす角度！',
+        question: '球をバネ（トランポリン）にぶつけるとき、球が一番遠くまで飛ぶ発射角度は何度かな？',
+        puzzleType: 'physics_quiz',
+        options: [
+          { id: 'opt1', text: '45度（ななめ45度）', correct: true },
+          { id: 'opt2', text: '90度（真上）', correct: false },
+          { id: 'opt3', text: '15度（ほぼ水平）', correct: false },
+          { id: 'opt4', text: '75度（ほぼ真上）', correct: false }
+        ],
+        hint: '高すぎても遠くへ行かず、低すぎてもすぐ地面に落ちてしまいます。',
+        explanation: '正解は「45度」！物理学において、空気抵抗を考えない場合、角度45度で打ち出すと最も遠くまで飛びます！',
+        examTip: '【最長到達距離の角度】中学入試でも問われる「45度の法則」！高さと前進のバランスが最も良い角度です！'
+      };
+    } else if (g === 5) {
+      puzzle = {
+        id: `daily_ct_${seed}`,
+        title: 'シーソーてこの力学連鎖',
+        subtitle: '重さと距離のモーメント計算！',
+        question: 'シーソーの左（支点から距離4）に20gの球が落ちました。右の距離2の球と釣り合うには右の球は何g？',
+        puzzleType: 'physics_quiz',
+        options: [
+          { id: 'opt1', text: '40g', correct: true },
+          { id: 'opt2', text: '20g', correct: false },
+          { id: 'opt3', text: '10g', correct: false },
+          { id: 'opt4', text: '80g', correct: false }
+        ],
+        hint: '左の力（4 × 20）＝ 右の力（2 × ？）',
+        explanation: '正解は「40g」！左のモーメントは「4 × 20 = 80」。右も80にするには「80 ÷ 2 = 40g」が必要です！',
+        examTip: '【てこの原理】「支点からの距離 × 重さ」が左右で等しくなると釣り合います！'
+      };
+    } else {
+      // Grade 6
+      puzzle = {
+        id: `daily_ct_${seed}`,
+        title: '位置エネルギーと仕事の比例関係',
+        subtitle: '高さと移動距離の実験！',
+        question: '高さ10cmの坂から球を落として木片に当てたら2cm動いたよ。高さを20cm（2倍）にして落としたら木片は何cm動く？',
+        puzzleType: 'physics_quiz',
+        options: [
+          { id: 'opt1', text: '約 4cm（2倍動く）', correct: true },
+          { id: 'opt2', text: '約 2cm（変わらない）', correct: false },
+          { id: 'opt3', text: '約 1cm（半分になる）', correct: false },
+          { id: 'opt4', text: '約 8cm（4倍動く）', correct: false }
+        ],
+        hint: '球の持つ位置エネルギーは「高さ」にきれいに比例します！',
+        explanation: '正解は「約 4cm」！球の持つ位置エネルギーは高さに比例するため、高さが2倍になれば衝突した木片を動かす仕事も2倍（2cm × 2 = 4cm）になります！',
+        examTip: '【中学入試力学の最重要グラフ】「落とす高さ」と「木片の移動距離」は正比例します！'
+      };
+    }
+
+    return { puzzle, signature };
+  }
+
+  return {
+    puzzle: {
+      id: 'fallback_contraption',
+      title: 'ピタゴラ物理連鎖',
+      subtitle: '',
+      question: '坂道を転がしてゴールを目指そう！',
+      puzzleType: 'physics_quiz',
+      options: [{ id: 'opt1', text: 'スタート！', correct: true }],
+      hint: '球を転がそう',
+      explanation: '正解です！',
+      examTip: '【基本】重力で球は転がります。'
+    },
+    signature: `contraption:fallback_${Date.now()}`
+  };
+};
+
+// =============================================================================
 // Master Daily Challenge Generator (5 Questions: 1 from each island)
 // =============================================================================
 
@@ -973,7 +1078,7 @@ export const generateDailyChallenge = (
       }
     : {
         gameType: 'lever' as const,
-        title: 'てこ天秤の釣り合い',
+        title: 'てこ天秤パズル',
         ...generateLeverPuzzle(solvedSet, grade)
       };
 
@@ -991,8 +1096,19 @@ export const generateDailyChallenge = (
         ...generateBlockPuzzle(solvedSet, grade)
       };
 
-  // 3. Engineering Island: Gear Chain
-  const gear = generateGearPuzzle(solvedSet, grade);
+  // 3. Engineering Island: Alternate between Gear and Contraption by day
+  const engIsContraption = dateDay % 2 === 0;
+  const engQuestion = engIsContraption
+    ? {
+        gameType: 'contraption' as const,
+        title: 'からくりピタゴラ物理連鎖パズル',
+        ...generateContraptionPuzzle(solvedSet, grade)
+      }
+    : {
+        gameType: 'gear' as const,
+        title: '歯車伝達パズル',
+        ...generateGearPuzzle(solvedSet, grade)
+      };
 
   // 4. Art Island: Cube Net
   const cubeNet = generateCubeNetPuzzle(solvedSet, grade);
@@ -1023,10 +1139,10 @@ export const generateDailyChallenge = (
       islandId: 'engineering',
       islandName: 'エンジニア鉱山',
       islandIcon: '⚙️',
-      gameType: 'gear',
-      title: '歯車伝達パズル',
-      signature: gear.signature,
-      puzzle: gear.puzzle
+      gameType: engQuestion.gameType,
+      title: engQuestion.title,
+      signature: engQuestion.signature,
+      puzzle: engQuestion.puzzle
     },
     {
       islandId: 'art',

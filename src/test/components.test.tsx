@@ -174,8 +174,8 @@ describe('App Component Integration', () => {
     // Click on Engineering island
     fireEvent.click(screen.getByText('エンジニア鉱山'));
 
-    // Find Lv.5 (応用) card
-    expect(screen.getByText('Lv.5 (応用)')).toBeInTheDocument();
+    // Find Lv.5 (応用) card for Gear game (first Lv.5)
+    expect(screen.getAllByText('Lv.5 (応用)').length).toBeGreaterThanOrEqual(1);
     
     // Click start on Lv.5 (index 4)
     const startButtons = screen.getAllByText('スタート');
@@ -224,8 +224,8 @@ describe('App Component Integration', () => {
     // Now in Grade 6, stage banner indicates Grade 6 and Science/Math are 0 / 36, and 3 islands are 0 / 18
     expect(screen.getByText('🎒 小学6年生レベル')).toBeInTheDocument();
     expect(screen.queryByText('3 / 36')).not.toBeInTheDocument();
-    expect(screen.getAllByText('0 / 18')).toHaveLength(3);
-    expect(screen.getAllByText('0 / 36')).toHaveLength(2);
+    expect(screen.getAllByText('0 / 18')).toHaveLength(2);
+    expect(screen.getAllByText('0 / 36')).toHaveLength(3);
 
     // Switch back to Grade 3
     fireEvent.change(gradeSelect, { target: { value: '3' } });
@@ -375,7 +375,7 @@ describe('App Component Integration', () => {
     // Click EX island to open stage select
     fireEvent.click(screen.getByText('EXアイランド'));
     expect(screen.getByText('【EX裏】多重モーメント・連鎖天秤パズル')).toBeInTheDocument();
-    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(7);
+    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(8);
 
     // Launch EX Level 1
     const startButtons = screen.getAllByText('スタート');
@@ -621,6 +621,108 @@ describe('App Component Integration', () => {
 
     // Select correct option
     fireEvent.click(screen.getByText(/電球Cには電流が流れず、点灯しない（明るさ0）/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders ContraptionGame on Engineering Island and clears quiz in Grade 3', () => {
+    localStorage.clear();
+    render(<App />);
+
+    // Click on Engineering Island (エンジニア鉱山)
+    fireEvent.click(screen.getByText('エンジニア鉱山'));
+
+    // Both Gear and Contraption games should be visible
+    expect(screen.getByText('歯車（ギア）伝達パズル')).toBeInTheDocument();
+    expect(screen.getByText('からくりピタゴラ物理連鎖パズル')).toBeInTheDocument();
+
+    // Start Contraption Lv.1 (index 6, since Gear has 6 levels 0..5)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[6]);
+
+    // Check game header
+    expect(screen.getAllByText(/まっすぐ転がる坂道レール/).length).toBeGreaterThanOrEqual(1);
+
+    // Switch to Problem 2 (physics_quiz: 坂道の傾きとスピード)
+    fireEvent.click(screen.getByText('第2問'));
+    expect(screen.getAllByText(/坂道の傾きとスピード/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/急な坂のほうが一気に加速して速い！/)).toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/急な坂のほうが一気に加速して速い！/));
+
+    // Cleared!
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    expect(screen.getByText(/急な坂のほうが重力の引っ張る力が進行方向に大きく働くため/)).toBeInTheDocument();
+  });
+
+  it('renders ContraptionGame for Grade 4 and Grade 6 with appropriate physics concepts', () => {
+    // Grade 4
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 4 })
+    );
+
+    const { unmount: unmountG4 } = render(<App />);
+    fireEvent.click(screen.getByText('エンジニア鉱山'));
+    const startBtnsG4 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG4[6]); // Contraption Lv.1
+
+    // Switch to Problem 2 (45-degree angle rule)
+    fireEvent.click(screen.getByText('第2問'));
+    expect(screen.getAllByText(/最長到達距離の角度（45度の法則）/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/45度（斜め45度）/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/45度（斜め45度）/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    unmountG4();
+
+    // Grade 6
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 6 })
+    );
+
+    render(<App />);
+    fireEvent.click(screen.getByText('エンジニア鉱山'));
+    const startBtnsG6 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG6[6]); // Contraption Lv.1
+
+    // Grade 6 Lv.1 Problem 1 is Newton's Cradle quiz!
+    expect(screen.getAllByText(/ニュートンのゆりかご（弾性衝突）/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/右端の「1個」だけが同じ速さで飛び出す！/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/右端の「1個」だけが同じ速さで飛び出す！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders EX Island with Contraption Puzzle and launches it', () => {
+    localStorage.clear();
+    const mockStamps = [
+      '2026-09-01', '2026-09-02', '2026-09-03',
+      '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07'
+    ];
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ stamps: mockStamps })
+    );
+
+    render(<App />);
+
+    // Click EX island
+    fireEvent.click(screen.getByText('EXアイランド'));
+    expect(screen.getByText('【EX裏】時空連鎖・究極ピタゴラ力学要塞')).toBeInTheDocument();
+
+    // Launch EX contraption Lv.1 (index 21)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[21]);
+
+    expect(screen.getByText(/三重ニュートン振り子と弾性衝突の共鳴カタパルト/)).toBeInTheDocument();
+    expect(screen.getByText(/右側から2個の球が同じ速さで飛び出す！/)).toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/右側から2個の球が同じ速さで飛び出す！/));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
   });
 });

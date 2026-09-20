@@ -6,6 +6,7 @@ import { CircuitGame } from './components/modules/science/CircuitGame';
 import { BlockCountGame } from './components/modules/math/BlockCountGame';
 import { TsurukameGame } from './components/modules/math/TsurukameGame';
 import { GearChainGame } from './components/modules/engineering/GearChainGame';
+import { ContraptionGame } from './components/modules/engineering/ContraptionGame';
 import { CubeNetGame } from './components/modules/art/CubeNetGame';
 import { AlgoMazeGame } from './components/modules/tech/AlgoMazeGame';
 import { StampBookModal } from './components/gamification/StampBookModal';
@@ -330,6 +331,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
                 block: 'ex_block',
                 tsurukame: 'ex_tsuru',
                 gear: 'ex_gear',
+                contraption: 'ex_contraption',
                 cube_net: 'ex_net',
                 algo_maze: 'ex_algo'
               };
@@ -353,6 +355,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               block: 'math',
               tsurukame: 'math',
               gear: 'engineering',
+              contraption: 'engineering',
               cube_net: 'art',
               algo_maze: 'tech'
             };
@@ -435,6 +438,23 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
 
           {activeGame.type === 'gear' && (
             <GearChainGame
+              level={activeGame.level}
+              grade={progress.grade}
+              onComplete={handleGameComplete}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
+            />
+          )}
+
+          {activeGame.type === 'contraption' && (
+            <ContraptionGame
               level={activeGame.level}
               grade={progress.grade}
               onComplete={handleGameComplete}

@@ -21,7 +21,7 @@ export interface DailyChallengeQuestion {
   islandId: 'science' | 'math' | 'engineering' | 'art' | 'tech';
   islandName: string;
   islandIcon: string;
-  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit';
+  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption';
   title: string;
   signature: string;
   puzzle: any;
@@ -467,6 +467,13 @@ export const BADGES: Badge[] = [
     category: 'mastery'
   },
   {
+    id: 'b_contraption_master',
+    title: 'からくり工学マスター',
+    description: 'エンジニア鉱山のピタゴラ物理連鎖パズルを全レベル制覇！',
+    icon: '🏗️',
+    category: 'mastery'
+  },
+  {
     id: 'b_collector_5',
     title: 'かけだしコレクター',
     description: 'STEAM図鑑のアイテムを5個以上集めた！',
@@ -803,7 +810,9 @@ export const getLegacyStageKey = (stagePrefixOrType: string, lvl: number): strin
     cube_net: 'net',
     net: 'net',
     algo_maze: 'algo',
-    algo: 'algo'
+    algo: 'algo',
+    circuit: 'circuit',
+    contraption: 'contraption'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   return `${prefix}_${lvl}`;
@@ -826,7 +835,9 @@ export const getStageProgressData = (
     cube_net: 'net',
     net: 'net',
     algo_maze: 'algo',
-    algo: 'algo'
+    algo: 'algo',
+    circuit: 'circuit',
+    contraption: 'contraption'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   const gradeKey = `g${grade}_${prefix}_${lvl}`;
@@ -894,6 +905,11 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
   // Circuit: circuit_1, circuit_2, circuit_3
   if ([1, 2, 3].every(lvl => isStageCleared('circuit', lvl)) && !current.has('b_circuit_master')) {
     newlyUnlocked.push('b_circuit_master');
+  }
+
+  // Contraption: contraption_1, contraption_2, contraption_3
+  if ([1, 2, 3].every(lvl => isStageCleared('contraption', lvl)) && !current.has('b_contraption_master')) {
+    newlyUnlocked.push('b_contraption_master');
   }
 
   // Collector 5

@@ -3,7 +3,7 @@ import { Star, Play, Award, ChevronRight, X, Lock, Sparkles } from 'lucide-react
 import { UserProgress, getStageProgressData, isExIslandUnlocked } from '../../services/storage';
 import { sound } from '../../services/audio';
 
-export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit';
+export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption';
 
 export interface Island {
   id: string;
@@ -73,8 +73,8 @@ export const ISLANDS: Island[] = [
     id: 'engineering',
     category: 'E',
     title: 'エンジニア鉱山',
-    subtitle: '工学・からくり工場',
-    examTopic: '歯車の回転方向・噛み合わせ・歯数と回転比',
+    subtitle: 'からくり機構ラボ',
+    examTopic: '歯車の回転比・回転数 ＆ からくり物理連鎖機構',
     icon: '⚙️',
     bgGradient: 'from-emerald-400 via-teal-500 to-cyan-600',
     borderColor: 'border-emerald-300',
@@ -83,6 +83,12 @@ export const ISLANDS: Island[] = [
         type: 'gear',
         name: '歯車（ギア）伝達パズル',
         stagePrefix: 'gear',
+        levels: [1, 2, 3, 4, 5, 6]
+      },
+      {
+        type: 'contraption',
+        name: 'からくりピタゴラ物理連鎖パズル',
+        stagePrefix: 'contraption',
         levels: [1, 2, 3, 4, 5, 6]
       }
     ]
@@ -183,6 +189,12 @@ export const ISLANDS: Island[] = [
         type: 'circuit',
         name: '【EX裏】超電導・量子電気回路パズル',
         stagePrefix: 'ex_circuit',
+        levels: [1, 2, 3]
+      },
+      {
+        type: 'contraption',
+        name: '【EX裏】時空連鎖・究極ピタゴラ力学要塞',
+        stagePrefix: 'ex_contraption',
         levels: [1, 2, 3]
       }
     ]
