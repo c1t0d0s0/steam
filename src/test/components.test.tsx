@@ -882,7 +882,7 @@ describe('App Component Integration', () => {
     expect(screen.queryByText('論理回路・2進数・暗号解読ノート')).not.toBeInTheDocument();
 
     // Select correct option
-    fireEvent.click(screen.getByText(/「ビット（bit）」/));
+    fireEvent.click(screen.getByText('ビット（bit）'));
 
     // Stage cleared!
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
@@ -904,9 +904,9 @@ describe('App Component Integration', () => {
 
     // Grade 4 Lv.1: AND Gate
     expect(screen.getAllByText(/【ANDゲート】両方ONで初めて動く！/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/「AND（アンド）ゲート」！/)).toBeInTheDocument();
+    expect(screen.getByText('ANDゲート')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText(/「AND（アンド）ゲート」！/));
+    fireEvent.click(screen.getByText('ANDゲート'));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
     unmountG4();
 
@@ -924,9 +924,9 @@ describe('App Component Integration', () => {
 
     // Grade 6 Lv.1: Half Adder
     expect(screen.getAllByText(/【半加算器（Half Adder）】計算回路の誕生！/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！/)).toBeInTheDocument();
+    expect(screen.getByText('和 Sum＝0、繰り上がり Carry＝1')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText(/和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！/));
+    fireEvent.click(screen.getByText('和 Sum＝0、繰り上がり Carry＝1'));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
   });
 
@@ -952,10 +952,10 @@ describe('App Component Integration', () => {
     fireEvent.click(startBtns[27]);
 
     expect(screen.getByText(/全加算器（Full Adder）と多重リップルキャリー回路/)).toBeInTheDocument();
-    expect(screen.getByText(/和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！/)).toBeInTheDocument();
+    expect(screen.getByText('和 Sum＝1、繰り上がり Cout＝1')).toBeInTheDocument();
 
     // Select correct option
-    fireEvent.click(screen.getByText(/和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！/));
+    fireEvent.click(screen.getByText('和 Sum＝1、繰り上がり Cout＝1'));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
   });
 });

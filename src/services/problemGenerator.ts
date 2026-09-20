@@ -1286,7 +1286,7 @@ export const generateBinaryCipherPuzzle = (
         puzzleType: 'binary_match',
         targetDecimal: decimalVal,
         options: [
-          { id: 'opt_correct', text: `${binaryStr}₂ (8×${b3} + 4×${b2} + 2×${b1} + 1×${b0} = ${decimalVal})`, correct: true },
+          { id: 'opt_correct', text: `${binaryStr}₂`, correct: true },
           { id: 'opt_w1', text: `${(b3 ? 0 : 1)}${b2}${b1}${b0}₂`, correct: false },
           { id: 'opt_w2', text: `${b3}${(b2 ? 0 : 1)}${b1}${b0}₂`, correct: false },
           { id: 'opt_w3', text: `${b3}${b2}${(b1 ? 0 : 1)}${b0}₂`, correct: false }
@@ -1299,7 +1299,7 @@ export const generateBinaryCipherPuzzle = (
       const gates = [
         { type: 'AND', question: 'スイッチAとスイッチBの両方がONの時だけLEDが点灯する論理回路はどれかな？', answer: 'ANDゲート（論理積回路）', tip: '両方成立で1になるのがAND！' },
         { type: 'OR', question: 'スイッチAまたはスイッチBの少なくともどちらか一方がONなら警報が鳴る回路はどれかな？', answer: 'ORゲート（論理和回路）', tip: 'いずれかが1で1になるのがOR！' },
-        { type: 'NOT', question: '入力がOFF（0）のときにLEDが点灯（1）し、入力がON（1）のときに消灯（0）する反転回路は？', answer: 'NOTゲート（インバータ・論理否定回路）', tip: '0と1を真逆にひっくり返すのがNOT！' }
+        { type: 'NOT', question: '入力がOFF（0）のときにLEDが点灯（1）し、入力がON（1）のときに消灯（0）する反転回路は？', answer: 'NOTゲート（論理否定回路）', tip: '0と1を真逆にひっくり返すのがNOT！' }
       ];
       const selected = gates[seed % gates.length];
 
@@ -1328,10 +1328,10 @@ export const generateBinaryCipherPuzzle = (
         question: `古代ローマのカエサル（シーザー）が使った文字シフト暗号です。アルファベットを「+${shift}」文字ずらす暗号で、【D O G】を暗号化するとどうなるかな？`,
         puzzleType: 'cipher_quiz',
         options: [
-          { id: 'opt_correct', text: shift === 1 ? 'E P H (+1シフト)' : shift === 2 ? 'F Q I (+2シフト)' : 'G R J (+3シフト)', correct: true },
-          { id: 'opt_w1', text: 'C N F (-1シフト)', correct: false },
-          { id: 'opt_w2', text: 'D O G (無変換)', correct: false },
-          { id: 'opt_w3', text: 'Z B C (ランダム変換)', correct: false }
+          { id: 'opt_correct', text: shift === 1 ? 'E P H' : shift === 2 ? 'F Q I' : 'G R J', correct: true },
+          { id: 'opt_w1', text: 'C N F', correct: false },
+          { id: 'opt_w2', text: 'D O G', correct: false },
+          { id: 'opt_w3', text: 'Z B C', correct: false }
         ],
         explanation: `正解！各文字をアルファベット順に+${shift}文字進めると、暗号メッセージが完成します！`,
         examTip: '【シーザー暗号】文字を一定数スライドさせる換字式暗号の代表格！中学入試の規則性・暗号問題で頻出です！'
@@ -1345,7 +1345,7 @@ export const generateBinaryCipherPuzzle = (
         question: '入力 A=1, B=1 のとき、1ビットの和 Sum (A ⊕ B) と繰り上がり Carry (A · B) の出力はどうなるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt_correct', text: '和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！', correct: true },
+          { id: 'opt_correct', text: '和 Sum＝0、繰り上がり Carry＝1', correct: true },
           { id: 'opt_w1', text: '和 Sum＝1、繰り上がり Carry＝0', correct: false },
           { id: 'opt_w2', text: '和 Sum＝1、繰り上がり Carry＝1', correct: false },
           { id: 'opt_w3', text: '和 Sum＝0、繰り上がり Carry＝0', correct: false }
@@ -1368,7 +1368,7 @@ export const generateBinaryCipherPuzzle = (
       question: '2進数の「1010₂」は十進数でいくつかな？',
       puzzleType: 'binary_match',
       options: [
-        { id: 'opt1', text: '「10」（8×1 + 4×0 + 2×1 + 1×0）！', correct: true },
+        { id: 'opt1', text: '10', correct: true },
         { id: 'opt2', text: '8', correct: false },
         { id: 'opt3', text: '12', correct: false }
       ],

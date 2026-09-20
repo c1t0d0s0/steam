@@ -543,8 +543,8 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         question: '1ビット全加算器（Full Adder）は、2つの入力 A, B と下からの繰り上がり Cin の3つのビットを入力します。入力が A=1, B=1, Cin=1 のとき、和（Sum）と繰り上がり（Cout）はどうなるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！', correct: true },
-          { id: 'opt2', text: '和 Sum＝0、繰り上がり Cout＝1（二進数で 10₂ ＝ 十進数2）', correct: false },
+          { id: 'opt1', text: '和 Sum＝1、繰り上がり Cout＝1', correct: true },
+          { id: 'opt2', text: '和 Sum＝0、繰り上がり Cout＝1', correct: false },
           { id: 'opt3', text: '和 Sum＝1、繰り上がり Cout＝0', correct: false },
           { id: 'opt4', text: '和 Sum＝0、繰り上がり Cout＝0', correct: false }
         ],
@@ -562,7 +562,7 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         question: '現代のインターネット通信の安全を支えるRSA暗号は、ある数学的性質（一方向性関数）に基づいています。その性質とは次のうちどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「2つの巨大素数の掛け算」は一瞬だが、その積を「素因数分解」するのは天文学的に困難！', correct: true },
+          { id: 'opt1', text: '巨大素数の掛け算は容易だが、その積の素因数分解は極めて困難', correct: true },
           { id: 'opt2', text: '足し算を何億回も繰り返すことで暗号化する', correct: false },
           { id: 'opt3', text: '文字をすべてアルファベット順に3つずらすだけ', correct: false },
           { id: 'opt4', text: '一度暗号化すると二度と復号できなくなる', correct: false }
@@ -581,10 +581,10 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         question: 'ブール代数の最重要定理「ド・モルガンの法則」によると、「NOT (A AND B)」と同じ論理出力になる式は次のうちどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「(NOT A) OR (NOT B)」！', correct: true },
-          { id: 'opt2', text: '「(NOT A) AND (NOT B)」', correct: false },
-          { id: 'opt3', text: '「A OR B」', correct: false },
-          { id: 'opt4', text: '「NOT (A OR B)」', correct: false }
+          { id: 'opt1', text: '(NOT A) OR (NOT B)', correct: true },
+          { id: 'opt2', text: '(NOT A) AND (NOT B)', correct: false },
+          { id: 'opt3', text: 'A OR B', correct: false },
+          { id: 'opt4', text: 'NOT (A OR B)', correct: false }
         ],
         explanation: '正解は「(NOT A) OR (NOT B)」！「AかつBではない」＝「Aではない、またはBではない」という関係です。このド・モルガンの法則により、半導体チップはNANDゲート（またはNORゲート）ただ1種類を組み合わせるだけで、AND・OR・NOT・XORを含むすべての論理回路を製造できるのです！',
         examTip: '【ド・モルガンの法則】集合と論理・情報科学の金字塔！全体否定のバーを割ると、AND記号とOR記号がひっくり返るという美しい数学の調和です！'

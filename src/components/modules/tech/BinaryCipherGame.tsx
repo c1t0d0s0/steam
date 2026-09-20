@@ -71,9 +71,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 1,
         targetDecimal: 1,
         options: [
-          { id: 'opt1', text: '「ビット（bit）」', correct: true },
-          { id: 'opt2', text: '「バイト（byte）」', correct: false },
-          { id: 'opt3', text: '「グラム（gram）」', correct: false }
+          { id: 'opt1', text: 'ビット（bit）', correct: true },
+          { id: 'opt2', text: 'バイト（byte）', correct: false },
+          { id: 'opt3', text: 'グラム（gram）', correct: false }
         ],
         hint: 'Binary Digit（2進法の数字）を縮めて「ビット」と呼ぶよ！',
         explanation: '正解は「ビット（bit）」！コンピュータの頭脳の中では、電気が通っている状態を「1」、通っていない状態を「0」として、すべての文字や計算をビットの組み合わせで表しています！',
@@ -88,7 +88,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 2,
         targetDecimal: 3,
         options: [
-          { id: 'opt1', text: '「4通り」（00, 01, 10, 11）！', correct: true },
+          { id: 'opt1', text: '4通り', correct: true },
           { id: 'opt2', text: '2通り', correct: false },
           { id: 'opt3', text: '3通り', correct: false }
         ],
@@ -105,12 +105,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 2,
         targetDecimal: 3,
         options: [
-          { id: 'opt1', text: '2×1 ＋ 1×1 ＝「3」！', correct: true },
+          { id: 'opt1', text: '3', correct: true },
           { id: 'opt2', text: '11', correct: false },
           { id: 'opt3', text: '2', correct: false }
         ],
         hint: '左の電球がつくと+2点、右の電球がつくと+1点だよ！',
-        explanation: '正解は「3」！十進数の位が「1の位、10の位、100の位...」と10倍ずつ増えるのに対し、2進数は「1の位、2の位、4の位...」と2倍ずつ増えます！',
+        explanation: '正解は「3」！2×1 ＋ 1×1 ＝ 3 です。十進数の位が「1の位、10の位、100の位...」と10倍ずつ増えるのに対し、2進数は「1の位、2の位、4の位...」と2倍ずつ増えます！',
         examTip: '【2進数の仕組み】2進数「11₂」は「じゅういち」ではなく「いち・いち」と読み、値は3です！'
       }
     ],
@@ -124,9 +124,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 3,
         targetDecimal: 5,
         options: [
-          { id: 'opt1', text: '「4」と「1」を点灯（2進数: 101₂）！', correct: true },
-          { id: 'opt2', text: '「4」と「2」を点灯（2進数: 110₂）', correct: false },
-          { id: 'opt3', text: '「2」と「1」を点灯（2進数: 011₂）', correct: false }
+          { id: 'opt1', text: '「4」と「1」を点灯（101₂）', correct: true },
+          { id: 'opt2', text: '「4」と「2」を点灯（110₂）', correct: false },
+          { id: 'opt3', text: '「2」と「1」を点灯（011₂）', correct: false }
         ],
         hint: '4 + 1 = 5 だね！真ん中の「2」は消灯（0）にするよ！',
         explanation: '正解は「101₂（4と1を点灯）」！4×1 + 2×0 + 1×1 = 5 となります！',
@@ -141,12 +141,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 3,
         targetDecimal: 7,
         options: [
-          { id: 'opt1', text: '4 ＋ 2 ＋ 1 ＝「7」！', correct: true },
+          { id: 'opt1', text: '7', correct: true },
           { id: 'opt2', text: '8', correct: false },
           { id: 'opt3', text: '6', correct: false }
         ],
         hint: '4+2+1を足し算してみよう！',
-        explanation: '正解は「7」！3ビットですべての桁を1にすると 4 + 2 + 1 = 7 になります。0から7までの全部で8通りの数を表現できます！',
+        explanation: '正解は「7」！4 + 2 + 1 = 7 です。3ビットですべての桁を1にすると 4 + 2 + 1 = 7 になります。0から7までの全部で8通りの数を表現できます！',
         examTip: '【最大の数と2の累乗】nビットの最大数は必ず「2^n − 1」になります！（3ビットなら 8 − 1 = 7）'
       },
       {
@@ -158,9 +158,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 3,
         targetDecimal: 0,
         options: [
-          { id: 'opt1', text: 'もちろん「0」！', correct: true },
+          { id: 'opt1', text: '0', correct: true },
           { id: 'opt2', text: '1', correct: false },
-          { id: 'opt3', text: '数えられない', correct: false }
+          { id: 'opt3', text: '3', correct: false }
         ],
         hint: 'どのランプもついていないので、合計点数は0点！',
         explanation: '正解は「0」！すべてのビットが0のときは「0」を表します。コンピュータは0から数を数え始めるのが特徴です！',
@@ -177,9 +177,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 4,
         targetDecimal: 9,
         options: [
-          { id: 'opt1', text: '「8」と「1」をつける（1001₂）！', correct: true },
-          { id: 'opt2', text: '「8」と「2」をつける（1010₂）', correct: false },
-          { id: 'opt3', text: '「4」と「2」と「1」をつける（0111₂）', correct: false }
+          { id: 'opt1', text: '「8」と「1」を点灯（1001₂）', correct: true },
+          { id: 'opt2', text: '「8」と「2」を点灯（1010₂）', correct: false },
+          { id: 'opt3', text: '「4」と「2」と「1」を点灯（0111₂）', correct: false }
         ],
         hint: '8 + 1 = 9 だね！',
         explanation: '正解は「1001₂」！8の位を1、4の位を0、2の位を0、1の位を1にすることで、8 + 1 = 9 を作ることができます！',
@@ -194,7 +194,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 4,
         targetDecimal: 12,
         options: [
-          { id: 'opt1', text: '8＋4＝12 なので「1100₂」！', correct: true },
+          { id: 'opt1', text: '1100₂', correct: true },
           { id: 'opt2', text: '1010₂', correct: false },
           { id: 'opt3', text: '1110₂', correct: false }
         ],
@@ -211,12 +211,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 4,
         targetDecimal: 15,
         options: [
-          { id: 'opt1', text: '8 ＋ 4 ＋ 2 ＋ 1 ＝「15」！', correct: true },
+          { id: 'opt1', text: '15', correct: true },
           { id: 'opt2', text: '16', correct: false },
           { id: 'opt3', text: '14', correct: false }
         ],
         hint: '8 + 4 + 2 + 1 を計算しよう！次の「16」より1小さい数だよ！',
-        explanation: '正解は「15」！8+4+2+1 = 15 です。4ビットでは「0〜15」の計16通りの数を表すことができます！',
+        explanation: '正解は「15」！8 + 4 + 2 + 1 = 15 です。4ビットでは「0〜15」の計16通りの数を表すことができます！',
         examTip: '【16進数への架け橋】0〜15の16個の数字は、16進数では「0〜9, A, B, C, D, E, F」として1文字で表せます！'
       }
     ],
@@ -228,9 +228,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'A=1, B=2, C=3, D=4... と番号をつけた秘密暗号があります。「3 - 1 - 20」は何という単語かな？',
         puzzleType: 'cipher_wheel',
         options: [
-          { id: 'opt1', text: 'C - A - T（CAT: ネコ）！', correct: true },
-          { id: 'opt2', text: 'D - O - G（DOG: イヌ）', correct: false },
-          { id: 'opt3', text: 'B - A - T（BAT: コウモリ）', correct: false }
+          { id: 'opt1', text: 'C - A - T（CAT）', correct: true },
+          { id: 'opt2', text: 'D - O - G（DOG）', correct: false },
+          { id: 'opt3', text: 'B - A - T（BAT）', correct: false }
         ],
         hint: '3番目はC、1番目はA、20番目はTだよ！',
         explanation: '正解は「CAT（ネコ）」！文字を番号に置き換えるのは、暗号やコンピュータ文字コード（ASCIIコード）のすべての基本です！',
@@ -243,9 +243,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '暗号「19 - 21 - 14」が届きました。アルファベット番号表（S=19, U=21, N=14）で解読すると何かな？',
         puzzleType: 'cipher_wheel',
         options: [
-          { id: 'opt1', text: 'S - U - N（SUN: 太陽）！', correct: true },
-          { id: 'opt2', text: 'S - T - A - R（星）', correct: false },
-          { id: 'opt3', text: 'M - O - O - N（月）', correct: false }
+          { id: 'opt1', text: 'S - U - N（SUN）', correct: true },
+          { id: 'opt2', text: 'S - T - A - R（STAR）', correct: false },
+          { id: 'opt3', text: 'M - O - O - N（MOON）', correct: false }
         ],
         hint: '19番目はS、21番目はU、14番目はN！空に輝くもの！',
         explanation: '正解は「SUN（太陽）」！番号と文字の対応ルール（換字表）があれば、誰でも暗号を読めるようになります！',
@@ -258,7 +258,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '「D - O - G（イヌ）」を番号暗号（A=1〜Z=26）に変換するとどうなるかな？（D=4, O=15, G=7）',
         puzzleType: 'cipher_wheel',
         options: [
-          { id: 'opt1', text: '「4 - 15 - 7」！', correct: true },
+          { id: 'opt1', text: '4 - 15 - 7', correct: true },
           { id: 'opt2', text: '3 - 14 - 6', correct: false },
           { id: 'opt3', text: '4 - 16 - 8', correct: false }
         ],
@@ -275,9 +275,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'モールス信号は、短い音「・（トン）」と長い音「ー（ツー）」の2種類だけで文字を伝えます。これも0と1の2進法と同じだと言えるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '言える！「・」を0、「ー」を1とみなせば全く同じ2進通信！', correct: true },
-          { id: 'opt2', text: '言えない！音と電気は全然違う', correct: false },
-          { id: 'opt3', text: 'アルファベットしか送れないので違う', correct: false }
+          { id: 'opt1', text: '言える（2種類の状態だけで表すため）', correct: true },
+          { id: 'opt2', text: '言えない（音と電気は仕組みが異なるため）', correct: false },
+          { id: 'opt3', text: '言えない（アルファベットしか送れないため）', correct: false }
         ],
         hint: 'どちらも「2つの状態（短い/長い、OFF/ON）」だけで情報を届けているよ！',
         explanation: '正解！「・」と「ー」の2種類で伝えるモールス符号は、まさに0と1のデジタル通信そのものです！電報や遭難信号で大活躍しました！',
@@ -290,9 +290,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '遭難したときに送る緊急SOS信号のモールス符号は「・・・ ーーー ・・・」です。「S」を表すモールス符号はどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「・・・」（トントン・トン）！', correct: true },
-          { id: 'opt2', text: '「ーーー」（ツーツー・ツー）', correct: false },
-          { id: 'opt3', text: '「・ー・」', correct: false }
+          { id: 'opt1', text: '・・・', correct: true },
+          { id: 'opt2', text: 'ーーー', correct: false },
+          { id: 'opt3', text: '・ー・', correct: false }
         ],
         hint: '最初と最後の文字がSだよ！',
         explanation: '正解は「・・・」！Sが「・・・」、Oが「ーーー」なので、つなげると「・・・ ーーー ・・・（SOS）」となります。誰でも打ちやすく聞き取りやすいように選ばれました！',
@@ -305,8 +305,8 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '遠くの船同士が、サーチライトを「ピカッ（短）」「ピカーッ（長）」と光らせてモールス信号で会話しています。これは何通信と呼べるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「光デジタル通信（可視光通信）」！', correct: true },
-          { id: 'opt2', text: '電波通信', correct: false },
+          { id: 'opt1', text: '光デジタル通信（可視光通信）', correct: true },
+          { id: 'opt2', text: '電波アナログ通信', correct: false },
           { id: 'opt3', text: '海底ケーブル通信', correct: false }
         ],
         hint: '目に見える光の点滅で0と1を送っているね！',
@@ -324,7 +324,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 4,
         targetDecimal: 15,
         options: [
-          { id: 'opt1', text: '16 × 2 ＝「32通り」！', correct: true },
+          { id: 'opt1', text: '32通り', correct: true },
           { id: 'opt2', text: '20通り', correct: false },
           { id: 'opt3', text: '64通り', correct: false }
         ],
@@ -339,7 +339,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '8ビット（1バイト）集まると、何通りの数字を表せるかな？（2×2×...を8回掛ける）',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「256通り」（0〜255）！', correct: true },
+          { id: 'opt1', text: '256通り', correct: true },
           { id: 'opt2', text: '128通り', correct: false },
           { id: 'opt3', text: '1000通り', correct: false }
         ],
@@ -354,9 +354,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '0と1のビットと暗号の基礎を完全制覇しました！コンピュータはこの0と1をどのように計算（加工）しているのかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'ANDやORなどの「論理回路（ゲート）」で瞬時に判定・計算している！', correct: true },
-          { id: 'opt2', text: '中に小さな人が入ってそろばんを弾いている', correct: false },
-          { id: 'opt3', text: '電卓のボタンを物理的にロボットが押している', correct: false }
+          { id: 'opt1', text: 'ANDやORなどの論理回路（ゲート）', correct: true },
+          { id: 'opt2', text: '磁石の引力による物理歯車', correct: false },
+          { id: 'opt3', text: 'インクの化学反応による自動着色', correct: false }
         ],
         hint: '次の学年で登場する「論理回路（ゲート）」が頭脳の秘密！',
         explanation: '大正解！小4ステージでは、この0と1を組み合わせて判断を下す「AND」「OR」「NOT」という論理ゲートの世界へ進みます！',
@@ -378,9 +378,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0, b: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '「AND（アンド）ゲート」！', correct: true },
-          { id: 'opt2', text: '「OR（オア）ゲート」', correct: false },
-          { id: 'opt3', text: '「NOT（ノット）ゲート」', correct: false }
+          { id: 'opt1', text: 'ANDゲート', correct: true },
+          { id: 'opt2', text: 'ORゲート', correct: false },
+          { id: 'opt3', text: 'NOTゲート', correct: false }
         ],
         hint: '「A かつ B（A AND B）」が揃ったときだけ出力が1になるよ！',
         explanation: '正解は「ANDゲート」！理科の電気回路でいう「直列つなぎの2つのスイッチ」と同じ働きをします。両方が閉じた（1になった）ときだけ電流が流れます！',
@@ -396,9 +396,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: 'スイッチAもBも「両方とも1（ON）」にする！', correct: true },
-          { id: 'opt2', text: 'スイッチAだけ1にする', correct: false },
-          { id: 'opt3', text: 'スイッチAもBも両方0にする', correct: false }
+          { id: 'opt1', text: 'スイッチAとBの両方を1（ON）にする', correct: true },
+          { id: 'opt2', text: 'スイッチAだけを1（ON）にする', correct: false },
+          { id: 'opt3', text: 'スイッチAとBの両方を0（OFF）にする', correct: false }
         ],
         hint: 'ANDは厳しい！片方だけでは通さないよ！',
         explanation: '正解！ANDゲートはすべての入力が「1」のときだけ出力が「1」になります。片方でも0があると出力は0になります！',
@@ -414,9 +414,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 0 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: 'Bが0なので出力は「0（OFF）」！', correct: true },
-          { id: 'opt2', text: 'Aが1なので出力は「1（ON）」', correct: false },
-          { id: 'opt3', text: '不確定で決まらない', correct: false }
+          { id: 'opt1', text: '0（OFF）', correct: true },
+          { id: 'opt2', text: '1（ON）', correct: false },
+          { id: 'opt3', text: '不確定', correct: false }
         ],
         hint: '1 × 0 ＝ 0 だね！',
         explanation: '正解は「0」！A×B = 1×0 = 0。両方が1でない限り、出力は絶対に0のままです！',
@@ -434,9 +434,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0, b: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '「OR（オア）ゲート」！', correct: true },
-          { id: 'opt2', text: '「ANDゲート」', correct: false },
-          { id: 'opt3', text: '「NOTゲート」', correct: false }
+          { id: 'opt1', text: 'ORゲート', correct: true },
+          { id: 'opt2', text: 'ANDゲート', correct: false },
+          { id: 'opt3', text: 'NOTゲート', correct: false }
         ],
         hint: '「A または B（A OR B）」のときに動くよ！',
         explanation: '正解は「ORゲート」！理科の電気回路でいう「並列つなぎの2つのスイッチ」と同じです。どちらか片方でも閉じれば、電気が迂回して流れます！',
@@ -452,9 +452,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0, b: 0 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: 'AもBも「両方とも0（OFF）」のときだけ！', correct: true },
+          { id: 'opt1', text: 'AとBの両方が0（OFF）のとき', correct: true },
           { id: 'opt2', text: 'Aが1でBが0のとき', correct: false },
-          { id: 'opt3', text: 'AもBも両方1のとき', correct: false }
+          { id: 'opt3', text: 'AとBの両方が1（ON）のとき', correct: false }
         ],
         hint: 'どちらか1つでも1があれば1になっちゃうよ！0になるには？',
         explanation: '正解！ORゲートは、入力がすべて0のときだけ出力が0になり、それ以外のときはすべて1を出力します！',
@@ -470,9 +470,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: 'もちろん「1（ON）」！', correct: true },
-          { id: 'opt2', text: '2になる', correct: false },
-          { id: 'opt3', text: 'ショートして0になる', correct: false }
+          { id: 'opt1', text: '1（ON）', correct: true },
+          { id: 'opt2', text: '2', correct: false },
+          { id: 'opt3', text: '0（OFF）', correct: false }
         ],
         hint: '論理の世界の最大値は「1」だよ！',
         explanation: '正解は「1」！ブール論理では 1 OR 1 = 1 となります。両方のスイッチが閉じていても電球は元気に点灯します！',
@@ -490,9 +490,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '「NOT（ノット）ゲート（インバータ）」！', correct: true },
-          { id: 'opt2', text: '「ANDゲート」', correct: false },
-          { id: 'opt3', text: '「ORゲート」', correct: false }
+          { id: 'opt1', text: 'NOTゲート（インバータ）', correct: true },
+          { id: 'opt2', text: 'ANDゲート', correct: false },
+          { id: 'opt3', text: 'ORゲート', correct: false }
         ],
         hint: '否定（ひっくり返す）のNOTだよ！三角の先に丸◯がついた記号！',
         explanation: '正解は「NOTゲート」！別名「インバータ（反転器）」とも呼ばれ、入力が1つのゲートです。三角の先端にある小さな丸（◯）が「反転」の印です！',
@@ -508,9 +508,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '「NOTゲート」をつなぐ！', correct: true },
-          { id: 'opt2', text: '「ANDゲート」をつなぐ', correct: false },
-          { id: 'opt3', text: '「ORゲート」をつなぐ', correct: false }
+          { id: 'opt1', text: 'NOTゲート', correct: true },
+          { id: 'opt2', text: 'ANDゲート', correct: false },
+          { id: 'opt3', text: 'ORゲート', correct: false }
         ],
         hint: '明るい(1)→消灯(0)、暗い(0)→点灯(1) に反転させたいね！',
         explanation: '正解！光センサーの出力をNOTゲートに入力すれば、夜になってセンサーが0になった瞬間にNOTが1を出力し、街灯が自動でパッと点灯します！',
@@ -526,7 +526,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '2回ひっくり返って「元のAと同じ」になる！', correct: true },
+          { id: 'opt1', text: '元のAと同じになる', correct: true },
           { id: 'opt2', text: '必ず0になる', correct: false },
           { id: 'opt3', text: '必ず1になる', correct: false }
         ],
@@ -546,9 +546,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: 'ANDが1なので、NOTで反転して「0」！', correct: true },
-          { id: 'opt2', text: '1になる', correct: false },
-          { id: 'opt3', text: '両方とも通らない', correct: false }
+          { id: 'opt1', text: '0', correct: true },
+          { id: 'opt2', text: '1', correct: false },
+          { id: 'opt3', text: '不確定', correct: false }
         ],
         hint: 'まずANDを計算（1 AND 1 = 1）、それをひっくり返すよ！',
         explanation: '正解は「0」！ANDの出力を真逆にひっくり返すのがNANDです。両方1のときだけ0になり、それ以外のときはすべて1を出力します！',
@@ -564,9 +564,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0, b: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: 'ORが0なので、反転して「1」！', correct: true },
-          { id: 'opt2', text: '0になる', correct: false },
-          { id: 'opt3', text: '反転しない', correct: false }
+          { id: 'opt1', text: '1', correct: true },
+          { id: 'opt2', text: '0', correct: false },
+          { id: 'opt3', text: '不確定', correct: false }
         ],
         hint: '0 OR 0 = 0、それをNOTでひっくり返そう！',
         explanation: '正解は「1」！両方とも0のときだけ1を出力し、片方でも1があれば0を出力するのがNORゲートです！',
@@ -579,8 +579,8 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'スーパーの自動ドアは、外側センサー（A）または内側センサー（B）のどちらかに人が立つと開きます。安全停止スイッチ（C: 押すと0）も組み合わせる場合、どんな回路？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「(A OR B) AND C」（人がいて、かつ安全スイッチ有効のとき開く）！', correct: true },
-          { id: 'opt2', text: 'A AND B AND C（両側に人がいないと開かない）', correct: false },
+          { id: 'opt1', text: '(A OR B) AND C', correct: true },
+          { id: 'opt2', text: 'A AND B AND C', correct: false },
           { id: 'opt3', text: 'A OR B OR C', correct: false }
         ],
         hint: '外か内のどちらかに人がいればよく（OR）、安全装置がON（AND）である必要があります！',
@@ -596,7 +596,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'ある謎のゲートがあります。(0,0)→0, (0,1)→1, (1,0)→1, (1,1)→1 という出力が出ました。このゲートの正体は何かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '片方でも1なら1になる「ORゲート」！', correct: true },
+          { id: 'opt1', text: 'ORゲート', correct: true },
           { id: 'opt2', text: 'ANDゲート', correct: false },
           { id: 'opt3', text: 'NOTゲート', correct: false }
         ],
@@ -611,7 +611,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '別の謎のゲートがあります。(0,0)→0, (0,1)→0, (1,0)→0, (1,1)→1 という出力でした。このゲートは何かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '両方1のときだけ1になる「ANDゲート」！', correct: true },
+          { id: 'opt1', text: 'ANDゲート', correct: true },
           { id: 'opt2', text: 'ORゲート', correct: false },
           { id: 'opt3', text: 'NANDゲート', correct: false }
         ],
@@ -626,7 +626,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '3つの入力（A, B, C）を持つANDゲートがあります。出力が1になるのは全部で8通りの入力のうち何通りあるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'A=1, B=1, C=1 の「1通り」だけ！', correct: true },
+          { id: 'opt1', text: '1通り', correct: true },
           { id: 'opt2', text: '3通り', correct: false },
           { id: 'opt3', text: '7通り', correct: false }
         ],
@@ -646,7 +646,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 0 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: '「XOR（排他的論理和: エックスオア）ゲート」！', correct: true },
+          { id: 'opt1', text: 'XORゲート（排他的論理和）', correct: true },
           { id: 'opt2', text: 'ANDゲート', correct: false },
           { id: 'opt3', text: 'NOTゲート', correct: false }
         ],
@@ -664,7 +664,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: 'どちらか片方を切り替えると状態が反転する「XORゲート」！', correct: true },
+          { id: 'opt1', text: 'XORゲート', correct: true },
           { id: 'opt2', text: 'ANDゲート', correct: false },
           { id: 'opt3', text: 'NOTゲート', correct: false }
         ],
@@ -679,9 +679,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '基本ゲート（AND, OR, NOT）を完全制覇しました！このゲートたちを使って、小5では何に挑戦するかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'XORを使った暗号解読や、データの誤り検出通信！', correct: true },
-          { id: 'opt2', text: '電球のガラスを割る実験', correct: false },
-          { id: 'opt3', text: '電卓の電池を抜く実験', correct: false }
+          { id: 'opt1', text: 'XORを使った暗号解読と誤り検出', correct: true },
+          { id: 'opt2', text: '磁気テープを使った音声録音', correct: false },
+          { id: 'opt3', text: '手回し発電機による蓄電', correct: false }
         ],
         hint: '小5では「情報セキュリティ」と「暗号」の本格的な世界へ飛び込むよ！',
         explanation: '大正解！小5ステージでは、歴史上の名暗号「シーザー暗号」や、現代の暗号通信で不可欠な「XOR暗号」「パリティビット」の謎を解き明かします！',
@@ -703,9 +703,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: '両方とも1で同じなので「0」！', correct: true },
-          { id: 'opt2', text: '両方1なので「1」', correct: false },
-          { id: 'opt3', text: 'エラーになって動かない', correct: false }
+          { id: 'opt1', text: '0', correct: true },
+          { id: 'opt2', text: '1', correct: false },
+          { id: 'opt3', text: '不確定', correct: false }
         ],
         hint: '「違いがあるときだけ1」！同じなら0だよ！',
         explanation: '正解は「0」！1⊕1 = 0 です。普通のORゲートなら 1 OR 1 = 1 ですが、XORは「両方とも1」のケースを排斥（仲間はずれに）するため、排他的（Exclusive）ORと呼ばれます！',
@@ -721,12 +721,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 0 },
         options: [
-          { id: 'opt1', text: '1⊕1=0 を出力する「XORゲート」！', correct: true },
+          { id: 'opt1', text: 'XORゲート', correct: true },
           { id: 'opt2', text: 'ANDゲート', correct: false },
           { id: 'opt3', text: 'ORゲート', correct: false }
         ],
         hint: '0+0=0, 0+1=1, 1+0=1, 1+1=0（繰り上がり無視）...これってXORの真理値表そのもの！',
-        explanation: '正解！XORの真理値表は、繰り上がりを無視した「足し算の1の位（和: Sum）」と完全に一致します！',
+        explanation: '正解は「XORゲート」！XORの真理値表（1⊕1=0）は、繰り上がりを無視した「足し算の1の位（和: Sum）」と完全に一致します！',
         examTip: '【足し算の心臓部】コンピュータが足し算をできるのは、XORゲートが和を計算してくれるからです！'
       },
       {
@@ -739,9 +739,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 0, b: 1 },
         targetOutput: { out: 1 },
         options: [
-          { id: 'opt1', text: 'Aが0なら1、1なら0と「必ず反転」する！', correct: true },
-          { id: 'opt2', text: '必ず0のままになる', correct: false },
-          { id: 'opt3', text: '変化しない', correct: false }
+          { id: 'opt1', text: '反転する（NOT A）', correct: true },
+          { id: 'opt2', text: '変化しない（Aのまま）', correct: false },
+          { id: 'opt3', text: '常に0になる', correct: false }
         ],
         hint: '0⊕1=1, 1⊕1=0 だね！Aがひっくり返っている！',
         explanation: '正解！B=0のときはAがそのまま通過し（A⊕0=A）、B=1のときはAが反転します（A⊕1=NOT A）。XORは「切り替え可能なNOTゲート」としても機能します！',
@@ -757,9 +757,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         puzzleType: 'cipher_wheel',
         shift: 3,
         options: [
-          { id: 'opt1', text: '「H E L L O」（ハロー）！', correct: true },
-          { id: 'opt2', text: '「A P P L E」（リンゴ）', correct: false },
-          { id: 'opt3', text: '「W O R L D」（世界）', correct: false }
+          { id: 'opt1', text: 'HELLO', correct: true },
+          { id: 'opt2', text: 'APPLE', correct: false },
+          { id: 'opt3', text: 'WORLD', correct: false }
         ],
         hint: 'Kの3つ前はH、Hの3つ前はE、Oの3つ前はL！',
         explanation: '正解は「HELLO」！K(-3)→H, H(-3)→E, O(-3)→L, O(-3)→L, R(-3)→O となります！古代ローマの英雄カエサルが軍事連絡に愛用した暗号です！',
@@ -773,7 +773,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         puzzleType: 'cipher_wheel',
         shift: 2,
         options: [
-          { id: 'opt1', text: '「U - V - G - C - O」！', correct: true },
+          { id: 'opt1', text: 'U - V - G - C - O', correct: true },
           { id: 'opt2', text: 'T - U - F - B - N', correct: false },
           { id: 'opt3', text: 'Q - R - C - Y - K', correct: false }
         ],
@@ -789,9 +789,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         puzzleType: 'cipher_wheel',
         shift: 13,
         options: [
-          { id: 'opt1', text: '13+13=26文字でちょうど1周して「元の文に戻る」！', correct: true },
-          { id: 'opt2', text: '二重に暗号化されて絶対読めなくなる', correct: false },
-          { id: 'opt3', text: '全部逆順のスペルになる', correct: false }
+          { id: 'opt1', text: '元の文に戻る', correct: true },
+          { id: 'opt2', text: '二重に暗号化されて読めなくなる', correct: false },
+          { id: 'opt3', text: '文字の並びが逆順になる', correct: false }
         ],
         hint: '時計の針を半周（6時間）進めて、もう半周進めたらどうなるかな？',
         explanation: '正解！13+13=26 でアルファベットがちょうど1周するため、「暗号化する関数」と「復号する関数」が完全に同一になるという非常に美しい性質を持ちます！',
@@ -806,12 +806,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '五十音表で「1つ前（上）の文字」にずらして書かれた暗号【す・い・か】。元のメッセージは何かな？',
         puzzleType: 'cipher_wheel',
         options: [
-          { id: 'opt1', text: '【せ・う・き】', correct: false },
-          { id: 'opt2', text: '各行で1つ後ろの文字に戻して【せ・え・き】', correct: false },
-          { id: 'opt3', text: '五十音順（あいうえお、かきくけこ...）で1つ後ろに戻して【せ・け・き】...ではなく【せ・え・き】？', correct: false }
+          { id: 'opt1', text: '【せ・う・き】', correct: true },
+          { id: 'opt2', text: '【せ・え・き】', correct: false },
+          { id: 'opt3', text: '【し・あ・こ】', correct: false }
         ],
         hint: '「あかさたな...」ではなく「あいうえお」の段で考えるか、行で考えるかルールを確認！',
-        explanation: '五十音暗号では「あいうえお（段）」ずらしや「あかさたな（行）」ずらしなど、ルール（共通鍵）をあらかじめ決めておく必要があります！',
+        explanation: '正解は【せ・う・き】！五十音暗号では「あいうえお（段）」ずらしや「あかさたな（行）」ずらしなど、ルール（共通鍵）をあらかじめ決めておく必要があります！',
         examTip: '【共通鍵暗号方式】暗号を送る人と受け取る人が、あらかじめ同じ秘密のルール（鍵）を共有しておく暗号方式を「共通鍵暗号」と呼びます！'
       },
       {
@@ -821,12 +821,12 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '英語の長い暗号文を解読するとき、一番たくさん登場する文字は、英語の文章で最もよく使われるアルファベット「何」だと推理できるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '英語で圧倒的に使用頻度が高い「E」！', correct: true },
-          { id: 'opt2', text: '「Z」', correct: false },
-          { id: 'opt3', text: '「Q」', correct: false }
+          { id: 'opt1', text: 'E', correct: true },
+          { id: 'opt2', text: 'Z', correct: false },
+          { id: 'opt3', text: 'Q', correct: false }
         ],
         hint: 'THE, HE, SHE, BE など至る所に出てくる母音だよ！',
-        explanation: '正解は「E」！どんなに文字をずらしても、最も多く使われる文字の統計的偏り（文字の頻度）は隠せません。これを「頻度分析」と呼び、名探偵シャーロック・ホームズも暗号解読に使用しました！',
+        explanation: '正解は「E」！英語で圧倒的に使用頻度が高い文字です。どんなに文字をずらしても、最も多く使われる文字の統計的偏り（文字の頻度）は隠せません。これを「頻度分析」と呼びます！',
         examTip: '【暗号解読の歴史】9世紀のアラブの数学者アル・キンディーが頻度分析を発明し、単純なシーザー暗号はすべて解読できるようになりました！'
       },
       {
@@ -836,9 +836,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '文字を一定数ずらすシーザー暗号の最大の弱点はどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'ずらし方のパターンが25通りしかなく、総当たりで破られる！', correct: true },
-          { id: 'opt2', text: '暗号化にパソコンが10台必要になること', correct: false },
-          { id: 'opt3', text: '文字数が10倍に増えてしまうこと', correct: false }
+          { id: 'opt1', text: 'ずらし方のパターンが25通りしかなく総当たりで解読される', correct: true },
+          { id: 'opt2', text: '文字数が元の文章の2倍に増えてしまう', correct: false },
+          { id: 'opt3', text: '暗号化と復号で異なるスーパーコンピュータが必要になる', correct: false }
         ],
         hint: 'たった25回試せば誰でも必ず解けちゃうね！',
         explanation: '正解！鍵の数がたった25通りしかないため、コンピュータはもちろん人間でも数分で全パターンを試せてしまいます。ここからより複雑な暗号へと進化しました！',
@@ -853,9 +853,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'インターネット通信で「1011」を送るとき、ノイズで途中の1ビットが「1001」に化けてしまいました。このエラーを見つける仕組みを何と呼ぶかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「パリティビット（偶数・奇数パリティ）」！', correct: true },
-          { id: 'opt2', text: '「シーソー回路」', correct: false },
-          { id: 'opt3', text: '「リセットボタン」', correct: false }
+          { id: 'opt1', text: 'パリティビット', correct: true },
+          { id: 'opt2', text: 'リセットビット', correct: false },
+          { id: 'opt3', text: 'ルーティングビット', correct: false }
         ],
         hint: '1の個数が偶数か奇数かを末尾に1ビット添えてチェックするよ！',
         explanation: '正解は「パリティビット」！データの末尾に「1の個数が偶数になるように検査ビット」を1つ付け足すことで、受信側でデータが壊れていないか一瞬で検出できます！',
@@ -868,8 +868,8 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'データ「1 1 0 1」があります（1の個数は3個＝奇数）。全体の1の個数を「偶数」にするためのパリティビットは何をつければいいかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '1を1個足して4個にするので「1」！', correct: true },
-          { id: 'opt2', text: '「0」', correct: false },
+          { id: 'opt1', text: '1', correct: true },
+          { id: 'opt2', text: '0', correct: false },
           { id: 'opt3', text: 'どちらでもよい', correct: false }
         ],
         hint: 'いま1が3個あるから、偶数（4個）にするには？',
@@ -883,9 +883,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '偶数パリティ付きデータ「1 0 1 1 1」が届きました。1の個数を数えると全部で4個（偶数）です。このデータは壊れているかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '1の個数が4個（偶数）で一致しているので「壊れていない（正常）」！', correct: true },
-          { id: 'opt2', text: '壊れている', correct: false },
-          { id: 'opt3', text: 'パリティビットからは分からない', correct: false }
+          { id: 'opt1', text: '壊れていない（正常）', correct: true },
+          { id: 'opt2', text: '壊れている（エラー発生）', correct: false },
+          { id: 'opt3', text: 'パリティからは判定不能', correct: false }
         ],
         hint: 'ルール通り偶数になっているか確認！',
         explanation: '正解！1の数が4個で偶数ルールが保たれているため、通信エラーが起きていないと判定できます！',
@@ -900,7 +900,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'データに秘密の鍵ビットを「XOR」して暗号化しました。受け取った人が元のデータに戻すには何をすればいいかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '暗号文にもう一度「同じ秘密鍵をXOR」するだけ！', correct: true },
+          { id: 'opt1', text: '同じ秘密鍵をもう一度XORする', correct: true },
           { id: 'opt2', text: '秘密鍵を引き算する', correct: false },
           { id: 'opt3', text: '秘密鍵をNOT反転する', correct: false }
         ],
@@ -915,7 +915,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'データ「1010」と秘密鍵「1100」を各桁ごとにXOR（異なるなら1、同じなら0）して暗号化するとどうなるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「0110」！', correct: true },
+          { id: 'opt1', text: '0110', correct: true },
           { id: 'opt2', text: '1110', correct: false },
           { id: 'opt3', text: '0000', correct: false }
         ],
@@ -930,9 +930,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '先ほどの暗号文「0110」に、秘密鍵「1100」をもう一度XORすると、元のデータ「何」に戻るかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '元の「1010」に完璧に戻る！', correct: true },
-          { id: 'opt2', text: '1111 になる', correct: false },
-          { id: 'opt3', text: '0000 になる', correct: false }
+          { id: 'opt1', text: '1010', correct: true },
+          { id: 'opt2', text: '1111', correct: false },
+          { id: 'opt3', text: '0000', correct: false }
         ],
         hint: '0⊕1=1, 1⊕1=0, 1⊕0=1, 0⊕0=0！元のデータと見比べよう！',
         explanation: '正解は「1010」！見事に元のデータが復元されました！暗号化と復号で同じ回路（XOR）をそのまま使い回せるため、ハードウェア回路を最小にできます！',
@@ -947,9 +947,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '情報セキュリティの3本柱（CIA）のうち、「許可された人だけがデータを見られるようにすること（暗号化など）」を何と呼ぶかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「機密性（Confidentiality）」！', correct: true },
-          { id: 'opt2', text: '「完全性（Integrity）」', correct: false },
-          { id: 'opt3', text: '「可用性（Availability）」', correct: false }
+          { id: 'opt1', text: '機密性（Confidentiality）', correct: true },
+          { id: 'opt2', text: '完全性（Integrity）', correct: false },
+          { id: 'opt3', text: '可用性（Availability）', correct: false }
         ],
         hint: '秘密（機密）を守ることだよ！',
         explanation: '正解は「機密性（Confidentiality）」！機密性（見られないこと）、完全性（改ざんされないこと）、可用性（使いたい時にいつでも使えること）の3つを合わせて「セキュリティのCIA」と呼びます！',
@@ -962,9 +962,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'テストの点数や銀行の送金額が途中で勝手に書き換えられていないことを保証する性質はどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「完全性（Integrity）」！', correct: true },
-          { id: 'opt2', text: '「機密性（Confidentiality）」', correct: false },
-          { id: 'opt3', text: '「匿名性（Anonymity）」', correct: false }
+          { id: 'opt1', text: '完全性（Integrity）', correct: true },
+          { id: 'opt2', text: '機密性（Confidentiality）', correct: false },
+          { id: 'opt3', text: '匿名性（Anonymity）', correct: false }
         ],
         hint: 'パリティビットやデジタル署名で「完全であること」を確かめるよ！',
         explanation: '正解は「完全性（Integrity）」！データが正確で改ざんされていない完全な状態であることを意味します！',
@@ -977,9 +977,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '小5のXORゲートと暗号解読を完全制覇しました！小6では、論理ゲートを組み合わせて「コンピュータの電卓（加算器）」を作ります。足し算回路の名前は何かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「半加算器（Half Adder）」と「全加算器（Full Adder）」！', correct: true },
-          { id: 'opt2', text: 'シーソー天秤', correct: false },
-          { id: 'opt3', text: 'ピタゴラドミノ', correct: false }
+          { id: 'opt1', text: '半加算器と全加算器', correct: true },
+          { id: 'opt2', text: 'アナログ天秤加算器', correct: false },
+          { id: 'opt3', text: '歯車パルス加算器', correct: false }
         ],
         hint: '英語で足し算器のことを「Adder（アダー）」と呼ぶよ！',
         explanation: '大正解！小6ステージでは、これまで学んだANDとXORを結合し、コンピュータが算数の計算を行う心臓部「半加算器・全加算器」の謎に迫ります！',
@@ -1001,7 +1001,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 1 },
         targetOutput: { out: 0, carry: 1 },
         options: [
-          { id: 'opt1', text: '和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！', correct: true },
+          { id: 'opt1', text: '和 Sum＝0、繰り上がり Carry＝1', correct: true },
           { id: 'opt2', text: '和 Sum＝1、繰り上がり Carry＝0', correct: false },
           { id: 'opt3', text: '和 Sum＝1、繰り上がり Carry＝1', correct: false },
           { id: 'opt4', text: '和 Sum＝0、繰り上がり Carry＝0', correct: false }
@@ -1020,7 +1020,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         defaultInputs: { a: 1, b: 0 },
         targetOutput: { out: 1, carry: 0 },
         options: [
-          { id: 'opt1', text: '和 Sum＝1、繰り上がり Carry＝0（二進数で 01₂ ＝ 十進数1）！', correct: true },
+          { id: 'opt1', text: '和 Sum＝1、繰り上がり Carry＝0', correct: true },
           { id: 'opt2', text: '和 Sum＝0、繰り上がり Carry＝1', correct: false },
           { id: 'opt3', text: '和 Sum＝1、繰り上がり Carry＝1', correct: false }
         ],
@@ -1035,9 +1035,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'この回路が「全」加算器ではなく「半（Half）」加算器と呼ばれる理由はどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '下位の桁からの「繰り上がり入力（Cin）」を受け取る機能がないから！', correct: true },
-          { id: 'opt2', text: '引き算しかできないから', correct: false },
-          { id: 'opt3', text: '半分壊れているから', correct: false }
+          { id: 'opt1', text: '下位桁からの繰り上がり入力（Cin）を受け取れないため', correct: true },
+          { id: 'opt2', text: '引き算の機能が含まれていないため', correct: false },
+          { id: 'opt3', text: '偶数しか計算できないため', correct: false }
         ],
         hint: '2桁目以上の足し算をするとき、1桁目から上がってきた「繰り上がり」も足したいよね！',
         explanation: '正解！半加算器はAとBの2つしか入力できません。前の桁から繰り上がってきた「Cin（キャリーイン）」を含む3つのビットを同時に足せる回路が「全加算器（Full Adder）」です！',
@@ -1052,7 +1052,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '全加算器に A=1, B=0, Cin=1（前からの繰り上がりあり）を入力しました。今回の和 Sum と次の桁への繰り上がり Cout はどうなるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '1 ＋ 0 ＋ 1 ＝ 2 なので、和 Sum＝0、繰り上がり Cout＝1！', correct: true },
+          { id: 'opt1', text: '和 Sum＝0、繰り上がり Cout＝1', correct: true },
           { id: 'opt2', text: '和 Sum＝1、繰り上がり Cout＝0', correct: false },
           { id: 'opt3', text: '和 Sum＝1、繰り上がり Cout＝1', correct: false }
         ],
@@ -1067,7 +1067,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '全加算器に A=1, B=1, Cin=1（全員1）を入力しました。出力（Sum と Cout）はどうなるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '1 ＋ 1 ＋ 1 ＝ 3 なので、和 Sum＝1、繰り上がり Cout＝1！', correct: true },
+          { id: 'opt1', text: '和 Sum＝1、繰り上がり Cout＝1', correct: true },
           { id: 'opt2', text: '和 Sum＝0、繰り上がり Cout＝1', correct: false },
           { id: 'opt3', text: '和 Sum＝1、繰り上がり Cout＝0', correct: false }
         ],
@@ -1082,9 +1082,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '全加算器を4個横につなげると、何ビット同士の足し算ができる電卓になるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「4ビット（0〜15の数）」同士の足し算器！', correct: true },
-          { id: 'opt2', text: '1ビットの足し算しかできない', correct: false },
-          { id: 'opt3', text: '掛け算しかできない', correct: false }
+          { id: 'opt1', text: '4ビット同士の足し算', correct: true },
+          { id: 'opt2', text: '1ビット同士の足し算', correct: false },
+          { id: 'opt3', text: '8ビット同士の掛け算', correct: false }
         ],
         hint: '1桁に1個の全加算器を使うから、4個つなげれば4桁！',
         explanation: '正解！全加算器を4個並べて繰り上がり（Carry）を数珠つなぎにすれば、4ビットの加算器になります。64個並べれば、現代の64ビットCPUの加算回路になります！',
@@ -1101,7 +1101,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         numBits: 4,
         targetDecimal: 16,
         options: [
-          { id: 'opt1', text: '繰り上がって「10000₂」（十進数の16）！', correct: true },
+          { id: 'opt1', text: '10000₂', correct: true },
           { id: 'opt2', text: '1110₂', correct: false },
           { id: 'opt3', text: '1111₂', correct: false }
         ],
@@ -1116,9 +1116,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '4ビットのレジスタ（記憶箱）は最大「15（1111₂）」までしか入りません。ここに15+1=16を足すと何が起きる？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'あふれた最上位が消えて「0000（0）」に戻ってしまう（オーバーフロー）！', correct: true },
-          { id: 'opt2', text: '自動で箱が大きくなって16になる', correct: false },
-          { id: 'opt3', text: 'コンピュータが爆発する', correct: false }
+          { id: 'opt1', text: '最上位があふれて「0000」になる（オーバーフロー）', correct: true },
+          { id: 'opt2', text: '自動で箱のサイズが拡張されて「16」になる', correct: false },
+          { id: 'opt3', text: '計算が停止して電源が切れる', correct: false }
         ],
         hint: 'ゲームでスコアが999999を超えると0になっちゃうバグと同じ！',
         explanation: '正解！桁あふれ（オーバーフロー）が起きると、5桁目の1が捨てられて「0000（0）」になってしまいます！古今東西のゲームやロケット打ち上げで有名なバグの原因です！',
@@ -1131,9 +1131,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'コンピュータは引き算専用の回路を持たず、ある工夫をして「足し算回路（加算器）だけ」で引き算を行っています。この手法を何と呼ぶかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「2の補数（ビット反転＋1）」を使った加算！', correct: true },
-          { id: 'opt2', text: 'そろばんの引き算', correct: false },
-          { id: 'opt3', text: '逆再生回路', correct: false }
+          { id: 'opt1', text: '2の補数（ビット反転＋1）による加算', correct: true },
+          { id: 'opt2', text: '差分探索テーブルの参照', correct: false },
+          { id: 'opt3', text: '逆方向クロックによる減算', correct: false }
         ],
         hint: '負の数を「ビットを全部ひっくり返して+1した数」として定義するよ！',
         explanation: '正解は「2の補数」！すべてのビットを反転して1を足すと「マイナスの数」になり、A − B を「A ＋ (−Bの補数)」として足し算器だけで計算できます！',
@@ -1148,9 +1148,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'CPUの中で、足し算や引き算、ANDやORなどの論理演算を一手に引き受ける計算ユニットを英語3文字で何と呼ぶかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「ALU（エー・エル・ユー）」！', correct: true },
-          { id: 'opt2', text: '「GPU」', correct: false },
-          { id: 'opt3', text: '「USB」', correct: false }
+          { id: 'opt1', text: 'ALU（算術論理演算装置）', correct: true },
+          { id: 'opt2', text: 'GPU（画像処理装置）', correct: false },
+          { id: 'opt3', text: 'USB（汎用シリアルバス）', correct: false }
         ],
         hint: 'Arithmetic（算術）Logic（論理）Unit（装置）の略！',
         explanation: '正解は「ALU」！CPUのど真ん中にあり、今日学んだ加算器や論理ゲートがぎっしり詰まった、人類史上最も高速な計算エンジンです！',
@@ -1163,8 +1163,8 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '「3.0 GHz（ギガヘルツ）」のCPUがあります。このCPUのALUは、1秒間に約何回論理ゲートのスイッチを切り替えて計算できるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '1秒間に「約30億回」！', correct: true },
-          { id: 'opt2', text: '約3000回', correct: false },
+          { id: 'opt1', text: '約30億回', correct: true },
+          { id: 'opt2', text: '約300万回', correct: false },
           { id: 'opt3', text: '約3万回', correct: false }
         ],
         hint: 'ギガ（G）は10億（10の9乗）を表す単位だよ！',
@@ -1178,9 +1178,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '現代のスマホやPCのCPUチップには、今日学んだ論理ゲートを作るための超微小な電子スイッチが約何個詰め込まれているかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「数百億個」のトランジスタ！', correct: true },
+          { id: 'opt1', text: '約100億個以上', correct: true },
           { id: 'opt2', text: '約100個', correct: false },
-          { id: 'opt3', text: '約1万個', correct: false }
+          { id: 'opt3', text: '約10万個', correct: false }
         ],
         hint: 'ナノメートル（原子数個分）という驚異的な超微細加工技術で作られています！',
         explanation: '正解は「数百億個」！最新の半導体チップには1個あたり100億個〜200億個以上のトランジスタが集積され、複雑なAIや3Dゲームを動かしています！',
@@ -1195,9 +1195,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'コンピュータは掛け算（乗算）をどうやって計算しているかな？例えば 5 × 3 は？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '2進数を「左にシフト（桁上げ）」して「加算器で足し合わせる」！', correct: true },
-          { id: 'opt2', text: '九九の表を全部丸暗記した辞書を引いているだけ', correct: false },
-          { id: 'opt3', text: '掛け算はできないので割り算に直している', correct: false }
+          { id: 'opt1', text: 'ビットを左シフトして加算器で足し合わせる', correct: true },
+          { id: 'opt2', text: 'すべての掛け算結果を記録した辞書を参照する', correct: false },
+          { id: 'opt3', text: '反復引き算で商を求める', correct: false }
         ],
         hint: '十進数の筆算でも、位をずらしながら足し算していくよね！',
         explanation: '正解！2進数を左に1ビットずらすと「×2倍」になります。筆算と同じように、シフトと足し算（加算器）を組み合わせるだけで巨大な掛け算も瞬時に解けます！',
@@ -1210,9 +1210,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'きれいな写真（RGBカラー）や音楽、YouTube動画も、コンピュータの中では本当にすべて「0と1」のビット列かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '本当！文字も色も音も動画も、すべて0と1の数字に変換されている！', correct: true },
-          { id: 'opt2', text: 'ウソ！絵の具の粉がパソコンの中で混ざっている', correct: false },
-          { id: 'opt3', text: '文字だけ0と1で、画像は別の特別な物質', correct: false }
+          { id: 'opt1', text: 'すべて0と1の数字（ビット列）に変換されている', correct: true },
+          { id: 'opt2', text: '文字のみ数字で、画像や音声は別のアナログ物質である', correct: false },
+          { id: 'opt3', text: 'インターネット通信時のみ数字に変換され、本体内では波のままである', correct: false }
         ],
         hint: '音の波の高さも、色の光の強さも、ぜんぶ数字で測れるね！',
         explanation: '正解！赤・緑・青の光の強さ（各0〜255）を並べたものが画像データであり、空気の振動（音波）の高さを1秒間に44100回数値化したものが音楽（CD音質）です！',
@@ -1225,9 +1225,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '未来の超高速コンピュータ「量子コンピュータ」の基本単位「量子ビット（Qubit）」が持つ驚異的な性質はどれかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「0」と「1」の両方の状態を同時に併せ持つ（量子重ね合わせ）！', correct: true },
-          { id: 'opt2', text: '0と1ではなく、2と3だけで計算する', correct: false },
-          { id: 'opt3', text: '電気をまったく使わずに蒸気で動く', correct: false }
+          { id: 'opt1', text: '0と1の両方の状態を同時に重ね合わせる', correct: true },
+          { id: 'opt2', text: '0から9までの十進数を1つの素子で表す', correct: false },
+          { id: 'opt3', text: '電気ではなく光の強弱のみでアナログ計算する', correct: false }
         ],
         hint: 'コインを指で激しく回転させると、表でもあり裏でもある状態になるね！',
         explanation: '正解！通常のビットが0か1のどちらか一方しか取れないのに対し、量子ビットは「0と1が同時に重なり合った状態」を保てるため、何億通りもの可能性を一瞬で並列計算できます！',
@@ -1242,7 +1242,7 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '今日学んだAND・OR・NOT・XORという「論理数学（ブール代数）」を体系化したイギリスの数学者は誰かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「ジョージ・ブール（George Boole）」！', correct: true },
+          { id: 'opt1', text: 'ジョージ・ブール', correct: true },
           { id: 'opt2', text: 'アイザック・ニュートン', correct: false },
           { id: 'opt3', text: 'トーマス・エジソン', correct: false }
         ],
@@ -1257,9 +1257,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: '理科の電気回路、算数の2進数・つるかめ算、工学の歯車とピタゴラ力学、美術幾何の立方体切断、そして情報の論理暗号。これらSTEAMが共通して育む力は何かな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: '「論理的思考力・空間認識力・問題解決力（ひらめき力）」！', correct: true },
-          { id: 'opt2', text: '丸暗記してテスト用紙を埋めるだけの記憶力', correct: false },
-          { id: 'opt3', text: 'ゲームのコントローラーを連打する反射神経', correct: false }
+          { id: 'opt1', text: '論理的思考力・空間認識力・問題解決力', correct: true },
+          { id: 'opt2', text: '単語の丸暗記力・暗記再生力', correct: false },
+          { id: 'opt3', text: '反射神経・入力スピード', correct: false }
         ],
         hint: 'STEAM探検隊が冒険を通じてずっと鍛えてきた探検スピリット！',
         explanation: '大正解！物事の本質を見抜き、規則性を発見し、自分の手で組み立てて検証する力こそが、STEAM教育が目指す真の「生きる力」です！',
@@ -1272,9 +1272,9 @@ const GRADE_BINARY_CIPHER_PUZZLES: Record<number, Record<number, BinaryCipherPuz
         question: 'STEAM探検隊の全10大モジュールを完全制覇しました！残る伝説の究極ステージはどこにあるかな？',
         puzzleType: 'logic_quiz',
         options: [
-          { id: 'opt1', text: 'スタンプ7個で解放される最難関「EXアイランド（裏ステージ）」！', correct: true },
-          { id: 'opt2', text: 'もうどこにもない', correct: false },
-          { id: 'opt3', text: '最初からやり直すだけ', correct: false }
+          { id: 'opt1', text: 'スタンプ7個で解放される裏ステージ「EXアイランド」', correct: true },
+          { id: 'opt2', text: '隠しステージはなく全クリアで終了', correct: false },
+          { id: 'opt3', text: 'すべてのデータがリセットされて最初から再開', correct: false }
         ],
         hint: '夜空に光る時空の超空間ラボ「EXアイランド」へ飛び込もう！',
         explanation: '全問完全制覇、本当におめでとうございます！！あなたの論理的思考力と空間認識力は最高峰の達人レベルに到達しました！次はEX島の超難関パズルに挑みましょう！',
