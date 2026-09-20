@@ -111,57 +111,67 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
       },
       {
         id: 'g3_l1_p2',
-        title: '輪を閉じるスイッチ',
-        subtitle: '途切れた回路をつなごう！',
-        question: 'スイッチSW1を入れて豆電球Aにあかりをつけよう！',
+        title: '回路を開いて消灯（スイッチを切る）',
+        subtitle: 'スイッチを切ると電気はどうなる？',
+        question: '部屋が明るくなりました！スイッチSW1を切って（OFFにして）、回路を開いて豆電球Aを【消灯】させよう！',
         puzzleType: 'switch_target',
-        batteries: [{ id: 'b1', label: '乾電池 1個', x: 180, y: 220, count: 1, connection: 'series' }],
-        bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 90 }],
-        switches: [{ id: 'SW1', label: 'スイッチSW1', x: 320, y: 220, defaultOn: false }],
+        batteries: [{ id: 'b1', label: '乾電池 1個', x: 150, y: 220, count: 1, connection: 'series' }],
+        bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 80 }],
+        switches: [{ id: 'SW1', label: 'スイッチSW1', x: 350, y: 220, defaultOn: true }],
         wireSegments: [
-          { x1: 180, y1: 220, x2: 100, y2: 220 },
-          { x1: 100, y1: 220, x2: 100, y2: 90 },
-          { x1: 100, y1: 90, x2: 250, y2: 90 },
-          { x1: 250, y1: 90, x2: 400, y2: 90 },
-          { x1: 400, y1: 90, x2: 400, y2: 220 },
-          { x1: 400, y1: 220, x2: 320, y2: 220 },
-          { x1: 320, y1: 220, x2: 180, y2: 220 }
+          { x1: 150, y1: 220, x2: 100, y2: 220 },
+          { x1: 100, y1: 220, x2: 100, y2: 80 },
+          { x1: 100, y1: 80, x2: 250, y2: 80 },
+          { x1: 250, y1: 80, x2: 400, y2: 80 },
+          { x1: 400, y1: 80, x2: 400, y2: 220 },
+          { x1: 400, y1: 220, x2: 350, y2: 220 },
+          { x1: 350, y1: 220, x2: 150, y2: 220 }
         ],
         calculateState: (sw) => {
           const on = Boolean(sw['SW1']);
-          return { bulbBrightness: { A: on ? 1 : 0 } };
+          return {
+            bulbBrightness: { A: on ? 1 : 0 },
+            activeWires: on ? [0, 1, 2, 3, 4, 5, 6] : []
+          };
         },
-        targetCondition: { requiredOn: ['A'], requiredOff: [], description: '豆電球Aを点灯させる' },
-        hint: 'スイッチを入れて回路を閉じましょう。',
-        explanation: '回路の途中にスイッチを挟むことで、電気をつけたり消したり自由にコントロールできます。',
-        examTip: '【小学3年理科】スイッチを入れる＝回路をつなぐ、スイッチを切る＝回路を開く（遮断する）ことです！'
+        targetCondition: { requiredOn: [], requiredOff: ['A'], description: 'スイッチSW1を切って豆電球Aを消灯させる' },
+        hint: 'スイッチをクリックして【OFF（開く）】にすると、電気の通り道が途切れて消灯します！',
+        explanation: '正解！スイッチを切る（回路を開く）と、電気の通り道が途切れて電流が止まり、豆電球が消灯します。「つける」だけでなく「安全に消す」のもスイッチの大切な役割です！',
+        examTip: '【回路の開閉】スイッチを入れることを「回路を閉じる（閉回路）」、スイッチを切ることを「回路を開く（開回路）」と呼びます！'
       },
       {
         id: 'g3_l1_p3',
-        title: '回路の導通チェック',
-        subtitle: '電気の通り道を完成させよう！',
-        question: 'スイッチをONにして豆電球Aを光らせてください。',
+        title: '直列2重スイッチ（安全装置）',
+        subtitle: '2つのスイッチを両方入れよう！',
+        question: '安全のためスイッチが直列に2つついています。SW1（主電源）とSW2（点灯スイッチ）の両方を入れて、豆電球Aを光らせよう！',
         puzzleType: 'switch_target',
-        batteries: [{ id: 'b1', label: '乾電池 1個', x: 200, y: 220, count: 1, connection: 'series' }],
+        batteries: [{ id: 'b1', label: '乾電池 1個', x: 120, y: 220, count: 1, connection: 'series' }],
         bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 80 }],
-        switches: [{ id: 'SW1', label: 'メインスイッチ', x: 300, y: 220, defaultOn: false }],
+        switches: [
+          { id: 'SW1', label: '主電源SW1', x: 250, y: 220, defaultOn: false },
+          { id: 'SW2', label: '点灯SW2', x: 370, y: 220, defaultOn: false }
+        ],
         wireSegments: [
-          { x1: 200, y1: 220, x2: 120, y2: 220 },
-          { x1: 120, y1: 220, x2: 120, y2: 80 },
-          { x1: 120, y1: 80, x2: 250, y2: 80 },
-          { x1: 250, y1: 80, x2: 380, y2: 80 },
-          { x1: 380, y1: 80, x2: 380, y2: 220 },
-          { x1: 380, y1: 220, x2: 300, y2: 220 },
-          { x1: 300, y1: 220, x2: 200, y2: 220 }
+          { x1: 120, y1: 220, x2: 70, y2: 220 },
+          { x1: 70, y1: 220, x2: 70, y2: 80 },
+          { x1: 70, y1: 80, x2: 250, y2: 80 },
+          { x1: 250, y1: 80, x2: 430, y2: 80 },
+          { x1: 430, y1: 80, x2: 430, y2: 220 },
+          { x1: 430, y1: 220, x2: 370, y2: 220 },
+          { x1: 370, y1: 220, x2: 250, y2: 220 },
+          { x1: 250, y1: 220, x2: 120, y2: 220 }
         ],
         calculateState: (sw) => {
-          const on = Boolean(sw['SW1']);
-          return { bulbBrightness: { A: on ? 1 : 0 } };
+          const on = Boolean(sw['SW1']) && Boolean(sw['SW2']);
+          return {
+            bulbBrightness: { A: on ? 1 : 0 },
+            activeWires: on ? [0, 1, 2, 3, 4, 5, 6, 7] : []
+          };
         },
-        targetCondition: { requiredOn: ['A'], requiredOff: [], description: '豆電球Aを点灯させる' },
-        hint: 'スイッチをクリックしてください！',
-        explanation: '見事に回路がつながり、豆電球があたたかい光を放ちました！',
-        examTip: '【豆知識】豆電球の中にある細い金属線（フィラメント）に電気が通ると、熱と光を出します。'
+        targetCondition: { requiredOn: ['A'], requiredOff: [], description: 'SW1とSW2の両方を入れて豆電球Aを点灯させる' },
+        hint: 'どちらか一方だけONにしても、もう片方が開いていたら電気は流れません！両方をONにしましょう。',
+        explanation: '正解！2つのスイッチが直列に並んでいるときは、両方のスイッチをONにしないと回路が完成しません。電子レンジや洗濯機などで誤作動を防ぐ「二重安全スイッチ（インターロック）」と同じ仕組みです！',
+        examTip: '【直列スイッチの論理】2つの条件が両方揃ったときだけ動く回路は、後の学年や情報科学で学ぶ「AND（論理積）回路」の基礎になります！'
       }
     ],
     2: [
@@ -416,7 +426,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         id: 'g3_l4_p3',
         title: '3つの電球の選択',
         subtitle: '狙った電球に電気を流そう！',
-        question: 'スイッチSW1とSW2を操作して、【電球Bだけ】を点灯させてください！',
+        question: 'スイッチSW1, SW2, SW3を操作して、【電球Bだけ】を点灯させてください！',
         puzzleType: 'switch_target',
         batteries: [{ id: 'b1', label: '乾電池 1個', x: 120, y: 240, count: 1, connection: 'series' }],
         bulbs: [
@@ -426,7 +436,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         ],
         switches: [
           { id: 'SW1', label: 'SW1（電球A）', x: 380, y: 60, defaultOn: true },
-          { id: 'SW2', label: 'SW2（電球B）', x: 380, y: 120, defaultOn: false }
+          { id: 'SW2', label: 'SW2（電球B）', x: 380, y: 120, defaultOn: false },
+          { id: 'SW3', label: 'SW3（電球C）', x: 380, y: 180, defaultOn: true }
         ],
         wireSegments: [
           { x1: 120, y1: 240, x2: 80, y2: 240 },
@@ -436,9 +447,10 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
           { x1: 80, y1: 180, x2: 250, y2: 180 },
           { x1: 250, y1: 60, x2: 380, y2: 60 },
           { x1: 250, y1: 120, x2: 380, y2: 120 },
-          { x1: 250, y1: 180, x2: 440, y2: 180 },
+          { x1: 250, y1: 180, x2: 380, y2: 180 },
           { x1: 380, y1: 60, x2: 440, y2: 60 },
           { x1: 380, y1: 120, x2: 440, y2: 120 },
+          { x1: 380, y1: 180, x2: 440, y2: 180 },
           { x1: 440, y1: 60, x2: 440, y2: 240 },
           { x1: 440, y1: 240, x2: 120, y2: 240 }
         ],
@@ -446,11 +458,11 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
           bulbBrightness: {
             A: sw['SW1'] ? 1 : 0,
             B: sw['SW2'] ? 1 : 0,
-            C: 0
+            C: sw['SW3'] ? 1 : 0
           }
         }),
-        targetCondition: { requiredOn: ['B'], requiredOff: ['A'], description: '電球Bのみ点灯（Aは消灯）' },
-        hint: 'SW1をOFF、SW2をONにしましょう。',
+        targetCondition: { requiredOn: ['B'], requiredOff: ['A', 'C'], description: '電球Bのみ点灯（AとCは消灯）' },
+        hint: 'SW1とSW3をOFFにし、SW2だけをONにしましょう。',
         explanation: '見事に電球Bだけに通電させることができました！',
         examTip: '【観察眼】どの線がどこにつながっているかを指でなぞって確認する習慣をつけましょう。'
       }
@@ -663,8 +675,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 2 } }),
         options: [
-          { id: 'o1', text: '約2倍の強さで、とても明るくなる！', correct: true },
-          { id: 'o2', text: '明るさは乾電池1個の時と変わらない', correct: false },
+          { id: 'o1', text: '約2倍の明るさになる', correct: true },
+          { id: 'o2', text: '明るさは変わらない', correct: false },
           { id: 'o3', text: '半分になって暗くなる', correct: false }
         ],
         hint: '乾電池を直列につなぐと電圧（電気を押し出す力）が2倍になります！',
@@ -722,9 +734,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1 } }),
         options: [
-          { id: 'o1', text: '明るさは変わらない（乾電池1個と同じ）が、約2倍長持ちする！', correct: true },
-          { id: 'o2', text: '明るさが2倍になる', correct: false },
-          { id: 'o3', text: '明るさが半分になる', correct: false }
+          { id: 'o1', text: '明るさは変わらないが約2倍長持ちする', correct: true },
+          { id: 'o2', text: '明るさが2倍になるが寿命は半分になる', correct: false },
+          { id: 'o3', text: '明るさが半分になり長持ちもしない', correct: false }
         ],
         hint: '並列につなぐと電圧（電気を押し出す力）は1個分と同じですが、電池2個で電気を分け合って流します！',
         explanation: '乾電池を並列につないでも電圧は1個分と同じなので明るさは変わりません。しかし、2個の電池が半分ずつ電流を出し合うため、乾電池が約2倍長持ちします！',
@@ -899,8 +911,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 3 } }),
         options: [
-          { id: 'o1', text: '3倍（まぶしく光る！）', correct: true },
-          { id: 'o2', text: '1倍（変わらない）', correct: false },
+          { id: 'o1', text: '3倍', correct: true },
+          { id: 'o2', text: '1倍', correct: false },
           { id: 'o3', text: '1.5倍', correct: false }
         ],
         hint: '乾電池の個数分だけ電圧が足し算されます！',
@@ -918,9 +930,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1 } }),
         options: [
-          { id: 'o1', text: '明るさは1個の時と変わらないが、約3倍長持ちする！', correct: true },
-          { id: 'o2', text: '明るさが3倍になり、長持ちもする', correct: false },
-          { id: 'o3', text: '明るさが1/3になる', correct: false }
+          { id: 'o1', text: '明るさは変わらないが約3倍長持ちする', correct: true },
+          { id: 'o2', text: '明るさが3倍になり長持ちもする', correct: false },
+          { id: 'o3', text: '明るさが1/3になり長持ちもしない', correct: false }
         ],
         hint: '並列なら何個つないでも電圧は1個分と同じです！',
         explanation: '何個並列にしても電圧は1個分と同じなので明るさは1倍のままです。電流を3個の電池で3等分（0.33ずつ）するため、3倍長持ちします！',
@@ -937,9 +949,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 2 } }),
         options: [
-          { id: 'o1', text: '乾電池 2個分の明るさ（並列部分の1個分 ＋ 直列の1個分 = 2）', correct: true },
-          { id: 'o2', text: '乾電池 3個分の明るさ', correct: false },
-          { id: 'o3', text: '乾電池 1個分の明るさ', correct: false }
+          { id: 'o1', text: '乾電池2個分の明るさ', correct: true },
+          { id: 'o2', text: '乾電池3個分の明るさ', correct: false },
+          { id: 'o3', text: '乾電池1個分の明るさ', correct: false }
         ],
         hint: '並列部分は電圧1、それに直列の1が足されます！',
         explanation: '並列部分の電圧は1個分（1V）、それに直列の乾電池（1V）が加わるので、全体の電圧は「1 + 1 = 2個分」となり、明るさも2倍になります！',
@@ -1008,14 +1020,14 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
       },
       {
         id: 'g4_l6_p3',
-        title: '小4総合：回路の完全制御マスター',
-        subtitle: '点灯状態を自由自在に操れ！',
-        question: '直列SW1をON、並列SW2をOFFにして、最大パワー（明るさ2）で電球を点灯させよう！',
+        title: '小4総合：安全消灯・待機モード',
+        subtitle: 'スイッチを切って回路を安全に遮断しよう！',
+        question: '実験が終わりました！直列SW1と並列SW2の両方をOFFにして、豆電球Aを安全に【消灯】させてください！',
         puzzleType: 'switch_target',
         batteries: [{ id: 'b1', label: '乾電池2個ボックス', x: 250, y: 220, count: 2, connection: 'series' }],
         bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 70 }],
         switches: [
-          { id: 'SW1', label: 'SW1（直列）', x: 160, y: 150, defaultOn: false },
+          { id: 'SW1', label: 'SW1（直列）', x: 160, y: 150, defaultOn: true },
           { id: 'SW2', label: 'SW2（並列）', x: 340, y: 150, defaultOn: false }
         ],
         wireSegments: [
@@ -1030,10 +1042,10 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
           else if (!sw['SW1'] && sw['SW2']) b = 1;
           return { bulbBrightness: { A: b } };
         },
-        targetCondition: { requiredOn: ['A'], requiredOff: [], description: '豆電球Aを明るさ2で点灯' },
-        hint: 'SW1をONにしてください。',
-        explanation: 'パーフェクト！最大出力の直列回路が完成しました！',
-        examTip: '【小4クリア】これで乾電池の直列・並列つなぎの全課程を修了しました！5年生では豆電球の直列・並列に挑みます！'
+        targetCondition: { requiredOn: [], requiredOff: ['A'], description: 'スイッチを両方OFFにして豆電球Aを消灯させる' },
+        hint: '直列SW1をクリックしてOFFに切り替えましょう！両方のスイッチがOFFになれば回路が完全に開きます。',
+        explanation: 'パーフェクト！両方のスイッチをOFFにして回路を開き、豆電球を安全に消灯させました！直列モード（明るさ2倍）、並列モード（長持ち）、安全消灯モードのすべてをマスターしました！',
+        examTip: '【小4マスター認定】乾電池の直列（電圧2倍）・並列（長持ち）・開回路（消灯）を自由自在にコントロールできる電気回路の達人になりました！'
       }
     ]
   },
@@ -1055,9 +1067,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.5, B: 0.5 } }),
         options: [
-          { id: 'o1', text: '電気の通り道が狭くなり（抵抗2倍）、明るさは半分（1/2）に暗くなる！', correct: true },
-          { id: 'o2', text: '明るさは変わらない（1のまま）', correct: false },
-          { id: 'o3', text: '電球が2個あるので2倍明るくなる', correct: false }
+          { id: 'o1', text: '明るさは半分の1/2になる', correct: true },
+          { id: 'o2', text: '明るさは変わらない', correct: false },
+          { id: 'o3', text: '明るさは2倍になる', correct: false }
         ],
         hint: '豆電球は電気を通しにくい「障害物（抵抗）」です。障害物が2つ連続すると、流れる電気は半分になります！',
         explanation: '豆電球を直列につなぐと、全体の抵抗が2倍（1+1=2）になるため、流れる電流は「1 ÷ 2 = 1/2」に減り、それぞれの明るさは半分のうす暗い光になります！',
@@ -1077,8 +1089,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0, B: 0 } }),
         options: [
-          { id: 'o1', text: '回路が途切れるため、電球Bも消えてしまう！', correct: true },
-          { id: 'o2', text: '電球Bはそのまま点灯し続ける', correct: false },
+          { id: 'o1', text: '電球Bも消灯する', correct: true },
+          { id: 'o2', text: '電球Bは点灯し続ける', correct: false },
           { id: 'o3', text: '電球Bが2倍明るくなる', correct: false }
         ],
         hint: '電球を外すと、そこが切れた電線と同じ状態になります！',
@@ -1124,9 +1136,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1, B: 1 } }),
         options: [
-          { id: 'o1', text: 'どちらの電球も電球1個の時と【同じ明るさ（1倍）】で明るく光る！', correct: true },
-          { id: 'o2', text: 'どちらも半分（1/2）の明るさになる', correct: false },
-          { id: 'o3', text: '電球Aだけが光り、電球Bは消える', correct: false }
+          { id: 'o1', text: 'どちらの電球も同じ明るさ（1倍）', correct: true },
+          { id: 'o2', text: 'どちらの電球も半分の明るさ（1/2）', correct: false },
+          { id: 'o3', text: '電球Aだけが光り電球Bは消灯する', correct: false }
         ],
         hint: 'それぞれの電球に、乾電池1個が直接つながっているのと同じ状態です！',
         explanation: '並列につなぐと、電球Aにも電球Bにも乾電池の電圧（1V）がそのまま丸々かかるため、どちらも電球1個の時と同じ「明るさ 1」で元気に光ります！',
@@ -1146,8 +1158,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0, B: 1 } }),
         options: [
-          { id: 'o1', text: '電球Bには影響がなく、【同じ明るさのまま点灯し続ける】！', correct: true },
-          { id: 'o2', text: '電球Bも消えてしまう', correct: false },
+          { id: 'o1', text: '同じ明るさのまま点灯し続ける', correct: true },
+          { id: 'o2', text: '電球Bも消灯する', correct: false },
           { id: 'o3', text: '電球Bの明るさが2倍になる', correct: false }
         ],
         hint: '電球Bへの電気の通り道は遮られていません！',
@@ -1212,7 +1224,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1, B: 1 } }),
         options: [
-          { id: 'o1', text: '電圧2倍 ÷ 抵抗2倍 ＝ 1 となり、基本回路と同じ明るさになる！', correct: true },
+          { id: 'o1', text: '基本回路と同じ明るさ（1倍）', correct: true },
           { id: 'o2', text: '2倍明るくなる', correct: false },
           { id: 'o3', text: '半分の明るさになる', correct: false }
         ],
@@ -1234,9 +1246,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 2, B: 2 } }),
         options: [
-          { id: 'o1', text: 'どちらの電球も「明るさ 2」（とても明るい！）', correct: true },
-          { id: 'o2', text: '明るさ 1', correct: false },
-          { id: 'o3', text: '明るさ 4', correct: false }
+          { id: 'o1', text: 'どちらの電球も明るさ2', correct: true },
+          { id: 'o2', text: 'どちらの電球も明るさ1', correct: false },
+          { id: 'o3', text: 'どちらの電球も明るさ4', correct: false }
         ],
         hint: '並列の電球それぞれに乾電池2個分の電圧（2V）が丸ごとかかります！',
         explanation: '並列の枝それぞれに電圧2Vがかかるため、電球Aも電球Bも「明るさ 2」で激しく光ります！乾電池からは合計2+2=4の電流が出るため、電池の消耗は極めて激しくなります。',
@@ -1617,8 +1629,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.5, B: 0.5, C: 0 } }),
         options: [
-          { id: 'o1', text: '明るさ 2/3 から 1/2 に【暗くなる】！', correct: true },
-          { id: 'o2', text: '明るさ 2/3 から 1 に【明るくなる】', correct: false },
+          { id: 'o1', text: '明るさ 2/3 から 1/2 に暗くなる', correct: true },
+          { id: 'o2', text: '明るさ 2/3 から 1 に明るくなる', correct: false },
           { id: 'o3', text: '明るさは 2/3 のまま変わらない', correct: false }
         ],
         hint: '電球Cを外すと、電球Aと電球Bの「ただの直列つなぎ（2個直列）」になります！',
@@ -1686,8 +1698,8 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
           };
         },
         options: [
-          { id: 'o1', text: '電球Bがショートして【消灯】し、電球Aが 1/2 から 1 へ【明るくなる】！', correct: true },
-          { id: 'o2', text: '電球AとBの両方が消える', correct: false },
+          { id: 'o1', text: '電球Bがショートして消灯し、電球Aが明るくなる', correct: true },
+          { id: 'o2', text: '電球AとBの両方が消灯する', correct: false },
           { id: 'o3', text: '電球Bが2倍明るくなる', correct: false }
         ],
         hint: '電流は抵抗のある電球Bを通らず、抵抗ゼロの導線（SW1）だけを一気に通り抜けます！',
@@ -1728,9 +1740,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1, B: 0, C: 0 }, shortedBulbs: ['B', 'C'] }),
         options: [
-          { id: 'o1', text: '電球BとCが両方ショートして消え、電球Aだけが明るさ1で光る！', correct: true },
-          { id: 'o2', text: 'すべての電球が消える', correct: false },
-          { id: 'o3', text: '電球AとBが消え、Cだけ光る', correct: false }
+          { id: 'o1', text: '電球BとCが消灯し、電球Aだけが明るさ1で光る', correct: true },
+          { id: 'o2', text: 'すべての電球が消灯する', correct: false },
+          { id: 'o3', text: '電球AとBが消灯し、Cだけ光る', correct: false }
         ],
         hint: '電流は電球Aを通った後、電球BとCを避けてバイパス導線を通って戻ります！',
         explanation: '電球Aを通過した電流は、電球BとCを通らずにバイパス導線を通って乾電池のマイナス極に戻るため、電球BとCは消灯し、電球Aだけが明るさ1で点灯します！',
@@ -1753,7 +1765,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.67, B: 0.33, C: 0.33 } }),
         options: [
-          { id: 'o1', text: '電球Aの「半分（1/2倍）」の明るさ！', correct: true },
+          { id: 'o1', text: '電球Aの「半分（1/2倍）」の明るさ', correct: true },
           { id: 'o2', text: '電球Aと「同じ（1倍）」の明るさ', correct: false },
           { id: 'o3', text: '電球Aの「1/4倍」の明るさ', correct: false }
         ],
@@ -1777,9 +1789,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.5, B: 0.5, C: 0.5, D: 0.5 } }),
         options: [
-          { id: 'o1', text: '4つの電球すべて「明るさ 1/2」で同じ明るさ！', correct: true },
+          { id: 'o1', text: '4つの電球すべて「明るさ 1/2」', correct: true },
           { id: 'o2', text: '4つの電球すべて「明るさ 1/4」', correct: false },
-          { id: 'o3', text: 'AとBが1、CとDが1/2', correct: false }
+          { id: 'o3', text: '4つの電球すべて「明るさ 1」', correct: false }
         ],
         hint: '合成抵抗は 1/2 ＋ 1/2 ＝ 1 です！乾電池から出る電流は 1 ÷ 1 ＝ 1 です。',
         explanation: '回路全体の合成抵抗は「1/2 + 1/2 = 1」なので、全体に流れる電流は「1 ÷ 1 = 1」！この電流1が最初の並列（AとB）で0.5ずつに分かれ、次の並列（CとD）でも0.5ずつに分かれるため、4つすべて「明るさ 1/2」になります！',
@@ -1800,7 +1812,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1, B: 0.5, C: 0.5 } }),
         options: [
-          { id: 'o1', text: '全体の電流は「1.5（3/2）」！', correct: true },
+          { id: 'o1', text: '全体の電流は「1.5（3/2）」', correct: true },
           { id: 'o2', text: '全体の電流は「1」', correct: false },
           { id: 'o3', text: '全体の電流は「2」', correct: false }
         ],
@@ -1825,7 +1837,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 1.33, B: 0.67, C: 0.67 } }),
         options: [
-          { id: 'o1', text: '電球A は「4/3（約1.33）」で、基本の1個より明るい！', correct: true },
+          { id: 'o1', text: '電球A は「4/3（約1.33）」', correct: true },
           { id: 'o2', text: '電球A は「2」', correct: false },
           { id: 'o3', text: '電球A は「2/3」', correct: false },
           { id: 'o4', text: '電球A は「1」', correct: false }
@@ -1872,7 +1884,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.67, B: 0.33, C: 0.33 } }),
         options: [
-          { id: 'o1', text: '実質電圧が1なので、電球Aの明るさは「2/3」', correct: true },
+          { id: 'o1', text: '明るさは「2/3」', correct: true },
           { id: 'o2', text: '明るさは「2」', correct: false },
           { id: 'o3', text: '明るさは「0（消灯）」', correct: false }
         ],
@@ -2029,7 +2041,7 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.8, B: 0.4, C: 0.4, D: 0.8 } }),
         options: [
-          { id: 'o1', text: '電球A と 電球D が同率1位で最も明るい！', correct: true },
+          { id: 'o1', text: '電球A と 電球D が最も明るい', correct: true },
           { id: 'o2', text: '電球B が最も明るい', correct: false },
           { id: 'o3', text: '電球C が最も明るい', correct: false },
           { id: 'o4', text: '4つの電球すべて同じ明るさ', correct: false }
@@ -2054,9 +2066,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.5, B: 0, C: 0, D: 0.5 } }),
         options: [
-          { id: 'o1', text: '電球BとCが両方ショートして【消灯】し、AとDだけの直列になる！', correct: true },
+          { id: 'o1', text: '電球BとCがショートして消灯し、AとDだけの直列になる', correct: true },
           { id: 'o2', text: 'すべての電球が明るくなる', correct: false },
-          { id: 'o3', text: '電球AとDが消える', correct: false }
+          { id: 'o3', text: '電球AとDが消灯し、BとCだけが点灯する', correct: false }
         ],
         hint: '中央の並列部分をショートさせる導線が開通します！',
         explanation: 'バイパス線によって電球BとCの両端が等電位になり、電流はBとCを完全に避けてバイパス線を流れます。BとCは消灯し、回路は電球AとDの2個直列（明るさ各 1/2）に変わります！',
@@ -2076,9 +2088,9 @@ const GRADE_CIRCUIT_PUZZLES: Record<number, Record<number, CircuitPuzzle[]>> = {
         wireSegments: [],
         calculateState: () => ({ bulbBrightness: { A: 0.5, D: 0.5 } }),
         options: [
-          { id: 'o1', text: '電球2個直列なので「全体の抵抗は 2」（流れる電流は 1/2）', correct: true },
-          { id: 'o2', text: '全体の抵抗は 1', correct: false },
-          { id: 'o3', text: '全体の抵抗は 4', correct: false }
+          { id: 'o1', text: '全体の抵抗は 2（流れる電流は 1/2）', correct: true },
+          { id: 'o2', text: '全体の抵抗は 1（流れる電流は 1）', correct: false },
+          { id: 'o3', text: '全体の抵抗は 4（流れる電流は 1/4）', correct: false }
         ],
         hint: '電球Aの抵抗1 ＋ 電球Dの抵抗1 ＝ 2 です！',
         explanation: '電球A(1)と電球D(1)の2個直列なので全体の合成抵抗は「2」！乾電池1個なので流れる電流は「1 ÷ 2 = 1/2」となり、両方の電球が明るさ1/2で点灯します！',
@@ -2230,6 +2242,9 @@ export const CircuitGame: React.FC<CircuitGameProps> = ({
   const handleNextProblem = () => {
     if (problemIndex < puzzleList.length - 1) {
       setProblemIndex((p) => p + 1);
+      setIsCompleted(false);
+      setSelectedOptionId(null);
+      setFeedbackError(null);
     } else if (onNextLevel) {
       onNextLevel();
     }
@@ -2264,7 +2279,12 @@ export const CircuitGame: React.FC<CircuitGameProps> = ({
       onOpenHelp={() => setIsHelpOpen(true)}
       problemIndex={problemIndex}
       totalProblems={puzzleList.length}
-      onSwitchProblem={(idx) => setProblemIndex(idx)}
+      onSwitchProblem={(idx) => {
+        setProblemIndex(idx);
+        setIsCompleted(false);
+        setSelectedOptionId(null);
+        setFeedbackError(null);
+      }}
       onNextProblem={handleNextProblem}
     >
       <div className="flex-1 flex flex-col items-center justify-between p-3 sm:p-5 max-w-5xl mx-auto w-full gap-4 overflow-y-auto">

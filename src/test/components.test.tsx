@@ -550,6 +550,36 @@ describe('App Component Integration', () => {
     // Stage cleared!
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
     expect(screen.getByText(/電気は乾電池の＋極から出て/)).toBeInTheDocument();
+
+    // Advance to Problem 2 (回路を開いて消灯)
+    const nextProbBtn = screen.getByText('第2問へ進む');
+    fireEvent.click(nextProbBtn);
+
+    expect(screen.getAllByText(/回路を開いて消灯/).length).toBeGreaterThanOrEqual(1);
+    // Starts with SW1: ON (閉じる)
+    const sw2Btn = screen.getByText(/スイッチSW1: ON \(閉じる\)/);
+    fireEvent.click(sw2Btn);
+    expect(screen.getByText(/スイッチSW1: OFF \(開く\)/)).toBeInTheDocument();
+    const checkBtn2 = screen.getByText('実験結果をたしかめる！');
+    fireEvent.click(checkBtn2);
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    expect(screen.getByText(/電気の通り道が途切れて電流が止まり/)).toBeInTheDocument();
+
+    // Advance to Problem 3 (直列2重スイッチ)
+    const nextProbBtn2 = screen.getByText('第3問へ進む');
+    fireEvent.click(nextProbBtn2);
+
+    expect(screen.getAllByText(/直列2重スイッチ/).length).toBeGreaterThanOrEqual(1);
+    // Both switches start OFF
+    const swMain = screen.getByText(/主電源SW1: OFF \(開く\)/);
+    const swSub = screen.getByText(/点灯SW2: OFF \(開く\)/);
+    fireEvent.click(swMain);
+    fireEvent.click(swSub);
+
+    const checkBtn3 = screen.getByText('実験結果をたしかめる！');
+    fireEvent.click(checkBtn3);
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    expect(screen.getByText(/二重安全スイッチ/)).toBeInTheDocument();
   });
 
   it('renders CircuitGame for Grade 4 and Grade 6 with appropriate physics concepts', () => {
@@ -567,10 +597,10 @@ describe('App Component Integration', () => {
 
     // Grade 4 Lv.1: Batteries in series
     expect(screen.getAllByText(/乾電池の直列つなぎ/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/約2倍の強さで、とても明るくなる！/)).toBeInTheDocument();
+    expect(screen.getByText(/約2倍の明るさになる/)).toBeInTheDocument();
 
     // Select correct option
-    fireEvent.click(screen.getByText(/約2倍の強さで、とても明るくなる！/));
+    fireEvent.click(screen.getByText(/約2倍の明るさになる/));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
     unmountG4();
 
