@@ -51,6 +51,37 @@
   animation: spin-slow 12s linear infinite;
 }
 
+@keyframes float-island {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float-island {
+  animation: float-island 4.5s ease-in-out infinite;
+}
+
+@keyframes wave-flow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 120px 60px;
+  }
+}
+
+.ocean-water-pattern {
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.22) 1.5px, transparent 2px),
+    radial-gradient(ellipse at 20% 80%, rgba(255, 255, 255, 0.15) 2px, transparent 3px),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.18) 2px, transparent 3px);
+  background-size: 60px 40px, 120px 80px, 90px 60px;
+  animation: wave-flow 25s linear infinite;
+}
+
 /* Custom friendly scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
@@ -67,3 +98,4 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #d97706;
 }
+

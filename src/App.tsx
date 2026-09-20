@@ -293,7 +293,32 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-100 via-amber-50 to-orange-50 select-none">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-300 via-cyan-200 to-blue-400 select-none relative overflow-x-hidden">
+      {/* Ocean Water Surface Effect & Waves */}
+      <div className="absolute inset-0 ocean-water-pattern pointer-events-none opacity-60"></div>
+
+      {/* Decorative Sea Atmosphere & Floating Creatures */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        {/* Distant gentle wave lines SVG */}
+        <svg className="absolute w-full h-full opacity-20 text-white" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="sea-waves" width="160" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 0 20 Q 40 5 80 20 T 160 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 20 35 Q 60 25 100 35 T 180 35" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#sea-waves)" />
+        </svg>
+
+        {/* Ambient Sea Wildlife & Sailing Ships */}
+        <div className="absolute top-20 left-[4%] text-2xl opacity-40 animate-pulse-subtle" title="カモメ">🕊️</div>
+        <div className="absolute top-32 left-[8%] text-lg opacity-30 animate-pulse-subtle" title="カモメ">🕊️</div>
+        <div className="absolute top-44 right-[6%] text-3xl opacity-40 animate-bounce-slow" title="イルカ">🐬</div>
+        <div className="absolute top-[35%] left-[2%] text-2xl opacity-35" title="ウミガメ">🐢</div>
+        <div className="absolute top-[48%] right-[3%] text-3xl opacity-45 animate-float-island" title="ヨット">⛵</div>
+        <div className="absolute top-[68%] left-[4%] text-2xl opacity-35" title="熱帯魚">🐠</div>
+        <div className="absolute top-[82%] right-[5%] text-3xl opacity-40 animate-bounce-slow" title="クジラ">🐳</div>
+        <div className="absolute top-[94%] left-[3%] text-2xl opacity-30" title="ヒトデ">⭐</div>
+      </div>
+
       {/* Header */}
       <Header
         progress={progress}
@@ -318,7 +343,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col items-center w-full">
+      <main className="flex-1 flex flex-col items-center w-full relative z-10">
         <IslandMap
           progress={progress}
           selectedIslandId={selectedIslandId}

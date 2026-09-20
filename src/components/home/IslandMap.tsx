@@ -15,6 +15,11 @@ export interface Island {
   bgGradient: string;
   borderColor: string;
   isEX?: boolean;
+  islandTypeLabel: string;
+  portName: string;
+  coordinates: string;
+  islandDecor: string[];
+  seaRouteName?: string;
   games: {
     type: GameModuleType;
     name: string;
@@ -30,10 +35,15 @@ export const ISLANDS: Island[] = [
     category: 'S',
     title: 'サイエンス島',
     subtitle: '理科ラボの実験室',
+    islandTypeLabel: '清流と結晶のエメラルド環礁',
+    portName: '⚓ ポート・サイエンス',
+    coordinates: '08°N 138°E',
+    islandDecor: ['🌴', '🔬', '🌊', '🧪'],
+    seaRouteName: 'ひらめき海峡（S島 ⇄ T島）',
     examTopic: 'てこの規則性＆豆電球の電気回路（直列・並列・ショート回路）',
     icon: '🔬',
-    bgGradient: 'from-sky-400 via-blue-500 to-indigo-600',
-    borderColor: 'border-sky-300',
+    bgGradient: 'from-emerald-500 via-teal-600 to-sky-600',
+    borderColor: 'border-emerald-300',
     games: [
       {
         type: 'lever',
@@ -55,9 +65,14 @@ export const ISLANDS: Island[] = [
     category: 'T',
     title: 'テックラボ',
     subtitle: 'AI・暗号研究所',
+    islandTypeLabel: 'サイバー浮遊島・ネオテラ',
+    portName: '⚓ ネオ・デジタルドック',
+    coordinates: '15°N 142°E',
+    islandDecor: ['📡', '💻', '🌐', '⚡'],
+    seaRouteName: 'からくり潮流・機巧諸島航路（T島 ⇄ E島）',
     examTopic: 'アルゴリズム的思考＆論理回路（AND/OR/NOT）・2進数・デジタル暗号',
     icon: '💻',
-    bgGradient: 'from-cyan-400 via-teal-500 to-emerald-600',
+    bgGradient: 'from-cyan-500 via-teal-600 to-blue-700',
     borderColor: 'border-cyan-300',
     games: [
       {
@@ -80,6 +95,11 @@ export const ISLANDS: Island[] = [
     category: 'E',
     title: 'エンジニア鉱山',
     subtitle: 'からくり力学工場',
+    islandTypeLabel: '蒸気と巨岩の機巧火山島',
+    portName: '⚓ スチームハーバー',
+    coordinates: '21°N 135°E',
+    islandDecor: ['⚙️', '🌋', '🏭', '🚂'],
+    seaRouteName: '創造の入江・クリスタル潮岬（E島 ⇄ A島）',
     examTopic: '歯車（ギア）伝達比＆ピタゴラ物理連鎖（斜面・バネ・滑車・ドミノ）',
     icon: '⚙️',
     bgGradient: 'from-amber-500 via-orange-600 to-yellow-600',
@@ -105,9 +125,14 @@ export const ISLANDS: Island[] = [
     category: 'A',
     title: 'デザイン神殿',
     subtitle: '空間幾何・アート工房',
+    islandTypeLabel: '幾何学と虹彩の大理石神殿島',
+    portName: '⚓ パレットマリーナ',
+    coordinates: '18°N 146°E',
+    islandDecor: ['🏛️', '🎨', '💎', '✨'],
+    seaRouteName: '数理の浅瀬・黄金珊瑚水道（A島 ⇄ M島）',
     examTopic: '立方体の展開図11種類＆立体の切断（切り口の多角形・平行面の法則）',
     icon: '🎨',
-    bgGradient: 'from-purple-400 via-fuchsia-500 to-pink-500',
+    bgGradient: 'from-purple-500 via-fuchsia-600 to-pink-600',
     borderColor: 'border-purple-300',
     games: [
       {
@@ -130,6 +155,11 @@ export const ISLANDS: Island[] = [
     category: 'M',
     title: 'マス・アイランド',
     subtitle: '算数アリーナ',
+    islandTypeLabel: '黄金比の立体砂丘・ブロック諸島',
+    portName: '⚓ ナンバーピア',
+    coordinates: '10°N 144°E',
+    islandDecor: ['📐', '🧱', '🏖️', '☀️'],
+    seaRouteName: '時空の裂け目・超空間海溝（M島 ⇄ EX島）',
     examTopic: '空間把握（積み木）＆ 和差算・つるかめ算',
     icon: '📐',
     bgGradient: 'from-amber-400 via-orange-500 to-rose-500',
@@ -155,9 +185,13 @@ export const ISLANDS: Island[] = [
     category: 'EX',
     title: 'EXアイランド',
     subtitle: '時空の超空間ラボ（裏ステージ）',
+    islandTypeLabel: '暗黒星雲の特異点・重力反転島',
+    portName: '🌀 ワームホール・ゲート',
+    coordinates: '99°X 999°Z',
+    islandDecor: ['🪐', '🌀', '🌌', '☄️'],
     examTopic: '中学入試最難関レベル・STEAM総合思考力（超ハイレベル融合問題）',
     icon: '🌌',
-    bgGradient: 'from-violet-600 via-purple-700 to-indigo-950',
+    bgGradient: 'from-violet-700 via-purple-900 to-slate-950',
     borderColor: 'border-purple-400',
     isEX: true,
     games: [
@@ -266,9 +300,9 @@ export const IslandMap: React.FC<IslandMapProps> = ({
             sound.playClick();
             onOpenDaily();
           }}
-          className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-4 sm:p-5 text-white shadow-lg border-4 border-amber-300 mb-6 cursor-pointer hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-[2rem] p-4 sm:p-5 text-white shadow-xl border-4 border-amber-300 mb-6 cursor-pointer hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] transition-all flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden"
         >
-          <div className="flex items-center gap-3.5 text-center sm:text-left">
+          <div className="flex items-center gap-3.5 text-center sm:text-left relative z-10">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center text-3xl shrink-0 shadow-inner">
               🎯
             </div>
@@ -292,29 +326,36 @@ export const IslandMap: React.FC<IslandMapProps> = ({
             </div>
           </div>
 
-          <div className="shrink-0 flex items-center gap-2 bg-white text-orange-600 hover:bg-orange-50 px-5 py-2.5 rounded-2xl font-black text-sm shadow-md transition-all">
+          <div className="shrink-0 flex items-center gap-2 bg-white text-orange-600 hover:bg-orange-50 px-5 py-2.5 rounded-2xl font-black text-sm shadow-md transition-all relative z-10">
             <span>挑戦する！</span>
             <ChevronRight className="w-4 h-4" />
           </div>
         </div>
       )}
 
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 rounded-3xl p-5 sm:p-6 text-white shadow-lg border-4 border-amber-300 mb-6 text-center sm:text-left">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/30 backdrop-blur-sm rounded-full text-xs font-black mb-1.5">
-          <span>✨ ひらめき冒険マップ</span>
+      {/* Welcome Banner - Maritime Expedition Scroll */}
+      <div className="bg-gradient-to-r from-sky-600 via-teal-600 to-blue-700 rounded-[2rem] p-5 sm:p-6 text-white shadow-xl border-4 border-cyan-300 mb-6 text-center sm:text-left relative overflow-hidden">
+        <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-white/10 rounded-full pointer-events-none"></div>
+        <div className="absolute right-8 top-3 text-6xl opacity-15 pointer-events-none select-none">🧭</div>
+
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black mb-2 border border-white/30 text-amber-200">
+            <span>🧭 STEAM諸島・大航海マップ</span>
+            <span className="hidden sm:inline text-white/80">• 全6海域巡回航路</span>
+          </div>
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-sm">
+            すきな島をえらんで探検に出発しよう！
+          </h1>
+          <p className="text-xs sm:text-sm text-cyan-100 font-bold mt-1.5 flex items-center justify-center sm:justify-start gap-1.5">
+            <span>🌊</span>
+            <span>カリブの海に浮かぶ6つの島（S・T・E・A・M・EX）！波を越えて知恵の秘宝を集めよう！</span>
+          </p>
         </div>
-        <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-sm">
-          すきな島をえらんで探検に出発しよう！
-        </h1>
-        <p className="text-xs sm:text-sm text-amber-950 font-bold mt-1">
-          中学受験で差がつく算数・理科の最重要テーマを、ゲームで体感マスター！
-        </p>
       </div>
 
       {/* Islands Vertical Stack */}
-      <div className="flex flex-col gap-3.5 sm:gap-4 w-full">
-        {ISLANDS.map((island) => {
+      <div className="flex flex-col gap-4 sm:gap-5 w-full">
+        {ISLANDS.map((island, islandIdx) => {
           const isThisEx = island.isEX;
           const isLocked = isThisEx && !isExUnlocked;
 
@@ -329,107 +370,188 @@ export const IslandMap: React.FC<IslandMapProps> = ({
           });
 
           return (
-            <div
-              key={island.id}
-              onClick={() => {
-                sound.playClick();
-                if (isLocked) {
-                  setIsExLockedNoticeOpen(true);
-                  return;
-                }
-                setIslandId(island.id);
-              }}
-              className={`group bg-white rounded-3xl border-4 transition-all duration-300 p-3.5 sm:p-4 lg:p-5 flex flex-col justify-between cursor-pointer active:scale-[0.99] relative overflow-hidden ${
-                isLocked
-                  ? 'border-slate-300 bg-slate-50/90 shadow-sm opacity-90'
-                  : isThisEx
-                  ? 'border-purple-400 shadow-lg shadow-purple-500/15 hover:border-purple-500 hover:shadow-2xl'
-                  : 'border-slate-200 hover:border-amber-400 shadow-md hover:shadow-xl'
-              }`}
-            >
-              {/* Island Header banner */}
-              <div
-                className={`w-full rounded-2xl bg-gradient-to-r ${island.bgGradient} p-3.5 sm:p-4 lg:p-5 flex items-center justify-between shadow-inner relative overflow-hidden`}
-              >
-                <div className="text-white z-10 min-w-0 pr-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className={`px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-black tracking-wide whitespace-nowrap ${
-                        isThisEx ? 'bg-purple-950/60 text-purple-200' : 'bg-black/25 text-white'
-                      }`}
-                    >
-                      CATEGORY: {island.category}
-                    </span>
-                    <span className="text-xs sm:text-sm text-white/90 font-bold hidden sm:inline">
-                      • {island.subtitle}
-                    </span>
-                    {isThisEx && isExUnlocked && (
-                      <span className="px-2 py-0.5 bg-yellow-400 text-purple-950 rounded-full text-[10px] font-black animate-pulse flex items-center gap-1 shadow-sm">
-                        <Sparkles className="w-3 h-3" />
-                        <span>解放中！</span>
-                      </span>
-                    )}
+            <React.Fragment key={island.id}>
+              {/* Sea Route Connector Between Islands */}
+              {islandIdx > 0 && (
+                <div className="flex items-center justify-center my-0.5 sm:my-1 gap-2 text-sky-900 font-black text-xs select-none">
+                  <div className="hidden sm:block w-16 md:w-28 border-b-2 border-dashed border-sky-400/80"></div>
+                  <div className="px-3.5 py-1.5 rounded-full bg-white/85 border-2 border-sky-300 shadow-sm flex items-center gap-2 backdrop-blur-xs text-sky-900 text-xs">
+                    <span className="text-sm animate-bounce-slow">⛵</span>
+                    <span className="font-extrabold">{ISLANDS[islandIdx - 1].seaRouteName || '定期航路'}</span>
+                    <span className="text-sky-600 hidden md:inline">〜〜〜</span>
                   </div>
-                  <h3 className="text-lg sm:text-2xl font-black drop-shadow flex items-center gap-2">
-                    <span>{island.title}</span>
-                    {isLocked && <Lock className="w-5 h-5 text-amber-300 inline shrink-0" />}
-                  </h3>
-                  <span className="text-xs text-white/95 font-bold block sm:hidden mt-0.5">
-                    {island.subtitle}
-                  </span>
+                  <div className="hidden sm:block w-16 md:w-28 border-b-2 border-dashed border-sky-400/80"></div>
                 </div>
-                <div className="text-4xl sm:text-5xl filter drop-shadow group-hover:scale-110 transition-transform z-10 shrink-0">
-                  {island.icon}
-                </div>
+              )}
 
-                {/* Decorative circle backdrop */}
-                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none"></div>
-              </div>
-
-              {/* Entrance Exam connection */}
+              {/* Island Card: Contoured Floating Island with Sandy Beach Shoreline */}
               <div
-                className={`mt-3 rounded-xl p-2.5 sm:p-3 border text-xs sm:text-sm font-bold flex items-center gap-2 ${
-                  isThisEx
-                    ? 'bg-purple-50 border-purple-200 text-purple-900'
-                    : 'bg-amber-50 border-amber-200 text-amber-900'
+                onClick={() => {
+                  sound.playClick();
+                  if (isLocked) {
+                    setIsExLockedNoticeOpen(true);
+                    return;
+                  }
+                  setIslandId(island.id);
+                }}
+                className={`group relative rounded-[2.25rem] sm:rounded-[2.5rem] border-4 transition-all duration-300 p-3 sm:p-4 lg:p-5 flex flex-col justify-between cursor-pointer active:scale-[0.99] overflow-hidden ${
+                  isLocked
+                    ? 'border-slate-300 bg-slate-100/90 shadow-md opacity-90'
+                    : isThisEx
+                    ? 'border-purple-400 bg-gradient-to-b from-indigo-950/95 via-purple-950/90 to-slate-900 shadow-[0_12px_28px_-4px_rgba(147,51,234,0.45)] hover:border-purple-300 hover:shadow-[0_20px_35px_-4px_rgba(147,51,234,0.65)] hover:-translate-y-1.5'
+                    : 'border-amber-300/90 bg-gradient-to-b from-amber-100/95 via-amber-50 to-amber-100/95 shadow-[0_12px_26px_-4px_rgba(3,105,161,0.35)] hover:border-amber-400 hover:shadow-[0_20px_35px_-4px_rgba(3,105,161,0.45)] hover:-translate-y-1.5'
                 }`}
               >
-                <Award className={`w-4 h-4 shrink-0 ${isThisEx ? 'text-purple-600' : 'text-amber-600'}`} />
-                <span>{island.examTopic}</span>
-              </div>
+                {/* Coastal Wave Foam Underlay */}
+                <div className="absolute -bottom-1 inset-x-8 h-3 bg-white/70 rounded-full blur-[1px] pointer-events-none"></div>
 
-              {/* Island footer / Stars & Action */}
-              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                {isLocked ? (
-                  <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-purple-700">
-                    <Lock className="w-4 h-4 text-purple-500" />
-                    <span>
-                      🔒 累計スタンプ 7個 で解放！（現在: {progress.stamps.length} / 7個）
+                {/* Island Top Sandy Shoreline Header */}
+                <div className="flex items-center justify-between px-1 pb-2.5 text-xs font-black select-none">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-black border shadow-xs flex items-center gap-1 ${
+                        isThisEx
+                          ? 'bg-purple-900/80 border-purple-400 text-purple-200'
+                          : 'bg-amber-200/90 border-amber-300 text-amber-900'
+                      }`}
+                    >
+                      <span>🏝️</span>
+                      <span>CATEGORY {island.category}</span>
+                    </span>
+                    <span
+                      className={`text-xs font-bold hidden sm:inline ${
+                        isThisEx ? 'text-purple-300' : 'text-amber-800'
+                      }`}
+                    >
+                      {island.portName}
                     </span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-600">
-                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                    <span>
-                      {islandEarnedStars} / {islandTotalStars}
-                    </span>
-                  </div>
-                )}
 
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                        isThisEx ? 'bg-purple-900/50 text-purple-300' : 'bg-amber-200/60 text-amber-800'
+                      }`}
+                    >
+                      🧭 {island.coordinates}
+                    </span>
+                    <div className="hidden sm:flex items-center gap-1 text-sm opacity-80">
+                      {island.islandDecor?.map((dec, dIdx) => (
+                        <span key={dIdx}>{dec}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Island Central Plateau / Biome Banner */}
                 <div
-                  className={`flex items-center gap-1 text-xs sm:text-sm font-black transition-transform ${
-                    isLocked
-                      ? 'text-slate-500'
-                      : isThisEx
-                      ? 'text-purple-600 group-hover:translate-x-1'
-                      : 'text-indigo-600 group-hover:translate-x-1'
+                  className={`w-full rounded-[1.75rem] bg-gradient-to-r ${island.bgGradient} p-4 sm:p-5 lg:p-6 flex items-center justify-between shadow-inner relative overflow-hidden border-2 ${
+                    isThisEx ? 'border-purple-400/40' : 'border-white/30'
                   }`}
                 >
-                  <span>{isLocked ? '解放条件を見る' : '裏ステージへ'}</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <div className="text-white z-10 min-w-0 pr-2">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-black bg-black/25 text-white/95 tracking-wide">
+                        {island.islandTypeLabel}
+                      </span>
+                      <span className="text-xs sm:text-sm text-white/90 font-bold hidden md:inline">
+                        • {island.subtitle}
+                      </span>
+                      {isThisEx && isExUnlocked && (
+                        <span className="px-2.5 py-0.5 bg-yellow-400 text-purple-950 rounded-full text-[10px] font-black animate-pulse flex items-center gap-1 shadow-sm">
+                          <Sparkles className="w-3 h-3" />
+                          <span>解放中！</span>
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-black drop-shadow-md flex items-center gap-2.5">
+                      <span>{island.title}</span>
+                      {isLocked && <Lock className="w-5 h-5 text-amber-300 inline shrink-0" />}
+                    </h3>
+                    <span className="text-xs text-white/95 font-bold block sm:hidden mt-0.5">
+                      {island.subtitle}
+                    </span>
+                  </div>
+
+                  {/* Island Main Landmark Icon */}
+                  <div className="relative z-10 shrink-0 flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-white/35 flex items-center justify-center text-4xl sm:text-5xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                      {island.icon}
+                    </div>
+                  </div>
+
+                  {/* Decorative Terrain Backdrops */}
+                  <div className="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none"></div>
+                  <div className="absolute left-1/2 -top-12 w-28 h-28 bg-white/5 rounded-full pointer-events-none"></div>
+                </div>
+
+                {/* Entrance Exam connection / Explorer's Mission Scroll */}
+                <div
+                  className={`mt-3 rounded-2xl p-2.5 sm:p-3.5 border-2 text-xs sm:text-sm font-bold flex items-center gap-2.5 shadow-sm ${
+                    isThisEx
+                      ? 'bg-purple-900/60 border-purple-400/50 text-purple-100'
+                      : 'bg-white/95 border-amber-200 text-amber-950'
+                  }`}
+                >
+                  <Award className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${isThisEx ? 'text-purple-300' : 'text-amber-600'}`} />
+                  <span className="leading-snug">{island.examTopic}</span>
+                </div>
+
+                {/* Island Harbor Pier / Star Progress & Embark Action */}
+                <div
+                  className={`mt-3 pt-3 border-t flex items-center justify-between ${
+                    isThisEx ? 'border-purple-800/60' : 'border-amber-200/60'
+                  }`}
+                >
+                  {isLocked ? (
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-purple-400">
+                      <Lock className="w-4 h-4 text-purple-400" />
+                      <span>
+                        🔒 累計スタンプ 7個 で解放！（現在: {progress.stamps.length} / 7個）
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-black">
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-100/90 border border-amber-300/80 text-amber-900">
+                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                        <span>
+                          {islandEarnedStars} / {islandTotalStars}
+                        </span>
+                      </div>
+                      <span className={`text-[11px] font-bold hidden sm:inline ${isThisEx ? 'text-purple-300' : 'text-slate-600'}`}>
+                        {island.portName}
+                      </span>
+                    </div>
+                  )}
+
+                  <div
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl font-black text-xs sm:text-sm shadow-sm transition-all ${
+                      isLocked
+                        ? 'bg-slate-200 text-slate-500'
+                        : isThisEx
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white group-hover:scale-105'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white group-hover:scale-105'
+                    }`}
+                  >
+                    <span>{isLocked ? '解放条件を見る' : isThisEx ? '裏ステージへ' : 'この島へ上陸'}</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+
+                {/* Coastal Wave Foam Base Strip */}
+                <div
+                  className={`mt-2.5 -mx-3 sm:-mx-4 lg:-mx-5 -mb-3 sm:-mb-4 lg:-mb-5 py-1 px-3 border-t text-[10px] font-black flex items-center justify-between select-none ${
+                    isThisEx
+                      ? 'bg-purple-950/70 border-purple-900 text-purple-400'
+                      : 'bg-sky-200/70 border-sky-300 text-sky-800'
+                  }`}
+                >
+                  <span>〜〜 白波の波打ち際 〜〜</span>
+                  <span className="hidden sm:inline">⚓ {island.portName}</span>
+                  <span>〜〜〜</span>
                 </div>
               </div>
-            </div>
+            </React.Fragment>
           );
         })}
       </div>
@@ -453,19 +575,27 @@ export const IslandMap: React.FC<IslandMapProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            {/* Modal Title */}
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-4xl">{selectedIsland.icon}</span>
+            {/* Modal Title with Island Harbor Arrival Badge */}
+            <div className="flex items-center gap-3.5 mb-3.5 pb-2.5 border-b border-amber-200/80">
+              <div className="w-14 h-14 rounded-2xl bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-3xl shadow-sm shrink-0">
+                {selectedIsland.icon}
+              </div>
               <div>
-                <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  <span>{selectedIsland.title}</span>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black flex items-center gap-1">
+                    <span>{selectedIsland.portName}</span>
+                    <span>に上陸！</span>
+                  </span>
                   {selectedIsland.isEX && (
                     <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-xs font-black">
                       裏ステージ
                     </span>
                   )}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                  <span>{selectedIsland.title}</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-bold">{selectedIsland.subtitle}</p>
+                <p className="text-xs text-slate-500 font-bold">{selectedIsland.subtitle} • {selectedIsland.islandTypeLabel}</p>
               </div>
             </div>
 
