@@ -221,11 +221,11 @@ describe('App Component Integration', () => {
     const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
     fireEvent.change(gradeSelect, { target: { value: '6' } });
 
-    // Now in Grade 6, stage banner indicates Grade 6 and Science/Math are 0 / 36, and 3 islands are 0 / 18
+    // Now in Grade 6, stage banner indicates Grade 6 and Science/Math/Engineering/Art are 0 / 36, and 1 island (Tech) is 0 / 18
     expect(screen.getByText('🎒 小学6年生レベル')).toBeInTheDocument();
     expect(screen.queryByText('3 / 36')).not.toBeInTheDocument();
-    expect(screen.getAllByText('0 / 18')).toHaveLength(2);
-    expect(screen.getAllByText('0 / 36')).toHaveLength(3);
+    expect(screen.getAllByText('0 / 18')).toHaveLength(1);
+    expect(screen.getAllByText('0 / 36')).toHaveLength(4);
 
     // Switch back to Grade 3
     fireEvent.change(gradeSelect, { target: { value: '3' } });
@@ -375,7 +375,7 @@ describe('App Component Integration', () => {
     // Click EX island to open stage select
     fireEvent.click(screen.getByText('EXアイランド'));
     expect(screen.getByText('【EX裏】多重モーメント・連鎖天秤パズル')).toBeInTheDocument();
-    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(8);
+    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(9);
 
     // Launch EX Level 1
     const startButtons = screen.getAllByText('スタート');
@@ -723,6 +723,129 @@ describe('App Component Integration', () => {
 
     // Select correct option
     fireEvent.click(screen.getByText(/右側から2個の球が同じ速さで飛び出す！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders CrossSectionGame on Art Island and clears quiz in Grade 3 with 3D controls', () => {
+    localStorage.clear();
+    render(<App />);
+
+    // Click on Art Island (デザイン神殿)
+    fireEvent.click(screen.getByText('デザイン神殿'));
+
+    // Both Cube Net and Cross Section games should be visible
+    expect(screen.getByText('立方体の展開図マスター')).toBeInTheDocument();
+    expect(screen.getByText('立体の切断・断面幾何パズル')).toBeInTheDocument();
+
+    // Start Cross Section Lv.1 (index 6, since Cube Net has 6 levels 0..5)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[6]);
+
+    // Check game header
+    expect(screen.getAllByText(/立方体のカド切り落とし（三角形）/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/立方体の1つの角（頂点）を斜めに切り落としました/)).toBeInTheDocument();
+
+    // Test 3D view mode toggle
+    const topViewBtn = screen.getByText('真上 (上面)');
+    fireEvent.click(topViewBtn);
+    expect(screen.getByText('正面')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('正面'));
+    fireEvent.click(screen.getByText('斜め3D'));
+
+    // Test Slice and Explode toggle
+    const sliceBtn = screen.getByText('切断中');
+    fireEvent.click(sliceBtn);
+    expect(screen.getByText('切断する')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('切断する'));
+
+    const explodeBtn = screen.getByText('分離');
+    fireEvent.click(explodeBtn);
+    expect(screen.getByText('合体')).toBeInTheDocument();
+    expect(screen.getByText('断面オープン！')).toBeInTheDocument();
+
+    // Test Hint / Strategy modal
+    const helpBtn = screen.getByText('ヒント');
+    fireEvent.click(helpBtn);
+    expect(screen.getByText('立体切断・空間幾何ノート')).toBeInTheDocument();
+    expect(screen.getByText('【切断の3大鉄則】')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('わかった！閉じる'));
+    expect(screen.queryByText('立体切断・空間幾何ノート')).not.toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/3つの頂点を結ぶ「三角形」！/));
+
+    // Stage cleared!
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    expect(screen.getByText(/立方体の1つの頂点に集まる3つの面を通る平面で切断すると/)).toBeInTheDocument();
+  });
+
+  it('renders CrossSectionGame for Grade 4 and Grade 6 with geometry concepts', () => {
+    // Grade 4
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 4 })
+    );
+
+    const { unmount: unmountG4 } = render(<App />);
+    fireEvent.click(screen.getByText('デザイン神殿'));
+    const startBtnsG4 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG4[6]); // CrossSection Lv.1
+
+    // Grade 4 Lv.1: Rule 1 - points on same plane
+    expect(screen.getAllByText(/【第1鉄則】同一平面上の2点は結ぶ！/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/同じ面（上の面）の上を「まっすぐな直線」で結ぶ！/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/同じ面（上の面）の上を「まっすぐな直線」で結ぶ！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    unmountG4();
+
+    // Grade 6
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 6 })
+    );
+
+    render(<App />);
+    fireEvent.click(screen.getByText('デザイン神殿'));
+    const startBtnsG6 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG6[6]); // CrossSection Lv.1
+
+    // Grade 6 Lv.1: Corner pyramid volume
+    expect(screen.getAllByText(/切断によって生じる三角すいの体積/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/底面積\(3×3÷2\) × 高さ3 ÷ 3 ＝「4\.5 cm³」！/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/底面積\(3×3÷2\) × 高さ3 ÷ 3 ＝「4\.5 cm³」！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders EX Island with CrossSection Puzzle and launches it', () => {
+    localStorage.clear();
+    const mockStamps = [
+      '2026-09-01', '2026-09-02', '2026-09-03',
+      '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07'
+    ];
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ stamps: mockStamps })
+    );
+
+    render(<App />);
+
+    // Click EX island
+    fireEvent.click(screen.getByText('EXアイランド'));
+    expect(screen.getByText('【EX裏】多面体切断・極限断面幾何パズル')).toBeInTheDocument();
+
+    // Launch EX CrossSection Lv.1 (index 24)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[24]);
+
+    expect(screen.getByText(/立方体の3方向直交中心切断と切断面/)).toBeInTheDocument();
+    expect(screen.getByText(/8個の小立方体に分かれ、切断面の総面積は「108cm²」！/)).toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/8個の小立方体に分かれ、切断面の総面積は「108cm²」！/));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
   });
 });

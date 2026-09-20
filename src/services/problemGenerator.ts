@@ -1056,6 +1056,204 @@ export const generateContraptionPuzzle = (
 };
 
 // =============================================================================
+// Art Island: Solid Cross-Section Puzzle Generator
+// =============================================================================
+
+export interface CrossSectionCutPoint {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  z: number;
+  description: string;
+}
+
+export interface GeneratedCrossSectionPuzzle {
+  id: string;
+  title: string;
+  subtitle: string;
+  question: string;
+  puzzleType: 'slice_identify' | 'slice_exam_quiz';
+  cutPoints: CrossSectionCutPoint[];
+  polygonShape: string;
+  polygonVertices: { x: number; y: number; z: number }[];
+  options: { id: string; text: string; correct: boolean }[];
+  explanation: string;
+  examTip: string;
+}
+
+export const generateCrossSectionPuzzle = (
+  solvedSignatures: Set<string>,
+  grade: number = 4
+): { puzzle: GeneratedCrossSectionPuzzle; signature: string } => {
+  const patterns = [
+    {
+      key: 'equilateral_tri',
+      title: '立方体のカド切り落とし（正三角形）',
+      subtitle: '合同な3本の対角線がつくる切り口',
+      question: '立方体の1つの頂点から広がる3辺の長さがすべて等しい点（頂点3つ）を通る平面で切断したよ。切り口の断面は何の図形かな？',
+      polygonShape: '正三角形',
+      cutPoints: [
+        { id: 'p1', label: 'P', x: 1, y: 0, z: 0, description: '頂点B' },
+        { id: 'p2', label: 'Q', x: 0, y: 1, z: 0, description: '頂点D' },
+        { id: 'p3', label: 'R', x: 0, y: 0, z: 1, description: '頂点E' }
+      ],
+      polygonVertices: [
+        { x: 1, y: 0, z: 0 },
+        { x: 0, y: 1, z: 0 },
+        { x: 0, y: 0, z: 1 }
+      ],
+      options: [
+        { text: '3辺の長さが等しい「正三角形」', correct: true },
+        { text: '2辺だけ等しい「二等辺三角形」', correct: false },
+        { text: '1つの角が90度の「直角二等辺三角形」', correct: false },
+        { text: '角が削れた「台形」', correct: false }
+      ],
+      explanation: '正解は「正三角形」！立方体の3つの正方形の面の対角線が切り口の3辺となり、どの対角線も長さが完全に等しいため、正三角形になります！',
+      examTip: '【切断の基本】頂点や等距離の点を結ぶと、正方形の対角線で構成される美しい正三角形が現れます！'
+    },
+    {
+      key: 'isosceles_trapezoid',
+      title: '平行面の法則と台形断面',
+      subtitle: '向かい合う面の切り口は必ず平行！',
+      question: '立方体の上面の2辺の中点と、底面の向かい合う2辺の中点を通る平面で斜めにスライスしたよ。切り口の断面は何の図形かな？',
+      polygonShape: '等脚台形',
+      cutPoints: [
+        { id: 'p1', label: 'P', x: 0.5, y: 0, z: 0, description: '上辺の中点' },
+        { id: 'p2', label: 'Q', x: 0, y: 0.5, z: 0, description: '左上辺の中点' },
+        { id: 'p3', label: 'R', x: 0, y: 1, z: 1, description: '底面の頂点' },
+        { id: 'p4', label: 'S', x: 1, y: 0, z: 1, description: '底面の頂点' }
+      ],
+      polygonVertices: [
+        { x: 0.5, y: 0, z: 0 },
+        { x: 0, y: 0.5, z: 0 },
+        { x: 0, y: 1, z: 1 },
+        { x: 1, y: 0, z: 1 }
+      ],
+      options: [
+        { text: '上底と下底が平行な「等脚台形」', correct: true },
+        { text: '向かい合う2組の辺が平行な「平行四辺形」', correct: false },
+        { text: 'すべての辺が等しい「ひし形」', correct: false },
+        { text: '3辺の「三角形」', correct: false }
+      ],
+      explanation: '正解は「等脚台形」！上面と底面は平行なので、切り口の線も必ず互いに平行になります（平行面の法則）。上底と下底の長さが異なるため、等脚台形になります！',
+      examTip: '【切断の第2鉄則】向かい合う平行な面にあらわれる切り口の線は「必ず平行」になります！中学入試の最頻出作図定理です！'
+    },
+    {
+      key: 'regular_hexagon',
+      title: '奇跡の正六角形断面',
+      subtitle: '各辺の中点6個を結ぶ究極の断面！',
+      question: '立方体の向かい合う6本の辺の「ちょうど真ん中（中点）」を次々と通る平面でスパッと切断したよ。切り口は何の図形かな？',
+      polygonShape: '正六角形',
+      cutPoints: [
+        { id: 'p1', label: 'A', x: 0.5, y: 0, z: 0, description: '中点1' },
+        { id: 'p2', label: 'B', x: 1, y: 0.5, z: 0, description: '中点2' },
+        { id: 'p3', label: 'C', x: 1, y: 1, z: 0.5, description: '中点3' },
+        { id: 'p4', label: 'D', x: 0.5, y: 1, z: 1, description: '中点4' },
+        { id: 'p5', label: 'E', x: 0, y: 0.5, z: 1, description: '中点5' },
+        { id: 'p6', label: 'F', x: 0, y: 0, z: 0.5, description: '中点6' }
+      ],
+      polygonVertices: [
+        { x: 0.5, y: 0, z: 0 },
+        { x: 1, y: 0.5, z: 0 },
+        { x: 1, y: 1, z: 0.5 },
+        { x: 0.5, y: 1, z: 1 },
+        { x: 0, y: 0.5, z: 1 },
+        { x: 0, y: 0, z: 0.5 }
+      ],
+      options: [
+        { text: 'すべての辺と角が等しい「正六角形」！', correct: true },
+        { text: '辺の長さがバラバラの「不等辺六角形」', correct: false },
+        { text: '5辺の「正五角形」', correct: false },
+        { text: '大きな「正八角形」', correct: false }
+      ],
+      explanation: '正解は「正六角形」！向かい合う6辺の中点を通る切断面は、すべての辺が直角二等辺三角形の斜辺（長さが全て等しい）になり、内角もすべて120度になるため完璧な正六角形を描きます！',
+      examTip: '【中学受験の至宝・正六角形】立方体の切断で最も美しく難関校で出題される断面！向かい合う辺が3組すべて平行になります！'
+    },
+    {
+      key: 'impossible_seven',
+      title: '切断の幾何学限界定理',
+      subtitle: '作ることが不可能な多角形は？',
+      question: '立方体を「1つの平面」でスパッと切断したとき、切り口の多角形として【絶対に作ることができない】ものはどれかな？',
+      polygonShape: '限界定理',
+      cutPoints: [],
+      polygonVertices: [],
+      options: [
+        { text: '面が足りず絶対に切れない「七角形」', correct: true },
+        { text: 'カドを切ってできる「三角形」', correct: false },
+        { text: '面を5つ通ってできる「五角形」', correct: false },
+        { text: '面を6つすべて通る「六角形」', correct: false }
+      ],
+      explanation: '正解は「七角形」！立方体には面が「6つ」しかありません。1つの平面が1つの面と交わってできる切り口の線は最大1本なので、切り口の辺は最大でも6本まで。したがって七角形以上の多角形は絶対にできません！',
+      examTip: '【切断の限界法則】立体の面の数が多角形の頂点（辺）の最大数！立方体（6面体）の切断面は最大で六角形です！'
+    },
+    {
+      key: 'center_split_volume',
+      title: '立方体の中心を通る2等分切断',
+      subtitle: 'どんな角度でも半分になる秘密',
+      question: '1辺が6cmの立方体（体積216cm³）を、立方体のちょうど中心（重心）を通る平面で斜めに切断しました。切り分けられた2つの立体の体積はどうなるかな？',
+      polygonShape: '体積2等分',
+      cutPoints: [],
+      polygonVertices: [],
+      options: [
+        { text: 'どんな向きで切っても「ぴったり半分の108cm³ずつ」！', correct: true },
+        { text: '斜めに切ると必ず「120cm³と96cm³」に偏る', correct: false },
+        { text: '角度によって「3:1」や「4:1」に変わる', correct: false }
+      ],
+      explanation: '正解は「ぴったり半分の108cm³ずつ」！立方体は中心に対して点対称な立体です。中心を通る平面で切断すると、分けられた2つの立体は必ず点対称で合同（または体積が等しい）になるため、常に体積は1:1の半分（216÷2=108cm³）になります！',
+      examTip: '【中心切断の二等分定理】点対称な立体の中心を通る平面は、体積を確実に2等分します！難関中の大問で大きな武器になります！'
+    }
+  ];
+
+  for (const pat of patterns) {
+    const signature = `cross_section:${pat.key}_g${grade}`;
+    if (!solvedSignatures.has(signature)) {
+      const opts = pat.options.map((o, idx) => ({
+        id: `opt_${idx + 1}`,
+        text: o.text,
+        correct: o.correct
+      }));
+      return {
+        signature,
+        puzzle: {
+          id: `gen_${pat.key}`,
+          title: pat.title,
+          subtitle: pat.subtitle,
+          question: pat.question,
+          puzzleType: pat.polygonShape.includes('定理') || pat.polygonShape.includes('体積') ? 'slice_exam_quiz' : 'slice_identify',
+          cutPoints: pat.cutPoints,
+          polygonShape: pat.polygonShape,
+          polygonVertices: pat.polygonVertices,
+          options: opts,
+          explanation: pat.explanation,
+          examTip: pat.examTip
+        }
+      };
+    }
+  }
+
+  // Fallback pattern
+  const fallback = patterns[0];
+  const fallbackSig = `cross_section:${fallback.key}_fallback_${Date.now()}`;
+  return {
+    signature: fallbackSig,
+    puzzle: {
+      id: 'gen_fallback',
+      title: fallback.title,
+      subtitle: fallback.subtitle,
+      question: fallback.question,
+      puzzleType: 'slice_identify',
+      cutPoints: fallback.cutPoints,
+      polygonShape: fallback.polygonShape,
+      polygonVertices: fallback.polygonVertices,
+      options: fallback.options.map((o, idx) => ({ id: `opt_${idx + 1}`, text: o.text, correct: o.correct })),
+      explanation: fallback.explanation,
+      examTip: fallback.examTip
+    }
+  };
+};
+
+// =============================================================================
 // Master Daily Challenge Generator (5 Questions: 1 from each island)
 // =============================================================================
 
@@ -1110,8 +1308,19 @@ export const generateDailyChallenge = (
         ...generateGearPuzzle(solvedSet, grade)
       };
 
-  // 4. Art Island: Cube Net
-  const cubeNet = generateCubeNetPuzzle(solvedSet, grade);
+  // 4. Art Island: Alternate between Cube Net and Cross Section by day
+  const artIsCrossSection = dateDay % 2 === 0;
+  const artQuestion = artIsCrossSection
+    ? {
+        gameType: 'cross_section' as const,
+        title: '立体の切断・断面幾何パズル',
+        ...generateCrossSectionPuzzle(solvedSet, grade)
+      }
+    : {
+        gameType: 'cube_net' as const,
+        title: '立体展開図マスター',
+        ...generateCubeNetPuzzle(solvedSet, grade)
+      };
 
   // 5. Tech Island: Algo Maze
   const algoMaze = generateMazePuzzle(solvedSet, grade);
@@ -1148,10 +1357,10 @@ export const generateDailyChallenge = (
       islandId: 'art',
       islandName: 'デザイン神殿',
       islandIcon: '🎨',
-      gameType: 'cube_net',
-      title: '立体展開図マスター',
-      signature: cubeNet.signature,
-      puzzle: cubeNet.puzzle
+      gameType: artQuestion.gameType,
+      title: artQuestion.title,
+      signature: artQuestion.signature,
+      puzzle: artQuestion.puzzle
     },
     {
       islandId: 'tech',

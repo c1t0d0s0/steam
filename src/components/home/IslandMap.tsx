@@ -3,7 +3,7 @@ import { Star, Play, Award, ChevronRight, X, Lock, Sparkles } from 'lucide-react
 import { UserProgress, getStageProgressData, isExIslandUnlocked } from '../../services/storage';
 import { sound } from '../../services/audio';
 
-export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption';
+export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section';
 
 export interface Island {
   id: string;
@@ -54,15 +54,15 @@ export const ISLANDS: Island[] = [
     id: 'tech',
     category: 'T',
     title: 'テックラボ',
-    subtitle: '情報・論理研究所',
-    examTopic: 'プログラミング的思考・アルゴリズム・順次処理',
-    icon: '🤖',
-    bgGradient: 'from-cyan-400 via-blue-500 to-teal-500',
+    subtitle: 'AI・暗号研究所',
+    examTopic: 'アルゴリズム的思考・ループ処理と最短経路探索',
+    icon: '💻',
+    bgGradient: 'from-cyan-400 via-teal-500 to-emerald-600',
     borderColor: 'border-cyan-300',
     games: [
       {
         type: 'algo_maze',
-        name: 'プログラミング迷路探索',
+        name: 'アルゴリズム迷路探索',
         stagePrefix: 'algo',
         levels: [1, 2, 3, 4, 5, 6]
       }
@@ -73,11 +73,11 @@ export const ISLANDS: Island[] = [
     id: 'engineering',
     category: 'E',
     title: 'エンジニア鉱山',
-    subtitle: 'からくり機構ラボ',
-    examTopic: '歯車の回転比・回転数 ＆ からくり物理連鎖機構',
+    subtitle: 'からくり力学工場',
+    examTopic: '歯車（ギア）伝達比＆ピタゴラ物理連鎖（斜面・バネ・滑車・ドミノ）',
     icon: '⚙️',
-    bgGradient: 'from-emerald-400 via-teal-500 to-cyan-600',
-    borderColor: 'border-emerald-300',
+    bgGradient: 'from-amber-500 via-orange-600 to-yellow-600',
+    borderColor: 'border-amber-300',
     games: [
       {
         type: 'gear',
@@ -99,7 +99,7 @@ export const ISLANDS: Island[] = [
     category: 'A',
     title: 'デザイン神殿',
     subtitle: '空間幾何・アート工房',
-    examTopic: '立方体の展開図11種類・対面とサイコロの目',
+    examTopic: '立方体の展開図11種類＆立体の切断（切り口の多角形・平行面の法則）',
     icon: '🎨',
     bgGradient: 'from-purple-400 via-fuchsia-500 to-pink-500',
     borderColor: 'border-purple-300',
@@ -108,6 +108,12 @@ export const ISLANDS: Island[] = [
         type: 'cube_net',
         name: '立方体の展開図マスター',
         stagePrefix: 'net',
+        levels: [1, 2, 3, 4, 5, 6]
+      },
+      {
+        type: 'cross_section',
+        name: '立体の切断・断面幾何パズル',
+        stagePrefix: 'section',
         levels: [1, 2, 3, 4, 5, 6]
       }
     ]
@@ -195,6 +201,12 @@ export const ISLANDS: Island[] = [
         type: 'contraption',
         name: '【EX裏】時空連鎖・究極ピタゴラ力学要塞',
         stagePrefix: 'ex_contraption',
+        levels: [1, 2, 3]
+      },
+      {
+        type: 'cross_section',
+        name: '【EX裏】多面体切断・極限断面幾何パズル',
+        stagePrefix: 'ex_section',
         levels: [1, 2, 3]
       }
     ]

@@ -6,6 +6,7 @@ import {
   generateBlockPuzzle,
   generateGearPuzzle,
   generateCubeNetPuzzle,
+  generateCrossSectionPuzzle,
   generateMazePuzzle,
   generateDailyChallenge
 } from '../services/problemGenerator';
@@ -93,12 +94,20 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
     });
   });
 
-  describe('Art Island Generator (Cube Net)', () => {
+  describe('Art Island Generator (Cube Net & Cross Section)', () => {
     it('generates cube net puzzles with correct answer in options', () => {
       const { puzzle, signature } = generateCubeNetPuzzle(new Set());
       expect(signature).toMatch(/^cubenet:/);
       expect(puzzle.options).toContain(puzzle.correctAnswer);
       expect(puzzle.grid.length).toBeGreaterThan(0);
+    });
+
+    it('generates valid solid cross-section puzzles with correct answer in options', () => {
+      const { puzzle, signature } = generateCrossSectionPuzzle(new Set());
+      expect(signature).toMatch(/^cross_section:/);
+      expect(puzzle.options.length).toBeGreaterThanOrEqual(3);
+      const correctOpt = puzzle.options.find((o) => o.correct);
+      expect(correctOpt).toBeDefined();
     });
   });
 

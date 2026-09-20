@@ -142,6 +142,21 @@ describe('STEAM Lab Core Logic & Calculations', () => {
       expect(newBadges).toContain('b_contraption_master');
     });
 
+    it('unlocks section master badge when section stages 1-3 are cleared', () => {
+      const progress: UserProgress = {
+        ...INITIAL_USER_PROGRESS,
+        unlockedBadges: ['b_first_step'],
+        stageProgress: {
+          section_1: { stars: 3, cleared: true },
+          section_2: { stars: 3, cleared: true },
+          section_3: { stars: 3, cleared: true }
+        }
+      };
+
+      const newBadges = checkNewBadges(progress);
+      expect(newBadges).toContain('b_section_master');
+    });
+
     it('unlocks grand explorer badge when all 6 modules reach level 6', () => {
       const progress: UserProgress = {
         ...INITIAL_USER_PROGRESS,
@@ -201,26 +216,26 @@ describe('STEAM Lab Core Logic & Calculations', () => {
 
 
   describe('Stage Map Expansion Verification', () => {
-    it('provides 6 levels across all 8 game modules totaling 48 stages', async () => {
+    it('provides 6 levels across all 9 game modules totaling 54 stages', async () => {
       const { ISLANDS } = await import('../components/home/IslandMap');
       const standardIslands = ISLANDS.filter((island) => !island.isEX);
       const allGames = standardIslands.flatMap((island) => island.games);
-      expect(allGames.length).toBe(8);
+      expect(allGames.length).toBe(9);
 
       let totalStages = 0;
       for (const game of allGames) {
         expect(game.levels).toEqual([1, 2, 3, 4, 5, 6]);
         totalStages += game.levels.length;
       }
-      expect(totalStages).toBe(48);
+      expect(totalStages).toBe(54);
     });
 
-    it('provides EX secret island with 3 levels across all 8 game modules', async () => {
+    it('provides EX secret island with 3 levels across all 9 game modules', async () => {
       const { ISLANDS } = await import('../components/home/IslandMap');
       const exIsland = ISLANDS.find((island) => island.isEX);
       expect(exIsland).toBeDefined();
       expect(exIsland?.id).toBe('ex_island');
-      expect(exIsland?.games.length).toBe(8);
+      expect(exIsland?.games.length).toBe(9);
       for (const game of exIsland!.games) {
         expect(game.levels).toEqual([1, 2, 3]);
       }

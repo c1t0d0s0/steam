@@ -475,6 +475,62 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         examTip: '【からくり工学の最高峰】エネルギーが「位置→運動→弾性→モーメント→仕事」へと姿を変えながら次々とバトンタッチしていく物理連鎖の真髄を完全制覇しました！'
       }
     }
+  },
+  cross_section: {
+    1: {
+      title: '多面体切断・極限断面幾何パズル (EX Lv.1)',
+      badge: 'EX裏 Lv.1',
+      puzzle: {
+        id: 'ex_sec1',
+        title: '立方体の3方向直交中心切断と切断面',
+        question: '1辺が6cmの立方体を、互いに直交する3つの中心平面（x=3, y=3, z=3）で同時に切断すると、何個の合同な小立方体に分割され、切断面の総面積は何cm²になるかな？',
+        puzzleType: 'slice_exam_quiz',
+        options: [
+          { id: 'opt1', text: '8個の小立方体に分かれ、切断面の総面積は「108cm²」！', correct: true },
+          { id: 'opt2', text: '6個の小立方体に分かれ、切断面の総面積は「72cm²」', correct: false },
+          { id: 'opt3', text: '12個の直方体に分かれ、切断面の総面積は「216cm²」', correct: false },
+          { id: 'opt4', text: '8個の小立方体に分かれ、切断面の総面積は「36cm²」', correct: false }
+        ],
+        explanation: '正解は「8個、108cm²」！3つの直交平面で切断すると、2×2×2 = 8個の合同な小立方体に分割されます。内部に現れる切断面は、1つの切断につき 6×6 = 36cm² の正方形断面が1つ。3回の切断で 36 × 3 = 108cm² となります！',
+        examTip: '【空間の3分割定理】3次元空間を直交する3平面で切ると「2×2×2 = 8分割」！難関校の立体分割の超頻出思考です！'
+      }
+    },
+    2: {
+      title: '多面体切断・極限断面幾何パズル (EX Lv.2)',
+      badge: 'EX裏 Lv.2',
+      puzzle: {
+        id: 'ex_sec2',
+        title: '立方体の向かい合う6辺の中点を通る奇跡の正六角形断面',
+        question: '1辺が6cmの立方体において、ある頂点に集まらない向かい合う6本の辺の各中点を通る平面で切断したよ。この切り口の「正六角形」の1辺の長さは何cmかな？',
+        puzzleType: 'slice_exam_quiz',
+        options: [
+          { id: 'opt1', text: '3√2 cm（直角二等辺三角形の斜辺の長さ）！', correct: true },
+          { id: 'opt2', text: '3 cm（元の立方体の辺の半分）', correct: false },
+          { id: 'opt3', text: '6 cm（元の立方体の1辺と同じ）', correct: false },
+          { id: 'opt4', text: '6√2 cm（立方体の面の対角線と同じ）', correct: false }
+        ],
+        explanation: '正解は「3√2 cm」！各中点間を結ぶ線は、正方形の面のカドを切り落とす直角二等辺三角形（直角をはさむ2辺がそれぞれ3cm）の斜辺になります。三平方の定理より 3 : 3 : 3√2 となり、美しい正六角形の各辺は 3√2 cm となります！',
+        examTip: '【正六角形断面の対称性】灘・開成・筑駒などで繰り返し問われる最重要断面！向かい合う辺の中点6個を結ぶと、中心対称かつ線対称な完璧な正六角形が現れます！'
+      }
+    },
+    3: {
+      title: '多面体切断・極限断面幾何パズル (EX Lv.3)',
+      badge: 'EX裏 Lv.3',
+      puzzle: {
+        id: 'ex_sec3',
+        title: '【究極EX裏】断頭三角柱の体積公式と立体切断',
+        question: '底面が直角二等辺三角形（底辺6cm、高さ6cm）の断頭三角柱があります。3本の立ち上がり辺の高さがそれぞれ 2cm, 5cm, 8cm のとき、この立体の体積は何cm³かな？',
+        puzzleType: 'slice_exam_quiz',
+        options: [
+          { id: 'opt1', text: 'わずか「90cm³」（平均の高さ5cm × 底面積18cm²）！', correct: true },
+          { id: 'opt2', text: '180cm³（底面積 × 最大の高さ8cm）', correct: false },
+          { id: 'opt3', text: '108cm³（平均の高さ6cm × 底面積18cm²）', correct: false },
+          { id: 'opt4', text: '45cm³（体積公式のさらに半分）', correct: false }
+        ],
+        explanation: '正解は「90cm³」！断頭三角柱の体積公式は「底面積 × (h1 + h2 + h3) ÷ 3」！底面積は 6 × 6 ÷ 2 = 18cm²。3本の高さの平均は (2 + 5 + 8) ÷ 3 = 5cm。したがって 18 × 5 = 90cm³ と一瞬で求まります！',
+        examTip: '【断頭三角柱の体積公式】難関中学受験の算数で劇的な計算時短になる必殺公式！高さの平均（重心の高さ）× 底面積 でどんな切断柱体も秒速で解けます！'
+      }
+    }
   }
 };
 

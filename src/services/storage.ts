@@ -21,7 +21,7 @@ export interface DailyChallengeQuestion {
   islandId: 'science' | 'math' | 'engineering' | 'art' | 'tech';
   islandName: string;
   islandIcon: string;
-  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption';
+  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section';
   title: string;
   signature: string;
   puzzle: any;
@@ -474,6 +474,13 @@ export const BADGES: Badge[] = [
     category: 'mastery'
   },
   {
+    id: 'b_section_master',
+    title: '立体切断マスター',
+    description: 'デザイン神殿の立体切断パズルを全レベル制覇！',
+    icon: '💎',
+    category: 'mastery'
+  },
+  {
     id: 'b_collector_5',
     title: 'かけだしコレクター',
     description: 'STEAM図鑑のアイテムを5個以上集めた！',
@@ -794,7 +801,11 @@ export const getStageKey = (stagePrefixOrType: string, lvl: number, grade: numbe
     cube_net: 'net',
     net: 'net',
     algo_maze: 'algo',
-    algo: 'algo'
+    algo: 'algo',
+    circuit: 'circuit',
+    contraption: 'contraption',
+    cross_section: 'section',
+    section: 'section'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   return `g${grade}_${prefix}_${lvl}`;
@@ -812,7 +823,9 @@ export const getLegacyStageKey = (stagePrefixOrType: string, lvl: number): strin
     algo_maze: 'algo',
     algo: 'algo',
     circuit: 'circuit',
-    contraption: 'contraption'
+    contraption: 'contraption',
+    cross_section: 'section',
+    section: 'section'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   return `${prefix}_${lvl}`;
@@ -837,7 +850,9 @@ export const getStageProgressData = (
     algo_maze: 'algo',
     algo: 'algo',
     circuit: 'circuit',
-    contraption: 'contraption'
+    contraption: 'contraption',
+    cross_section: 'section',
+    section: 'section'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   const gradeKey = `g${grade}_${prefix}_${lvl}`;
@@ -910,6 +925,11 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
   // Contraption: contraption_1, contraption_2, contraption_3
   if ([1, 2, 3].every(lvl => isStageCleared('contraption', lvl)) && !current.has('b_contraption_master')) {
     newlyUnlocked.push('b_contraption_master');
+  }
+
+  // Cross section: section_1, section_2, section_3
+  if ([1, 2, 3].every(lvl => isStageCleared('section', lvl)) && !current.has('b_section_master')) {
+    newlyUnlocked.push('b_section_master');
   }
 
   // Collector 5
