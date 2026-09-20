@@ -2,7 +2,7 @@ export interface CollectibleItem {
   id: string;
   name: string;
   category: 'S' | 'T' | 'E' | 'A' | 'M';
-  rarity: 1 | 2 | 3;
+  rarity: 1 | 2 | 3 | 4 | 5;
   icon: string;
   tagline: string;
   description: string;
@@ -21,7 +21,7 @@ export interface DailyChallengeQuestion {
   islandId: 'science' | 'math' | 'engineering' | 'art' | 'tech';
   islandName: string;
   islandIcon: string;
-  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze';
+  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit';
   title: string;
   signature: string;
   puzzle: any;
@@ -139,6 +139,26 @@ export const ITEMS: CollectibleItem[] = [
     description: '宇宙空間を旅してきた流星が残した特別な星の結晶。科学者の夢を叶えてくれます。',
     examTrivia: '【中学受験のツボ】月の満ち欠けは、月が太陽の光を反射して光り、地球の周りを回るから起こります！'
   },
+  {
+    id: 's_galileo_telescope',
+    name: 'ガリレオの木星観測望遠鏡',
+    category: 'S',
+    rarity: 4,
+    icon: '🔭',
+    tagline: '「それでも地球は回っている！」地動説を証明した望遠鏡',
+    description: '1609年、ガリレオが自作した望遠鏡で木星の4大衛星を発見し、天動説を覆し地動説の決定打となった歴史的望遠鏡。',
+    examTrivia: '【中学受験のツボ】太陽系の惑星の並び順「水金地火木土天海」！木星は太陽系最大のガス惑星です！'
+  },
+  {
+    id: 's_newton_apple_orrery',
+    name: 'ニュートンの万有引力・天体運行儀',
+    category: 'S',
+    rarity: 5,
+    icon: '🌌',
+    tagline: '落ちるリンゴと月を同じ物理法則で結びつけた宇宙の真理',
+    description: 'あらゆる物質は互いに引き合うという「万有引力の法則」を解き明かし、太陽系の天体運行を完璧に数式化した物理学の最高峰至宝。',
+    examTrivia: '【中学受験のツボ】地球上の「重力」と「質量」の違い！質量は月でも変わりませんが、重さ（重力）は月の表面では約1/6になります！'
+  },
 
   // Technology (T)
   {
@@ -180,6 +200,26 @@ export const ITEMS: CollectibleItem[] = [
     tagline: '地磁気を感じて常に北を指し示すナビゲーター',
     description: '地球そのものが巨大な磁石であることを利用した、人類の航海技術を大きく進めた道具。',
     examTrivia: '【中学受験のツボ】方位磁針のN極が指すのは「北（北極付近＝地磁気のS極）」です！'
+  },
+  {
+    id: 't_neumann_core',
+    name: 'フォン・ノイマンの電脳思考コア',
+    category: 'T',
+    rarity: 4,
+    icon: '💾',
+    tagline: '現代の全スマートフォン・PCの基本設計となった頭脳構造',
+    description: 'プログラムとデータを同じメモリに記憶させ、順番に読み込んで実行する「プログラム内蔵方式（ノイマン型）」を確立した天才の遺産。',
+    examTrivia: '【中学受験のツボ】情報処理の基本単位！「1バイト＝8ビット」。2の8乗＝256通りの情報（文字や数字）を表すことができます！'
+  },
+  {
+    id: 't_ada_lovelace',
+    name: 'エイダ・ラブレスの世界初プログラム原典',
+    category: 'T',
+    rarity: 5,
+    icon: '📜',
+    tagline: '1843年に記された、人類史上最初のコンピュータプログラム',
+    description: '詩人バイロンの娘エイダが、バベッジの解析機関のために世界最初のアルゴリズムを記述した、全プログラミングの聖典。',
+    examTrivia: '【中学受験のツボ】規則性の周期とループ処理！「○番目の数」を求める数列問題は、プログラミングのループ演算そのものです！'
   },
 
   // Engineering (E)
@@ -223,6 +263,26 @@ export const ITEMS: CollectibleItem[] = [
     description: '水を熱して沸騰させたときの膨大な水蒸気の力でピストンを押し出し、列車や船を動かしました。',
     examTrivia: '【中学受験のツボ】水が水蒸気（気体）になると体積は約1700倍に膨らみます！'
   },
+  {
+    id: 'e_wright_propeller',
+    name: 'ライト兄弟のフライヤー1号プロペラ',
+    category: 'E',
+    rarity: 4,
+    icon: '✈️',
+    tagline: '1903年、人類が初めて空を飛んだ翼と推力の原点',
+    description: '木材を削り出して流体力学の翼断面をプロペラに応用。人類初の動力有人飛行を成し遂げた、航空工学の歴史を開いた伝説のパーツ。',
+    examTrivia: '【中学受験のツボ】飛行機が飛ぶ原理「揚力」！翼の上の空気の流れが速くなり、気圧が下がることで上向きの力が生まれます！'
+  },
+  {
+    id: 'e_antikythera',
+    name: '古代の奇跡 アンティキティラ島の天文歯車',
+    category: 'E',
+    rarity: 5,
+    icon: '🪐',
+    tagline: '紀元前100年の海底から発見された、世界最古のアナログ電脳',
+    description: '太陽や月の位置、日食・月食の時期、古代オリンピックの開催年までを30個以上の精密な青銅歯車で計算・表示した古代ギリシャの超絶工学。',
+    examTrivia: '【中学受験のツボ】複合歯車列の計算！歯車が何枚連なっても、中継ギアは向きだけ変え、回転比は「最初÷最後」で求まります！'
+  },
 
   // Art & Geometry (A)
   {
@@ -265,6 +325,26 @@ export const ITEMS: CollectibleItem[] = [
     description: '3枚の鏡を三角柱にして覗くと、カラフルなビーズが美しい対称パターンを描きます。',
     examTrivia: '【中学受験のツボ】線対称は「折り目でピッタリ重なる」、点対称は「180度回して重なる」図形です！'
   },
+  {
+    id: 'a_vitruvian',
+    name: 'ダ・ヴィンチのウィトルウィウス的人体図',
+    category: 'A',
+    rarity: 4,
+    icon: '🏛️',
+    tagline: '正方形と円の中に黄金比で宿る、人体の幾何学的調和',
+    description: '人体の両手足を広げると正方形と円に美しく内接する。古代建築家ウィトルウィウスの理論をレオナルドが昇華させた美術・幾何学の傑作。',
+    examTrivia: '【中学受験のツボ】円に内接・外接する正方形！内接する正方形の面積は、外接する正方形の面積のちょうど「半分（1/2）」です！'
+  },
+  {
+    id: 'a_escher_stair',
+    name: 'エッシャーの上昇と下降・無限立体結晶',
+    category: 'A',
+    rarity: 5,
+    icon: '🌀',
+    tagline: '登り続けても元の場所に戻る、錯視と無限ループの超空間',
+    description: '版画家エッシャーがペンローズの階段を描いた幾何学絵画。3次元の空間法則を2次元の平面で欺くトポロジーと錯視の芸術的至宝。',
+    examTrivia: '【中学受験のツボ】立方体や展開図の空間認識！頭の中で立体を90度回転させ、視点を切り替える思考力が難問攻略の鍵です！'
+  },
 
   // Mathematics (M)
   {
@@ -306,6 +386,26 @@ export const ITEMS: CollectibleItem[] = [
     tagline: 'ヒマワリの種やオウムガイに潜む数列の魔法',
     description: '1, 1, 2, 3, 5, 8, 13... 前の2つの数を足すと次の数になる自然界が愛する数列。',
     examTrivia: '【中学受験のツボ】規則性の問題では、差に注目する（階差数列）か、周期（グループ分け）を見つけましょう！'
+  },
+  {
+    id: 'm_pythagoras',
+    name: 'ピタゴラスの直角三角形ピラミッド儀',
+    category: 'M',
+    rarity: 4,
+    icon: '📐',
+    tagline: '「3 : 4 : 5」直角を測りピラミッドを築いた古代幾何学の礎',
+    description: '直角をはさむ2辺の正方形の面積の和は、斜辺の正方形の面積と等しい。古代エジプトの縄張り師から続く三平方の定理の起源。',
+    examTrivia: '【中学受験のツボ】特別な直角三角形の辺の比！「3:4:5」「5:12:13」、そして三角定規の「1:1:√2」「1:2:√3」は頻出です！'
+  },
+  {
+    id: 'm_euler_identity',
+    name: 'オイラーの神の数式ゴールデンプレート',
+    category: 'M',
+    rarity: 5,
+    icon: '👑',
+    tagline: '「e^(iπ) + 1 = 0」数学界で最も美しいと讃えられる至高の等式',
+    description: '全く起源の異なる自然対数の底 e、円周率 π、虚数単位 i、すべての始まり 1、何もない 0 の5大定数が1つの式で結ばれた数学の奇跡。',
+    examTrivia: '【中学受験のツボ】円周率 π（3.14）の計算名人！「3.14×1〜9」の段を暗記しておくと、円や扇形の計算スピードが何倍にも跳ね上がります！'
   }
 ];
 
@@ -360,6 +460,13 @@ export const BADGES: Badge[] = [
     category: 'mastery'
   },
   {
+    id: 'b_circuit_master',
+    title: '電気回路マスター',
+    description: '理科ラボの豆電球回路パズルを全レベル制覇！',
+    icon: '💡',
+    category: 'mastery'
+  },
+  {
     id: 'b_collector_5',
     title: 'かけだしコレクター',
     description: 'STEAM図鑑のアイテムを5個以上集めた！',
@@ -367,9 +474,16 @@ export const BADGES: Badge[] = [
     category: 'collection'
   },
   {
+    id: 'b_collector_legend',
+    title: '伝説の発明発見者',
+    description: '科学図鑑で最高レア度（★5）のレジェンド発明品を発掘した！',
+    icon: '👑',
+    category: 'collection'
+  },
+  {
     id: 'b_collector_all',
     title: '大博物館の館長',
-    description: 'STEAM図鑑の全アイテム（20個以上）をコンプリート！',
+    description: 'STEAM図鑑の全発明品をコンプリート！',
     icon: '🏛️',
     category: 'collection'
   },
@@ -777,6 +891,11 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
     newlyUnlocked.push('b_algo_master');
   }
 
+  // Circuit: circuit_1, circuit_2, circuit_3
+  if ([1, 2, 3].every(lvl => isStageCleared('circuit', lvl)) && !current.has('b_circuit_master')) {
+    newlyUnlocked.push('b_circuit_master');
+  }
+
   // Collector 5
   if (progress.unlockedItems.length >= 5 && !current.has('b_collector_5')) {
     newlyUnlocked.push('b_collector_5');
@@ -785,6 +904,17 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
   // Collector All
   if (progress.unlockedItems.length >= ITEMS.length && !current.has('b_collector_all')) {
     newlyUnlocked.push('b_collector_all');
+  }
+
+  // Collector Legend (★5)
+  if (!current.has('b_collector_legend')) {
+    const hasLegend = progress.unlockedItems.some((itemId) => {
+      const itm = ITEMS.find((i) => i.id === itemId);
+      return itm && itm.rarity === 5;
+    });
+    if (hasLegend) {
+      newlyUnlocked.push('b_collector_legend');
+    }
   }
 
   // Stamps 3

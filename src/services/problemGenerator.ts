@@ -770,6 +770,187 @@ export const generateMazePuzzle = (
 };
 
 // =============================================================================
+// Science Island: Circuit Puzzle Generator
+// =============================================================================
+
+export const generateCircuitPuzzle = (
+  solvedSignatures: Set<string>,
+  grade: number = 4
+): { puzzle: any; signature: string } => {
+  const g = Math.min(Math.max(grade, 3), 6);
+
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const seed = randInt(1000, 9999);
+    const signature = `circuit:g${g}_seed${seed}`;
+    if (solvedSignatures.has(signature)) continue;
+
+    let puzzle: any;
+    if (g === 3) {
+      const targetBulb = Math.random() > 0.5 ? 'A' : 'B';
+      puzzle = {
+        id: `daily_circuit_${seed}`,
+        title: 'スイッチ配線チャレンジ',
+        subtitle: `電球${targetBulb}を点灯させよう！`,
+        question: `スイッチSW1とSW2を操作して、【電球${targetBulb}だけを点灯】させてください！`,
+        puzzleType: 'switch_target',
+        batteries: [{ id: 'b1', label: '乾電池 1個', x: 120, y: 240, count: 1, connection: 'series' }],
+        bulbs: [
+          { id: 'A', label: '豆電球A', x: 250, y: 70 },
+          { id: 'B', label: '豆電球B', x: 250, y: 150 }
+        ],
+        switches: [
+          { id: 'SW1', label: 'SW1 (A用)', x: 380, y: 70, defaultOn: false },
+          { id: 'SW2', label: 'SW2 (B用)', x: 380, y: 150, defaultOn: false }
+        ],
+        wireSegments: [
+          { x1: 120, y1: 240, x2: 80, y2: 240 },
+          { x1: 80, y1: 240, x2: 80, y2: 70 },
+          { x1: 80, y1: 70, x2: 250, y2: 70 },
+          { x1: 80, y1: 150, x2: 250, y2: 150 },
+          { x1: 250, y1: 70, x2: 380, y2: 70 },
+          { x1: 250, y1: 150, x2: 380, y2: 150 },
+          { x1: 380, y1: 70, x2: 440, y2: 70 },
+          { x1: 380, y1: 150, x2: 440, y2: 150 },
+          { x1: 440, y1: 70, x2: 440, y2: 240 },
+          { x1: 440, y1: 240, x2: 120, y2: 240 }
+        ],
+        calculateState: (sw: any) => ({
+          bulbBrightness: {
+            A: sw['SW1'] ? 1 : 0,
+            B: sw['SW2'] ? 1 : 0
+          }
+        }),
+        targetCondition: {
+          requiredOn: [targetBulb],
+          requiredOff: [targetBulb === 'A' ? 'B' : 'A'],
+          description: `電球${targetBulb}のみ点灯`
+        },
+        hint: `電球${targetBulb}につながるスイッチだけをONにしましょう！`,
+        explanation: `電球${targetBulb}への回路だけがつながり、見事に目標をクリアしました！`,
+        examTip: '【並列のスイッチ】各枝のスイッチで電球を個別に操作できます。'
+      };
+    } else if (g === 4) {
+      const batCount = pickRandom([2, 3]);
+      puzzle = {
+        id: `daily_circuit_${seed}`,
+        title: `乾電池${batCount}個の直列回路`,
+        subtitle: '電圧と電流の倍率を答えよう！',
+        question: `乾電池${batCount}個をすべて同じ向きに直列につないだとき、豆電球の明るさは乾電池1個の時の何倍？`,
+        puzzleType: 'brightness_quiz',
+        batteries: [{ id: 'b1', label: `乾電池 ${batCount}個直列`, x: 250, y: 220, count: batCount, connection: 'series' }],
+        bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 70 }],
+        wireSegments: [],
+        calculateState: () => ({ bulbBrightness: { A: batCount } }),
+        options: [
+          { id: 'o1', text: `${batCount}倍の明るさ（強く光る！）`, correct: true },
+          { id: 'o2', text: '1倍（変わらない）', correct: false },
+          { id: 'o3', text: `${(batCount / 2).toFixed(1)}倍`, correct: false },
+          { id: 'o4', text: `${batCount * 2}倍`, correct: false }
+        ],
+        hint: `直列につないだ乾電池の数だけ電圧が掛け算されます！`,
+        explanation: `乾電池${batCount}個直列では電圧が${batCount}倍になり、流れる電流も${batCount}倍になるため、明るさは${batCount}倍になります！`,
+        examTip: '【乾電池直列の公式】電球1個の明るさは、直列につながった乾電池の個数に比例します！'
+      };
+    } else if (g === 5) {
+      const isParallel = Math.random() > 0.5;
+      puzzle = isParallel
+        ? {
+            id: `daily_circuit_${seed}`,
+            title: '豆電球2個並列の特性',
+            subtitle: '並列回路の明るさを判定！',
+            question: '乾電池1個に豆電球2個を並列につないだとき、電球それぞれの明るさは電球1個の時と比べてどうなる？',
+            puzzleType: 'brightness_quiz',
+            batteries: [{ id: 'b1', label: '乾電池 1個', x: 100, y: 150, count: 1, connection: 'series' }],
+            bulbs: [
+              { id: 'A', label: '電球A', x: 300, y: 80 },
+              { id: 'B', label: '電球B', x: 300, y: 220 }
+            ],
+            wireSegments: [],
+            calculateState: () => ({ bulbBrightness: { A: 1, B: 1 } }),
+            options: [
+              { id: 'o1', text: 'どちらも「明るさ 1（同じ明るさ）」で光る！', correct: true },
+              { id: 'o2', text: 'どちらも「明るさ 1/2」に暗くなる', correct: false },
+              { id: 'o3', text: 'どちらも「明るさ 2」になる', correct: false }
+            ],
+            hint: 'それぞれの電球に乾電池の電圧がそのままかかります！',
+            explanation: '並列につなぐと、それぞれの電球に乾電池1個分の電圧が丸々かかるため、明るさは1倍のまま変わりません！',
+            examTip: '【豆電球並列のツボ】電球を何個並列にしても、それぞれの明るさは1倍のままです！'
+          }
+        : {
+            id: `daily_circuit_${seed}`,
+            title: '豆電球2個直列の特性',
+            subtitle: '直列回路の明るさを判定！',
+            question: '乾電池1個に豆電球2個を直列につないだとき、電球それぞれの明るさは電球1個の時と比べてどうなる？',
+            puzzleType: 'brightness_quiz',
+            batteries: [{ id: 'b1', label: '乾電池 1個', x: 250, y: 220, count: 1, connection: 'series' }],
+            bulbs: [
+              { id: 'A', label: '電球A', x: 180, y: 70 },
+              { id: 'B', label: '電球B', x: 320, y: 70 }
+            ],
+            wireSegments: [],
+            calculateState: () => ({ bulbBrightness: { A: 0.5, B: 0.5 } }),
+            options: [
+              { id: 'o1', text: '抵抗が2倍になり、どちらも「明るさ 1/2」に暗くなる！', correct: true },
+              { id: 'o2', text: 'どちらも「明るさ 1」で変わらない', correct: false },
+              { id: 'o3', text: 'どちらも「明るさ 2」になる', correct: false }
+            ],
+            hint: '電球が2つ直列になると、電気の通り道が狭くなります！',
+            explanation: '電球2個直列では全体の抵抗が2倍になるため、流れる電流は1/2になり、明るさは半分（1/2）になります！',
+            examTip: '【豆電球直列のツボ】電球を直列にすると、個数が増えるほど暗くなります（2個で1/2、3個で1/3）。'
+          };
+    } else {
+      // Grade 6
+      puzzle = {
+        id: `daily_circuit_${seed}`,
+        title: '直並列混列回路の電流比',
+        subtitle: '中学入試頻出の黄金比！',
+        question: '電球A（直列）の先に、電球Bと電球C（並列）がつながっています。電球Aと電球Bの明るさは？',
+        puzzleType: 'brightness_quiz',
+        batteries: [{ id: 'b1', label: '乾電池 1個', x: 100, y: 180, count: 1, connection: 'series' }],
+        bulbs: [
+          { id: 'A', label: '電球A', x: 220, y: 180 },
+          { id: 'B', label: '電球B', x: 360, y: 110 },
+          { id: 'C', label: '電球C', x: 360, y: 250 }
+        ],
+        wireSegments: [],
+        calculateState: () => ({ bulbBrightness: { A: 0.67, B: 0.33, C: 0.33 } }),
+        options: [
+          { id: 'o1', text: '電球A は「2/3」、電球B は「1/3」', correct: true },
+          { id: 'o2', text: '電球A は「1」、電球B は「1/2」', correct: false },
+          { id: 'o3', text: '電球A は「1/2」、電球B は「1/4」', correct: false },
+          { id: 'o4', text: '電球A と B はどちらも「1/3」', correct: false }
+        ],
+        hint: '合成抵抗は 1 + 1/2 = 1.5。電流は 1 ÷ 1.5 = 2/3 です！',
+        explanation: '回路全体の電流（電球A）は 1 ÷ 1.5 = 2/3！並列の電球Bにはその半分の「1/3」が流れます！',
+        examTip: '【混列の基本比】直列球 : 並列球 ＝ 2 : 1！入試超頻出の比率です。'
+      };
+    }
+
+    return { puzzle, signature };
+  }
+
+  return {
+    puzzle: {
+      id: 'fallback_circuit',
+      title: '電気回路パズル',
+      subtitle: '',
+      question: 'スイッチを入れて電球を光らせよう！',
+      puzzleType: 'switch_target',
+      batteries: [{ id: 'b1', label: '乾電池 1個', x: 150, y: 220, count: 1, connection: 'series' }],
+      bulbs: [{ id: 'A', label: '豆電球A', x: 250, y: 80 }],
+      switches: [{ id: 'SW1', label: 'スイッチ', x: 350, y: 220, defaultOn: false }],
+      wireSegments: [],
+      calculateState: (sw: any) => ({ bulbBrightness: { A: sw['SW1'] ? 1 : 0 } }),
+      targetCondition: { requiredOn: ['A'], requiredOff: [], description: '電球Aを点灯' },
+      hint: 'スイッチをONにしましょう。',
+      explanation: '正解です！',
+      examTip: '【基本】回路がつながると電気が流れます。'
+    },
+    signature: `circuit:fallback_${Date.now()}`
+  };
+};
+
+// =============================================================================
 // Master Daily Challenge Generator (5 Questions: 1 from each island)
 // =============================================================================
 
@@ -780,11 +961,23 @@ export const generateDailyChallenge = (
 ): DailyChallengeState => {
   const solvedSet = new Set<string>(solvedSignaturesList);
 
-  // 1. Science Island: Lever Balance
-  const lever = generateLeverPuzzle(solvedSet, grade);
+  const dateDay = parseInt(dateStr.split('-')[2] || '1', 10);
+
+  // 1. Science Island: Alternate between Lever and Circuit by day
+  const scienceIsCircuit = dateDay % 2 === 0;
+  const scienceQuestion = scienceIsCircuit
+    ? {
+        gameType: 'circuit' as const,
+        title: '豆電球と電気回路パズル',
+        ...generateCircuitPuzzle(solvedSet, grade)
+      }
+    : {
+        gameType: 'lever' as const,
+        title: 'てこ天秤の釣り合い',
+        ...generateLeverPuzzle(solvedSet, grade)
+      };
 
   // 2. Math Island: Alternate between Tsurukame and Block Count by day
-  const dateDay = parseInt(dateStr.split('-')[2] || '1', 10);
   const mathIsTsuru = dateDay % 2 === 1;
   const mathQuestion = mathIsTsuru
     ? {
@@ -812,10 +1005,10 @@ export const generateDailyChallenge = (
       islandId: 'science',
       islandName: 'サイエンス島',
       islandIcon: '🔬',
-      gameType: 'lever',
-      title: 'てこ天秤の釣り合い',
-      signature: lever.signature,
-      puzzle: lever.puzzle
+      gameType: scienceQuestion.gameType,
+      title: scienceQuestion.title,
+      signature: scienceQuestion.signature,
+      puzzle: scienceQuestion.puzzle
     },
     {
       islandId: 'math',
@@ -862,3 +1055,4 @@ export const generateDailyChallenge = (
     completed: false
   };
 };
+

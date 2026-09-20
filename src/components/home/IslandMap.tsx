@@ -3,7 +3,7 @@ import { Star, Play, Award, ChevronRight, X, Lock, Sparkles } from 'lucide-react
 import { UserProgress, getStageProgressData, isExIslandUnlocked } from '../../services/storage';
 import { sound } from '../../services/audio';
 
-export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze';
+export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit';
 
 export interface Island {
   id: string;
@@ -30,7 +30,7 @@ export const ISLANDS: Island[] = [
     category: 'S',
     title: 'サイエンス島',
     subtitle: '理科ラボの実験室',
-    examTopic: 'てこの規則性・釣り合い・力のモーメント',
+    examTopic: 'てこの規則性＆豆電球の電気回路（直列・並列・ショート回路）',
     icon: '🔬',
     bgGradient: 'from-sky-400 via-blue-500 to-indigo-600',
     borderColor: 'border-sky-300',
@@ -39,6 +39,12 @@ export const ISLANDS: Island[] = [
         type: 'lever',
         name: 'てこ天秤の釣り合いパズル',
         stagePrefix: 'lever',
+        levels: [1, 2, 3, 4, 5, 6]
+      },
+      {
+        type: 'circuit',
+        name: '豆電球と電気回路パズル',
+        stagePrefix: 'circuit',
         levels: [1, 2, 3, 4, 5, 6]
       }
     ]
@@ -171,6 +177,12 @@ export const ISLANDS: Island[] = [
         type: 'algo_maze',
         name: '【EX裏】超難解AIアルゴリズム量子迷路',
         stagePrefix: 'ex_algo',
+        levels: [1, 2, 3]
+      },
+      {
+        type: 'circuit',
+        name: '【EX裏】超電導・量子電気回路パズル',
+        stagePrefix: 'ex_circuit',
         levels: [1, 2, 3]
       }
     ]

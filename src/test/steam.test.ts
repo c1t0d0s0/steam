@@ -113,6 +113,20 @@ describe('STEAM Lab Core Logic & Calculations', () => {
       expect(newBadges).toContain('b_lever_master');
     });
 
+    it('unlocks circuit master badge when all 3 circuit stages are cleared', () => {
+      const progress: UserProgress = {
+        ...INITIAL_USER_PROGRESS,
+        stageProgress: {
+          circuit_1: { stars: 3, cleared: true },
+          circuit_2: { stars: 3, cleared: true },
+          circuit_3: { stars: 3, cleared: true }
+        }
+      };
+
+      const newBadges = checkNewBadges(progress);
+      expect(newBadges).toContain('b_circuit_master');
+    });
+
     it('unlocks grand explorer badge when all 6 modules reach level 6', () => {
       const progress: UserProgress = {
         ...INITIAL_USER_PROGRESS,
@@ -132,7 +146,7 @@ describe('STEAM Lab Core Logic & Calculations', () => {
     });
 
     it('catalogs exist and are rich in educational value', () => {
-      expect(ITEMS.length).toBeGreaterThanOrEqual(15);
+      expect(ITEMS.length).toBe(31);
       expect(BADGES.length).toBeGreaterThanOrEqual(8);
 
       // Verify all items have junior high entrance exam trivia
@@ -141,30 +155,53 @@ describe('STEAM Lab Core Logic & Calculations', () => {
         expect(item.name).toBeTruthy();
         expect(item.icon).toBeTruthy();
       });
+
+      // Verify all rarities 1-5 exist
+      const rarities = new Set(ITEMS.map((i) => i.rarity));
+      expect(rarities).toEqual(new Set([1, 2, 3, 4, 5]));
+
+      // Verify all STEAM disciplines have high-rarity inventions (★4 and ★5)
+      const categories = ['S', 'T', 'E', 'A', 'M'] as const;
+      for (const cat of categories) {
+        const star4 = ITEMS.filter((i) => i.category === cat && i.rarity === 4);
+        const star5 = ITEMS.filter((i) => i.category === cat && i.rarity === 5);
+        expect(star4.length).toBeGreaterThanOrEqual(1);
+        expect(star5.length).toBeGreaterThanOrEqual(1);
+      }
+
+      // Check legend collector badge unlocks when a ★5 item is unlocked
+      const legendItem = ITEMS.find((i) => i.rarity === 5)!;
+      const progressWithLegend: UserProgress = {
+        ...INITIAL_USER_PROGRESS,
+        unlockedItems: [legendItem.id]
+      };
+      const badges = checkNewBadges(progressWithLegend);
+      expect(badges).toContain('b_collector_legend');
     });
   });
 
+
   describe('Stage Map Expansion Verification', () => {
-    it('provides 6 levels across all 6 game modules totaling 36 stages', async () => {
+    it('provides 6 levels across all 7 game modules totaling 42 stages', async () => {
       const { ISLANDS } = await import('../components/home/IslandMap');
       const standardIslands = ISLANDS.filter((island) => !island.isEX);
       const allGames = standardIslands.flatMap((island) => island.games);
-      expect(allGames.length).toBe(6);
+      expect(allGames.length).toBe(7);
 
       let totalStages = 0;
       for (const game of allGames) {
         expect(game.levels).toEqual([1, 2, 3, 4, 5, 6]);
         totalStages += game.levels.length;
       }
-      expect(totalStages).toBe(36);
+      expect(totalStages).toBe(42);
     });
 
-    it('provides EX secret island with 3 levels across all 6 game modules', async () => {
+    it('provides EX secret island with 3 levels across all 7 game modules', async () => {
       const { ISLANDS } = await import('../components/home/IslandMap');
       const exIsland = ISLANDS.find((island) => island.isEX);
       expect(exIsland).toBeDefined();
       expect(exIsland?.id).toBe('ex_island');
-      expect(exIsland?.games.length).toBe(6);
+      expect(exIsland?.games.length).toBe(7);
       for (const game of exIsland!.games) {
         expect(game.levels).toEqual([1, 2, 3]);
       }

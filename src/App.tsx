@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/layout/Header';
 import { IslandMap, GameModuleType } from './components/home/IslandMap';
 import { LeverBalanceGame } from './components/modules/science/LeverBalanceGame';
+import { CircuitGame } from './components/modules/science/CircuitGame';
 import { BlockCountGame } from './components/modules/math/BlockCountGame';
 import { TsurukameGame } from './components/modules/math/TsurukameGame';
 import { GearChainGame } from './components/modules/engineering/GearChainGame';
@@ -325,6 +326,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
             if (options?.isEX) {
               const exPrefixMap: Record<GameModuleType, string> = {
                 lever: 'ex_lever',
+                circuit: 'ex_circuit',
                 block: 'ex_block',
                 tsurukame: 'ex_tsuru',
                 gear: 'ex_gear',
@@ -347,6 +349,7 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
 
             const gameToIsland: Record<GameModuleType, string> = {
               lever: 'science',
+              circuit: 'science',
               block: 'math',
               tsurukame: 'math',
               gear: 'engineering',
@@ -364,6 +367,23 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
         <>
           {activeGame.type === 'lever' && (
             <LeverBalanceGame
+              level={activeGame.level}
+              grade={progress.grade}
+              onComplete={handleGameComplete}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
+            />
+          )}
+
+          {activeGame.type === 'circuit' && (
+            <CircuitGame
               level={activeGame.level}
               grade={progress.grade}
               onComplete={handleGameComplete}

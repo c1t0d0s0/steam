@@ -78,18 +78,21 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Level & XP bar & Custom Title */}
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
               <button
                 onClick={() => {
                   sound.playClick();
                   onOpenProfile();
                 }}
                 title="称号・アバターを変更"
-                className="px-1.5 py-0.2 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border border-indigo-200 rounded-md text-[10px] font-black transition-colors cursor-pointer truncate max-w-[130px]"
+                className="px-2 py-0.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-200 rounded-md text-[10px] sm:text-xs font-black transition-colors cursor-pointer whitespace-nowrap shadow-xs"
               >
                 Lv.{level} {currentTitle}
               </button>
-              <div className="w-16 sm:w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className="w-12 sm:w-20 h-2 bg-slate-200 rounded-full overflow-hidden shrink-0"
+                title={`次のレベルまであと ${nextLevelXp - currentXp} XP`}
+              >
                 <div
                   className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                   style={{ width: `${xpPercent}%` }}
@@ -100,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right: Coins & Quick Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Star Coins */}
           <div className="flex items-center gap-1 bg-amber-100 border-2 border-amber-300 rounded-2xl px-2.5 py-1 text-amber-900 font-black text-xs sm:text-sm shadow-sm">
             <span className="text-amber-500 text-base">⭐</span>

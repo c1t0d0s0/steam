@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   generateLeverPuzzle,
+  generateCircuitPuzzle,
   generateTsurukamePuzzle,
   generateBlockPuzzle,
   generateGearPuzzle,
@@ -16,7 +17,7 @@ import {
 } from '../services/storage';
 
 describe('Daily Challenge & Dynamic Problem Generator', () => {
-  describe('Science Island Generator (Lever Balance)', () => {
+  describe('Science Island Generator (Lever Balance & Circuit)', () => {
     it('generates a valid, solvable lever balance puzzle with torque equality', () => {
       const { puzzle, signature } = generateLeverPuzzle(new Set());
       expect(signature).toMatch(/^lever:/);
@@ -38,10 +39,23 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
       expect(puzzle.examTip).toBeTruthy();
     });
 
+    it('generates a valid electric circuit puzzle for science island', () => {
+      const { puzzle, signature } = generateCircuitPuzzle(new Set(), 4);
+      expect(signature).toMatch(/^circuit:/);
+      expect(puzzle.bulbs.length).toBeGreaterThanOrEqual(1);
+      expect(puzzle.batteries.length).toBeGreaterThanOrEqual(1);
+      expect(puzzle.explanation).toBeTruthy();
+      expect(puzzle.examTip).toBeTruthy();
+    });
+
     it('avoids previously solved signatures', () => {
       const first = generateLeverPuzzle(new Set());
       const second = generateLeverPuzzle(new Set([first.signature]));
       expect(second.signature).not.toBe(first.signature);
+
+      const firstC = generateCircuitPuzzle(new Set(), 4);
+      const secondC = generateCircuitPuzzle(new Set([firstC.signature]), 4);
+      expect(secondC.signature).not.toBe(firstC.signature);
     });
   });
 
@@ -108,11 +122,15 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
       const islandIds = daily.questions.map((q) => q.islandId);
       expect(islandIds).toEqual(['science', 'math', 'engineering', 'art', 'tech']);
 
-      expect(daily.questions[0].gameType).toBe('lever');
+      expect(['lever', 'circuit']).toContain(daily.questions[0].gameType);
       expect(['tsurukame', 'block']).toContain(daily.questions[1].gameType);
       expect(daily.questions[2].gameType).toBe('gear');
       expect(daily.questions[3].gameType).toBe('cube_net');
       expect(daily.questions[4].gameType).toBe('algo_maze');
+
+      // Verify that on even day, circuit is selected
+      const dailyEven = generateDailyChallenge([], '2026-09-20', 4);
+      expect(dailyEven.questions[0].gameType).toBe('circuit');
 
       // All signatures must be non-empty and distinct
       const signatures = daily.questions.map((q) => q.signature);

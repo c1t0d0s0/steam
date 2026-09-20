@@ -89,7 +89,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 <span className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-black tracking-wide">
                   Lv.{level}
                 </span>
-                <span className="text-xs font-black px-2 py-0.5 rounded-full bg-black/25 text-amber-100 truncate max-w-[150px]">
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-black/25 text-amber-100 whitespace-nowrap">
                   {currentTitle}
                 </span>
               </div>

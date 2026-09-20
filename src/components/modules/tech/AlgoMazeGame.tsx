@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GameModalWrapper } from '../../common/GameModalWrapper';
 import { sound } from '../../../services/audio';
 import { fireConfetti } from '../../../services/confetti';
-import { Play, ArrowUp, ArrowLeft, ArrowRight, Trash2 } from 'lucide-react';
+import { Play, ArrowUp, ArrowLeft, ArrowRight, Trash2, Repeat, Zap, Box, FastForward } from 'lucide-react';
 
 interface AlgoMazeGameProps {
   level: number;
@@ -16,8 +16,21 @@ interface AlgoMazeGameProps {
 }
 
 type Direction = 'UP' | 'RIGHT' | 'DOWN' | 'LEFT';
-type Command = 'FORWARD' | 'TURN_LEFT' | 'TURN_RIGHT';
-interface MazePuzzle {
+
+export type Command =
+  | 'FORWARD'               // 1歩前進 (全学年)
+  | 'TURN_LEFT'             // 左を向く (全学年)
+  | 'TURN_RIGHT'            // 右を向く (全学年)
+  | 'FORWARD_2'             // 2歩前進 (小4+)
+  | 'FORWARD_3'             // 3歩ダッシュ (小4+)
+  | 'LOOP_FWD_RIGHT'        // 1歩前進して右を向く (小4+)
+  | 'LOOP_FWD_LEFT'         // 1歩前進して左を向く (小4+)
+  | 'IF_WALL_RIGHT_ELSE_FWD'// センサー条件分岐: 前が壁なら右折、道なら前進 (小5+)
+  | 'IF_WALL_LEFT_ELSE_FWD' // センサー条件分岐: 前が壁なら左折、道なら前進 (小5+)
+  | 'WHILE_NOT_WALL'        // 壁の手前まで一気に直進 (小6)
+  | 'CALL_F1';              // 関数F1（サブルーチン）を実行 (小6)
+
+export interface MazePuzzle {
   gridSize: number;
   start: { x: number; y: number; dir: Direction };
   goal: { x: number; y: number };
@@ -25,6 +38,7 @@ interface MazePuzzle {
   maxCommands: number;
   explanation: string;
   examTip: string;
+  presetF1?: ('FORWARD' | 'TURN_LEFT' | 'TURN_RIGHT')[];
 }
 
 const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
@@ -149,13 +163,90 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 2
           },
           {
-            "x": 1,
-            "y": 2
+            "x": 3,
+            "y": 1
           }
         ],
         "maxCommands": 7,
-        "explanation": "左向きスタートから北へ進路を変えて見事ゴール！",
-        "examTip": "ロボットの目線になって「右」「左」を判断しましょう！"
+        "explanation": "左向きからスタートしてジグザグに進み、ゴールに到着！",
+        "examTip": "ロボットから見た「左」と「右」を正確に判断しよう！"
+      },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 3,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "maxCommands": 6,
+        "explanation": "下に進んで岩の手前で左折し、東へ直進してゴール！",
+        "examTip": "ロボットから見て曲がる方向を考えよう！"
+      }
+    ],
+    "3": [
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 0,
+          "y": 3,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 3,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "maxCommands": 7,
+        "explanation": "北へ進んでから東へ曲がり、障害物を避けてゴール！",
+        "examTip": "曲がり角の数を減らして効率的な手順を組み立てよう！"
+      },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 3,
+          "y": 3,
+          "dir": "LEFT"
+        },
+        "goal": {
+          "x": 0,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "maxCommands": 7,
+        "explanation": "西へ直進して北上する最短ルートでゴール！",
+        "examTip": "直線の移動を意識しよう！"
       },
       {
         "gridSize": 4,
@@ -171,7 +262,7 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 1,
-            "y": 0
+            "y": 1
           },
           {
             "x": 2,
@@ -179,97 +270,8 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           }
         ],
         "maxCommands": 7,
-        "explanation": "障害物の間をくぐり抜ける2回折れ曲がりルート！",
-        "examTip": "曲がる回数をできるだけ減らすと安全なプログラムになります！"
-      }
-    ],
-    "3": [
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 0,
-          "y": 3,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 3,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 0,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 1
-          }
-        ],
-        "maxCommands": 8,
-        "explanation": "目の前の岩を避けて「右・上・右・上」とリズミカルにゴール！",
-        "examTip": "ジグザグに進むアルゴリズムの基礎を身につけました！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 3,
-          "y": 3,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 0
-          }
-        ],
-        "maxCommands": 8,
-        "explanation": "障害物の隙間を斜めに抜けていくルートを見事に計画！",
-        "examTip": "行き止まり（デッドエンド）を消去法で避けましょう！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 0,
-          "y": 0,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 3,
-          "y": 3
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 2
-          }
-        ],
-        "maxCommands": 8,
-        "explanation": "中央の岩の塊を迂回して外回りでゴール！",
-        "examTip": "回り道でも確実に通れる道を選ぶ判断力が大切です！"
+        "explanation": "北側を東へ進み、右折して南下してゴール！",
+        "examTip": "壁のない広い直線を選ぼう！"
       }
     ],
     "4": [
@@ -287,198 +289,20 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 0,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "下向きスタートから障害壁をジグザグにかわして南東ゴールへ！",
-        "examTip": "進むマス数と回転のタイミングを指でなぞって確認！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 3,
-          "y": 0,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 3
-        },
-        "walls": [
-          {
-            "x": 2,
-            "y": 0
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "北東から南西への対角線ルートを突破！",
-        "examTip": "ロボットの向きが逆になっても左右の旋回を間違えないように！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 0,
-          "y": 2,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 3,
-          "y": 1
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "狭い通路を抜けて東側のゴールへ到達！",
-        "examTip": "最短ステップ数を計算するプログラミング思考！"
-      }
-    ],
-    "5": [
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 3,
-          "y": 3,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 0,
-          "y": 1
-        },
-        "walls": [
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "北上してから西へと回り込むクランク型コース！",
-        "examTip": "曲がり角の直前で立ち止まる安全なアルゴリズム！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 0,
-          "y": 1,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 3,
-          "y": 2
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "中央のブロックを外回りで避けてゴールへ！",
-        "examTip": "迷路の全体像を俯瞰する視点を養いましょう！"
-      },
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 1,
-          "y": 3,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 3,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          }
-        ],
-        "maxCommands": 9,
-        "explanation": "S字状のカーブを描いて見事にゴール！",
-        "examTip": "順次処理の組み合わせで複雑な動きが作れます！"
-      }
-    ],
-    "6": [
-      {
-        "gridSize": 4,
-        "start": {
-          "x": 0,
-          "y": 3,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 3,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
             "y": 3
           },
           {
-            "x": 2,
-            "y": 2
-          },
-          {
             "x": 1,
             "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
           }
         ],
-        "maxCommands": 10,
-        "explanation": "小3マスター！4×4の難関迷路を最短コマンドで突破！",
-        "examTip": "【アルゴリズム達成】小学3年生のプログラミング思考を完全制覇！"
+        "maxCommands": 8,
+        "explanation": "南へ下りて東へ曲がり、障害物を迂回してゴール！",
+        "examTip": "障害物を大きく避けるルートを考えよう！"
       },
       {
         "gridSize": 4,
@@ -497,18 +321,41 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 2
           },
           {
-            "x": 2,
-            "y": 1
-          },
-          {
             "x": 1,
             "y": 2
           }
         ],
-        "maxCommands": 10,
-        "explanation": "南下してから西へ抜ける迷路を鮮やかにクリア！",
-        "examTip": "指示通りの手順で確実に目標を達成する論理的思考力！"
+        "maxCommands": 8,
+        "explanation": "南下して西へ進み、ゴールへ到着！",
+        "examTip": "角を曲がるときの向きを間違えないように！"
       },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 0,
+          "y": 3,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 3,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "maxCommands": 8,
+        "explanation": "東へ進んで北上し、ゴールイン！",
+        "examTip": "順番に命令を実行する大切さを確認しよう！"
+      }
+    ],
+    "5": [
       {
         "gridSize": 4,
         "start": {
@@ -517,7 +364,7 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 3,
+          "x": 2,
           "y": 3
         },
         "walls": [
@@ -526,22 +373,66 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 0
           },
           {
-            "x": 1,
+            "x": 2,
             "y": 2
+          }
+        ],
+        "maxCommands": 8,
+        "explanation": "迂回ルートを通り抜けてゴール！",
+        "examTip": "スタート直後に壁があるときは向きを変えよう！"
+      },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 3,
+          "y": 3,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 0,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 3,
+            "y": 1
           },
           {
             "x": 2,
             "y": 2
           }
         ],
-        "maxCommands": 10,
-        "explanation": "狭いクランクをすり抜けてゴールへ！小4レベルへ進もう！",
-        "examTip": "プログラミングの基本マスター達成！"
+        "maxCommands": 8,
+        "explanation": "障害物の隙間をぬってゴール！",
+        "examTip": "ゴールへの道筋を逆算してみよう！"
+      },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 0,
+          "y": 2,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 3,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "maxCommands": 8,
+        "explanation": "クランク状に曲がって北東のゴールへ！",
+        "examTip": "クランク道は交互に向きを変えよう！"
       }
-    ]
-  },
-  "4": {
-    "1": [
+    ],
+    "6": [
       {
         "gridSize": 4,
         "start": {
@@ -568,21 +459,54 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           }
         ],
         "maxCommands": 8,
-        "explanation": "目の前の岩を避けて「右・上・右・上」とジグザグ前進！",
-        "examTip": "小4ではより入り組んだ迷路の最短経路を導きます！"
+        "explanation": "【小3マスター】障害物が入り組んだ迷路を完全制覇！",
+        "examTip": "1歩ずつ確実にロボットを動かす順次処理をマスターしました！"
+      },
+      {
+        "gridSize": 4,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 3,
+          "y": 3
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "maxCommands": 8,
+        "explanation": "【小3マスター】S字を描いてゴールへ到達！",
+        "examTip": "複雑なコースも1手ずつの積み重ねで解けます！"
       },
       {
         "gridSize": 4,
         "start": {
           "x": 3,
-          "y": 3,
+          "y": 0,
           "dir": "LEFT"
         },
         "goal": {
           "x": 0,
-          "y": 0
+          "y": 3
         },
         "walls": [
+          {
+            "x": 2,
+            "y": 0
+          },
           {
             "x": 2,
             "y": 2
@@ -590,25 +514,91 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           {
             "x": 1,
             "y": 1
-          },
-          {
-            "x": 2,
-            "y": 0
           }
         ],
         "maxCommands": 8,
-        "explanation": "隙間を抜けて北西ゴールへ到達！",
-        "examTip": "デッドエンドを消去法で見分けましょう！"
-      },
+        "explanation": "【小3マスター】完璧なシーケンスで最難関迷路をクリア！",
+        "examTip": "順次処理の基本が完成！次は小4の繰り返し処理に挑戦しよう！"
+      }
+    ]
+  },
+  "4": {
+    "1": [
       {
-        "gridSize": 4,
+        "gridSize": 5,
         "start": {
           "x": 0,
           "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
+            "x": 4,
+            "y": 1
+          }
+        ],
+        "maxCommands": 2,
+        "explanation": "【ループ・反復の発見】4マスの長距離直線を「2歩すすむ×2」または「3歩ダッシュ＋1歩」で圧縮！わずか2命令でゴール！",
+        "examTip": "【中学入試・規則性】長い直線は1歩ずつ進むと命令上限オーバーになります。まとめて進む命令を活用しましょう！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
           "x": 3,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "maxCommands": 3,
+        "explanation": "【3歩ダッシュの快進撃】北へ3歩ダッシュ、右を向いて東へ3歩ダッシュ！驚異の3命令クリア！",
+        "examTip": "【パターンの対称性】同じ長さ（3歩）の移動を繰り返す美しいアルゴリズムです！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
           "y": 3
         },
         "walls": [
@@ -621,13 +611,13 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 1
           },
           {
-            "x": 1,
-            "y": 2
+            "x": 3,
+            "y": 1
           }
         ],
-        "maxCommands": 8,
-        "explanation": "中央の岩の塊を迂回して右回りでゴール！",
-        "examTip": "最短ルートが塞がれているときの迂回判断！"
+        "maxCommands": 4,
+        "explanation": "【縦横ダッシュの組み合わせ】東へ4歩（2歩×2）、右折して南へ3歩ダッシュ！4命令でゴール！",
+        "examTip": "【命令数の大幅節約】1歩ずつだと9命令必要なところを、マルチステップで4命令に圧縮できました！"
       }
     ],
     "2": [
@@ -635,78 +625,58 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 5,
         "start": {
           "x": 0,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 0,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 1
-          }
-        ],
-        "maxCommands": 10,
-        "explanation": "5×5の広大なフィールドへ！縦横の障害壁をくぐり抜けて対角線のゴールへ到達！",
-        "examTip": "【5×5迷路の攻略】マス目が増えても、1手先・2手先の状態を予測しながら命令を並べよう！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
           "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
           "x": 4,
-          "y": 4
+          "y": 2
         },
         "walls": [
-          {
-            "x": 2,
-            "y": 0
-          },
           {
             "x": 2,
             "y": 1
           },
           {
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【階段パターンの2歩刻み】東へ2歩、南へ2歩、東へ2歩！同じ2歩の移動を繰り返してゴール！",
+        "examTip": "【等差移動のパターン】2歩ごとの規則的なリズムを見抜くことが大切です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 2,
+          "y": 4
+        },
+        "walls": [
+          {
             "x": 1,
-            "y": 3
+            "y": 1
           },
           {
-            "x": 2,
+            "x": 1,
             "y": 3
           }
         ],
-        "maxCommands": 10,
-        "explanation": "中央の防壁を外回りして南東ゴールへ！",
-        "examTip": "障害物の配置を見て、安全な大通りを見つけましょう！"
+        "maxCommands": 5,
+        "explanation": "【L字ループ】南へ2歩、東へ2歩、南へ2歩！ジグザグの規則性でクリア！",
+        "examTip": "同じ歩数で曲がるパターンはプログラミングの基本です！"
       },
       {
         "gridSize": 5,
         "start": {
           "x": 4,
           "y": 0,
-          "dir": "DOWN"
+          "dir": "LEFT"
         },
         "goal": {
           "x": 0,
@@ -714,25 +684,17 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 4,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
             "x": 2,
             "y": 2
           },
           {
-            "x": 1,
+            "x": 3,
             "y": 3
           }
         ],
-        "maxCommands": 10,
-        "explanation": "下向きスタートから中央の防壁を回り込んでゴールイン！",
-        "examTip": "複雑なコースも「曲がるポイント」を決めておくと安心です！"
+        "maxCommands": 5,
+        "explanation": "【外周の高速ダッシュ】西へ4歩（2歩×2）、左折して南へ4歩（2歩×2）！",
+        "examTip": "長距離は「2歩すすむ」を連続実行して一気に走破しよう！"
       }
     ],
     "3": [
@@ -754,28 +716,41 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
+            "y": 2
           },
           {
             "x": 3,
             "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "S字状の二重の壁をジグザグにすり抜けるコースをクリア！",
-        "examTip": "【パターンの繰り返し】「進んで右、進んで左」の反復思考が大切です！"
+        "maxCommands": 5,
+        "explanation": "【外周ダッシュ】東へ4歩（2歩×2）、南へ4歩（2歩×2）！5命令で巨大フィールドを走破！",
+        "examTip": "中央の障害物を避けて外周をダッシュする基本戦略！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 4,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 1,
+          "y": 1
+        },
+        "walls": [
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【北西への高速アプローチ】北へ3歩、西へ3歩で一気に接近！",
+        "examTip": "3歩ダッシュの組み合わせで最短コマンドを記録！"
       },
       {
         "gridSize": 5,
@@ -790,74 +765,21 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
             "x": 2,
             "y": 1
           },
           {
-            "x": 3,
-            "y": 1
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "下から上へと登っていくジグザグ経路を見事にプログラミング！",
-        "examTip": "繰り返しパターンの見立てがポイントです！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 4,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 1
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "逆走コースのS字迷路も落ち着いてロボット主観でクリア！",
-        "examTip": "上向きの時と下向きの時で左右の旋回が逆になる感覚をマスター！"
+        "maxCommands": 5,
+        "explanation": "【大迂回スプリント】東へ4歩（2歩×2）、北へ4歩（2歩×2）でゴール！",
+        "examTip": "壁の切れ目を見極めてダッシュしよう！"
       }
     ],
     "4": [
@@ -865,107 +787,52 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 5,
         "start": {
           "x": 0,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 4,
-          "y": 2
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 4
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 3
-          }
-        ],
-        "maxCommands": 11,
-        "explanation": "入り組んだ通路をすり抜けて中央東のゴールへ到達！",
-        "examTip": "迷路の袋小路に入らないよう、分岐点で先読みしましょう！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 2,
           "y": 0,
           "dir": "DOWN"
         },
         "goal": {
-          "x": 4,
-          "y": 4
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
+            "x": 1,
+            "y": 1
+          },
+          {
             "x": 2,
             "y": 2
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 3
           }
         ],
-        "maxCommands": 11,
-        "explanation": "中央から南東への屈折コースをプログラミング！",
-        "examTip": "最短の手順数を逆算する力が身についています！"
+        "maxCommands": 3,
+        "explanation": "【3歩ダッシュ直交ルート】南へ3歩、左折して東へ3歩！たったの3命令！",
+        "examTip": "直交する直線をそれぞれ3歩ダッシュで制覇！"
       },
       {
         "gridSize": 5,
         "start": {
           "x": 4,
-          "y": 4,
-          "dir": "LEFT"
+          "y": 0,
+          "dir": "DOWN"
         },
         "goal": {
-          "x": 0,
-          "y": 2
+          "x": 1,
+          "y": 3
         },
         "walls": [
           {
-            "x": 3,
+            "x": 4,
             "y": 4
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 3
           },
           {
             "x": 2,
             "y": 1
           }
         ],
-        "maxCommands": 11,
-        "explanation": "南東から西側ゴールへ回り込むルート！",
-        "examTip": "ロボットの視点切り替えがとてもスムーズです！"
-      }
-    ],
-    "5": [
+        "maxCommands": 4,
+        "explanation": "【斜めターゲット】南へ3歩、西へ3歩でターゲットを捕捉！",
+        "examTip": "3歩ダッシュ×2回の対称移動です！"
+      },
       {
         "gridSize": 5,
         "start": {
@@ -979,36 +846,88 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 2,
+            "x": 1,
             "y": 1
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ],
+        "maxCommands": 2,
+        "explanation": "【ストレート高速クリア】一直線の4マスを2歩×2で最短クリア！",
+        "examTip": "障害物のないストレートはマルチステップの独壇場！"
+      }
+    ],
+    "5": [
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 3
           },
           {
             "x": 2,
             "y": 2
           },
           {
-            "x": 2,
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【対角線ダッシュ】北へ4歩（2歩×2）、東へ4歩（2歩×2）！",
+        "examTip": "対角の障害物を外周から迂回するスマートアルゴリズム！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 4,
+          "y": 4,
+          "dir": "LEFT"
+        },
+        "goal": {
+          "x": 0,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 3,
             "y": 3
           },
           {
-            "x": 3,
-            "y": 0
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 1
           }
         ],
-        "maxCommands": 12,
-        "explanation": "中央の縦壁を上下どちらから迂回するか選択してクリア！",
-        "examTip": "アルゴリズムの「条件分岐」の感覚を養います！"
+        "maxCommands": 5,
+        "explanation": "【西と北のロングスプリント】西へ4歩、北へ4歩！",
+        "examTip": "2歩すすむを連続で使って高速移動！"
       },
       {
         "gridSize": 5,
         "start": {
           "x": 2,
-          "y": 4,
-          "dir": "UP"
+          "y": 0,
+          "dir": "DOWN"
         },
         "goal": {
           "x": 2,
-          "y": 0
+          "y": 4
         },
         "walls": [
           {
@@ -1016,21 +935,69 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 2
           },
           {
-            "x": 2,
+            "x": 3,
             "y": 2
+          }
+        ],
+        "maxCommands": 2,
+        "explanation": "【センターレーン走破】中央の縦レーンを一気に4歩駆け抜ける！",
+        "examTip": "まっすぐなレーンは2歩×2回で一瞬！"
+      }
+    ],
+    "6": [
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 3,
+          "y": 3
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 1
           },
           {
             "x": 3,
-            "y": 2
+            "y": 1
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【小4マスター】東へ3歩ダッシュ、南へ3歩ダッシュ！",
+        "examTip": "繰り返し・マルチステップの真髄を極めました！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 4,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 0,
+          "y": 4
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 1
           },
           {
-            "x": 0,
+            "x": 2,
             "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "中央の横壁を迂回して北上するコース！",
-        "examTip": "左右対称の迷路からより効率的な手順を選び出せます！"
+        "maxCommands": 5,
+        "explanation": "【小4マスター】南へ4歩、西へ4歩でゴール！",
+        "examTip": "長距離の直線は迷わず2歩・3歩命令を活用しよう！"
       },
       {
         "gridSize": 5,
@@ -1041,130 +1008,25 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "goal": {
           "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 0
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 0
-          },
-          {
-            "x": 3,
-            "y": 1
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "U字型に大きく南に迂回して北東ゴールへ！",
-        "examTip": "障害物の壁を大きく避けるダイナミックな経路設計！"
-      }
-    ],
-    "6": [
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 0,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 4,
-            "y": 2
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "小4マスター！5×5の複雑迷路を最小コマンドで完全制覇！",
-        "examTip": "【論理的思考力の完成】手順を細かく分解して実行する能力は満点です！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 4,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 4
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "東西を分断する障害壁の間隙を突いてゴールイン！",
-        "examTip": "狭いボトルネックを正確に通過するプログラム！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 0,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 4,
           "y": 4
         },
         "walls": [
           {
             "x": 1,
-            "y": 1
+            "y": 0
           },
           {
-            "x": 2,
+            "x": 1,
             "y": 2
           },
           {
             "x": 3,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 0
+            "y": 2
           }
         ],
-        "maxCommands": 12,
-        "explanation": "迷路中央の十字路を駆け抜けてゴール！",
-        "examTip": "小学4年生のテックラボ完全攻略！小5へステップアップ！"
+        "maxCommands": 5,
+        "explanation": "【小4マスター】南へ4歩、東へ4歩！完璧なマルチステップ制御！",
+        "examTip": "繰り返し処理マスター認定！小5の条件分岐へ進もう！"
       }
     ]
   },
@@ -1174,6 +1036,31 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 5,
         "start": {
           "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 4
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 2
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
           "y": 4,
           "dir": "UP"
         },
@@ -1184,28 +1071,20 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 1,
-            "y": 4
-          },
-          {
-            "x": 2,
             "y": 3
           },
           {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
             "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
             "y": 1
           }
         ],
-        "maxCommands": 12,
-        "explanation": "斜めに配置された障害壁をくぐり抜ける高度な迷路！",
-        "examTip": "【小5アルゴリズム】複雑な盤面でも最短経路を論理的に組み立てよう！"
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
       },
       {
         "gridSize": 5,
@@ -1221,43 +1100,6 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 3,
-            "y": 0
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "対角線を横切る斜めブロックの隙間を突破！",
-        "examTip": "各マスの前後左右の安全確認を怠らない！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 0,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 4,
-          "y": 4
-        },
-        "walls": [
-          {
-            "x": 1,
             "y": 1
           },
           {
@@ -1265,17 +1107,13 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 2
           },
           {
-            "x": 3,
-            "y": 3
-          },
-          {
             "x": 1,
             "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "中央の対角線を大きく迂回してゴールイン！",
-        "examTip": "外回りのルートを素早く選択できました！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ],
     "2": [
@@ -1283,98 +1121,8 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 5,
         "start": {
           "x": 0,
-          "y": 4,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 4,
-            "y": 2
-          }
-        ],
-        "maxCommands": 14,
-        "explanation": "二重の遮断壁と袋小路を避けるクランクコース！",
-        "examTip": "袋小路（デッドエンド）を事前に見抜く先読み力！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 4,
-          "y": 4,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 0,
-            "y": 2
-          }
-        ],
-        "maxCommands": 14,
-        "explanation": "S字逆走の精密プログラミング！",
-        "examTip": "ロボットの向きによる左右の反転を完全マスター！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
           "y": 0,
-          "dir": "DOWN"
+          "dir": "RIGHT"
         },
         "goal": {
           "x": 4,
@@ -1382,25 +1130,75 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 1,
+            "x": 2,
             "y": 1
           },
           {
+            "x": 3,
+            "y": 2
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
             "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
             "y": 2
           },
           {
             "x": 3,
+            "y": 1
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 4,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 0,
+          "y": 4
+        },
+        "walls": [
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
+            "x": 2,
             "y": 2
           },
           {
-            "x": 3,
+            "x": 1,
             "y": 3
           }
         ],
-        "maxCommands": 14,
-        "explanation": "南北の二重壁を縫うように進むコース！",
-        "examTip": "迷路の幅を最大限に活用する経路設計！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ],
     "3": [
@@ -1408,6 +1206,31 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 5,
         "start": {
           "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 4
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 2
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
           "y": 4,
           "dir": "UP"
         },
@@ -1417,33 +1240,21 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 0,
-            "y": 2
-          },
-          {
             "x": 1,
-            "y": 2
+            "y": 3
           },
           {
             "x": 2,
             "y": 2
-          },
-          {
-            "x": 2,
-            "y": 4
           },
           {
             "x": 3,
             "y": 1
-          },
-          {
-            "x": 4,
-            "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "中央の防壁群を巧みに抜けて北東ゴールへ！",
-        "examTip": "条件に合わせた最適な手順を導き出せました！"
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
       },
       {
         "gridSize": 5,
@@ -1458,52 +1269,7 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         },
         "walls": [
           {
-            "x": 4,
-            "y": 2
-          },
-          {
             "x": 3,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 0
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 0,
-            "y": 1
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "逆方向の要塞迷路も冷静に攻略！",
-        "examTip": "状態遷移（向いている方向と座標）を正確に追跡！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 0,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 4,
-          "y": 4
-        },
-        "walls": [
-          {
-            "x": 2,
-            "y": 0
-          },
-          {
-            "x": 2,
             "y": 1
           },
           {
@@ -1513,73 +1279,24 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           {
             "x": 1,
             "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 3
           }
         ],
-        "maxCommands": 12,
-        "explanation": "中央のT字壁を迂回して南東ゴールへ！",
-        "examTip": "余分な回転命令を省いたスマートなコード！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ],
     "4": [
       {
-        "gridSize": 6,
-        "start": {
-          "x": 0,
-          "y": 5,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 5,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 4
-          },
-          {
-            "x": 4,
-            "y": 1
-          }
-        ],
-        "maxCommands": 14,
-        "explanation": "6×6のメガフィールド！中央の要塞を大きく迂回して北東へ！",
-        "examTip": "【6×6メガ迷路】最短ステップの組み合わせ思考が試されます！"
-      },
-      {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
           "x": 0,
           "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 5
+          "x": 4,
+          "y": 4
         },
         "walls": [
           {
@@ -1588,309 +1305,168 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 3,
-            "y": 1
+            "y": 2
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 3
           },
           {
             "x": 2,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 1,
             "y": 2
           },
           {
-            "x": 4,
-            "y": 3
+            "x": 3,
+            "y": 1
           }
         ],
-        "maxCommands": 14,
-        "explanation": "障害物が散らばる大フィールドを縦横無尽に突破！",
-        "examTip": "広い視野で最短ルートを見極めましょう！"
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
       },
       {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
-          "x": 5,
+          "x": 4,
           "y": 0,
           "dir": "DOWN"
         },
         "goal": {
           "x": 0,
-          "y": 5
+          "y": 4
         },
         "walls": [
           {
             "x": 3,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 3
+            "y": 1
           },
           {
             "x": 2,
             "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 4,
-            "y": 4
           },
           {
             "x": 1,
-            "y": 1
+            "y": 3
           }
         ],
-        "maxCommands": 14,
-        "explanation": "中央の壁をかわして南西の基地へ帰還！",
-        "examTip": "論理的思考力と空間把握能力の見事な融合！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ],
     "5": [
       {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
           "x": 0,
-          "y": 5,
+          "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 0
+          "x": 4,
+          "y": 4
         },
         "walls": [
           {
-            "x": 1,
-            "y": 4
-          },
-          {
             "x": 2,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 4,
-            "y": 2
-          },
-          {
-            "x": 3,
             "y": 1
           },
           {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
+            "x": 3,
             "y": 2
           }
         ],
-        "maxCommands": 16,
-        "explanation": "スパイラル状の障害物をくぐり抜ける超難度コース！",
-        "examTip": "渦巻き迷路の先読みトレース能力！"
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
       },
       {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
-          "x": 5,
-          "y": 5,
+          "x": 0,
+          "y": 4,
           "dir": "UP"
         },
         "goal": {
-          "x": 0,
+          "x": 4,
           "y": 0
         },
         "walls": [
           {
-            "x": 4,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 2,
+            "x": 1,
             "y": 3
           },
           {
-            "x": 1,
-            "y": 2
-          },
-          {
             "x": 2,
-            "y": 1
+            "y": 2
           },
           {
             "x": 3,
-            "y": 2
-          },
-          {
-            "x": 4,
-            "y": 2
+            "y": 1
           }
         ],
-        "maxCommands": 16,
-        "explanation": "逆渦巻きコースを最短手順で攻略！",
-        "examTip": "無駄のない効率的なアルゴリズム設計！"
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
       },
       {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
-          "x": 0,
+          "x": 4,
           "y": 0,
           "dir": "DOWN"
         },
         "goal": {
-          "x": 5,
-          "y": 5
+          "x": 0,
+          "y": 4
         },
         "walls": [
           {
-            "x": 1,
+            "x": 3,
             "y": 1
           },
           {
             "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
             "y": 2
-          },
-          {
-            "x": 4,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 3
           },
           {
             "x": 1,
             "y": 3
           }
         ],
-        "maxCommands": 16,
-        "explanation": "蛇行する狭路をスムーズに駆け抜ける！",
-        "examTip": "卓越したプログラミング感覚が光ります！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ],
     "6": [
       {
-        "gridSize": 6,
-        "start": {
-          "x": 0,
-          "y": 5,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 5,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 5
-          },
-          {
-            "x": 2,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 4,
-            "y": 2
-          },
-          {
-            "x": 5,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 4
-          }
-        ],
-        "maxCommands": 16,
-        "explanation": "小5最高峰！6×6メガ迷路の斜め防壁を完全攻略！",
-        "examTip": "【アルゴリズムの達人】中学受験適性検査の思考力問題を完璧にマスター！"
-      },
-      {
-        "gridSize": 6,
-        "start": {
-          "x": 5,
-          "y": 5,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 4,
-            "y": 5
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 0,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 4
-          }
-        ],
-        "maxCommands": 16,
-        "explanation": "6×6メガ逆走コースを最短ステップでゴールイン！",
-        "examTip": "最高レベルのプログラミング思考力を実証！"
-      },
-      {
-        "gridSize": 6,
+        "gridSize": 5,
         "start": {
           "x": 0,
           "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 5
+          "x": 4,
+          "y": 4
         },
         "walls": [
           {
@@ -1898,273 +1474,387 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 1
           },
           {
+            "x": 3,
+            "y": 2
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【センサー条件分岐の威力】突き当たりで前面センサーが壁（外周）を検知し、自動で右折して南下！",
+        "examTip": "【中学入試・条件分岐】「もし壁なら方向転換する」という自動運転ロボットの基本センサー判定です！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "UP"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
             "x": 2,
             "y": 2
           },
           {
             "x": 3,
-            "y": 3
-          },
+            "y": 1
+          }
+        ],
+        "maxCommands": 5,
+        "explanation": "【北端センサー検知】北端でセンサーが壁を検知して自動右折！",
+        "examTip": "条件分岐命令を使うと、曲がる指示と進む指示を賢くまとめられます！"
+      },
+      {
+        "gridSize": 5,
+        "start": {
+          "x": 4,
+          "y": 0,
+          "dir": "DOWN"
+        },
+        "goal": {
+          "x": 0,
+          "y": 4
+        },
+        "walls": [
           {
             "x": 3,
-            "y": 4
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
           },
           {
             "x": 1,
-            "y": 4
+            "y": 3
           }
         ],
-        "maxCommands": 16,
-        "explanation": "6×6の二重防壁迷路を完全制覇！小6へ！",
-        "examTip": "思考力・判断力・表現力のすべてがトップクラスです！"
+        "maxCommands": 5,
+        "explanation": "【南端センサー右折】南端でセンサーが壁を検知して自動右折（西向き）！",
+        "examTip": "障害物との距離を測るセンサーアルゴリズムです！"
       }
     ]
   },
   "6": {
     "1": [
       {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 4,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 4
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 1
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "【小6受験突破】階段状の要塞壁をタイトなコマンド予算でクリア！",
-        "examTip": "【最難関中のアルゴリズム】1歩の無駄も許されない最適経路の探求！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 4,
-          "y": 4,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 1
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "逆走階段迷路を無駄のないコマンドで突破！",
-        "examTip": "ロボット主観の旋回判断を反射的に行えるようになりましょう！"
-      },
-      {
-        "gridSize": 5,
+        "gridSize": 6,
         "start": {
           "x": 0,
           "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 4,
-          "y": 4
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
-            "x": 1,
+            "x": 2,
             "y": 0
           },
           {
-            "x": 1,
-            "y": 1
+            "x": 3,
+            "y": 0
           },
           {
-            "x": 2,
-            "y": 1
+            "x": 4,
+            "y": 0
           },
           {
-            "x": 2,
+            "x": 5,
+            "y": 0
+          },
+          {
+            "x": 0,
             "y": 2
           },
           {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 3
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "階段状のクランクを素早くすり抜ける！",
-        "examTip": "最短ステップ数を一瞬で見抜く計算力！"
-      }
-    ],
-    "2": [
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 2,
-          "dir": "UP"
-        },
-        "goal": {
-          "x": 4,
-          "y": 2
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 1,
+            "x": 0,
             "y": 3
           },
           {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 3
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "中央の二重縦壁の隙間をくぐり抜ける難関迷路！",
-        "examTip": "隘路（ボトルネック）を正確に通過するプログラム！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 2,
-          "y": 0,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 2,
-          "y": 4
-        },
-        "walls": [
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 3
-          }
-        ],
-        "maxCommands": 12,
-        "explanation": "横壁の二重トラップを迂回して南下！",
-        "examTip": "左右どちらの迂回がコマンド数を節約できるかを瞬時に判断！"
-      },
-      {
-        "gridSize": 5,
-        "start": {
-          "x": 0,
-          "y": 4,
-          "dir": "RIGHT"
-        },
-        "goal": {
-          "x": 4,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 2,
+            "x": 0,
             "y": 4
           },
           {
-            "x": 2,
-            "y": 3
+            "x": 0,
+            "y": 5
           },
           {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 2,
+            "x": 3,
             "y": 1
           },
           {
             "x": 4,
             "y": 1
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 4
           }
         ],
-        "maxCommands": 12,
-        "explanation": "長大な防壁を乗り越えて北東ゴールへ！",
-        "examTip": "ダイナミックな大迂回ルートの設計！"
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 5,
+          "y": 5
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
+      }
+    ],
+    "2": [
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 3,
+          "y": 3
+        },
+        "walls": [
+          {
+            "x": 2,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 0
+          },
+          {
+            "x": 4,
+            "y": 0
+          },
+          {
+            "x": 5,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
+            "x": 4,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 0,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 5,
+          "y": 5
+        },
+        "walls": [
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
       }
     ],
     "3": [
@@ -2172,106 +1862,130 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 6,
         "start": {
           "x": 0,
-          "y": 5,
-          "dir": "UP"
+          "y": 0,
+          "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 0
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
             "x": 2,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
+            "y": 0
           },
           {
             "x": 3,
+            "y": 0
+          },
+          {
+            "x": 4,
+            "y": 0
+          },
+          {
+            "x": 5,
+            "y": 0
+          },
+          {
+            "x": 0,
             "y": 2
           },
           {
-            "x": 3,
+            "x": 0,
             "y": 3
           },
           {
-            "x": 1,
+            "x": 0,
             "y": 4
           },
           {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
             "x": 4,
             "y": 1
           },
           {
             "x": 1,
-            "y": 1
+            "y": 3
           },
           {
-            "x": 4,
+            "x": 1,
             "y": 4
           }
         ],
-        "maxCommands": 14,
-        "explanation": "6×6メガフィールドの中央要塞群と外周トラップを突破！",
-        "examTip": "【メガ要塞攻略】広大なフィールドで迷わない論理的経路追跡！"
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
       },
       {
         "gridSize": 6,
         "start": {
-          "x": 5,
-          "y": 5,
-          "dir": "LEFT"
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
         },
         "goal": {
-          "x": 0,
+          "x": 4,
           "y": 0
         },
         "walls": [
           {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
             "x": 3,
             "y": 3
           },
           {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
             "x": 4,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 4
-          },
-          {
-            "x": 4,
-            "y": 4
-          },
-          {
-            "x": 1,
-            "y": 1
+            "y": 2
           }
         ],
-        "maxCommands": 14,
-        "explanation": "逆走メガ迷路を完璧なステップ配分でクリア！",
-        "examTip": "障害物の間隙を縫うミリ単位のプログラミング！"
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
       },
       {
         "gridSize": 6,
         "start": {
           "x": 0,
           "y": 0,
-          "dir": "DOWN"
+          "dir": "RIGHT"
         },
         "goal": {
           "x": 5,
@@ -2280,7 +1994,7 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 1,
-            "y": 2
+            "y": 1
           },
           {
             "x": 2,
@@ -2292,20 +2006,12 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 4,
-            "y": 3
-          },
-          {
-            "x": 2,
             "y": 4
-          },
-          {
-            "x": 3,
-            "y": 1
           }
         ],
-        "maxCommands": 14,
-        "explanation": "対角線上の難所をすべてクリアして南東へ！",
-        "examTip": "最短ステップ数を確実に達成する計画性！"
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
       }
     ],
     "4": [
@@ -2313,98 +2019,130 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 6,
         "start": {
           "x": 0,
-          "y": 5,
+          "y": 0,
           "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 0
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
-            "x": 1,
-            "y": 4
-          },
-          {
             "x": 2,
-            "y": 4
+            "y": 0
           },
           {
             "x": 3,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 2
+            "y": 0
           },
           {
             "x": 4,
-            "y": 2
+            "y": 0
           },
           {
             "x": 5,
-            "y": 2
-          },
-          {
-            "x": 2,
-            "y": 1
-          }
-        ],
-        "maxCommands": 16,
-        "explanation": "二重の長い横壁をジグザグにすり抜ける超難問！",
-        "examTip": "【S字ループの極意】繰り返しの美学をプログラミングで表現！"
-      },
-      {
-        "gridSize": 6,
-        "start": {
-          "x": 5,
-          "y": 5,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 4,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 2
+            "y": 0
           },
           {
             "x": 0,
             "y": 2
           },
           {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
             "x": 3,
             "y": 1
+          },
+          {
+            "x": 4,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 4
           }
         ],
-        "maxCommands": 16,
-        "explanation": "逆方向の超長S字コースも正確にクリア！",
-        "examTip": "ロボット主観の左右判断をノーミスで実行！"
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
       },
       {
         "gridSize": 6,
         "start": {
           "x": 0,
           "y": 0,
-          "dir": "DOWN"
+          "dir": "RIGHT"
         },
         "goal": {
           "x": 5,
@@ -2416,33 +2154,21 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 1
           },
           {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 3,
+            "x": 2,
             "y": 2
           },
           {
             "x": 3,
             "y": 3
-          },
-          {
-            "x": 3,
-            "y": 4
           },
           {
             "x": 4,
-            "y": 1
+            "y": 4
           }
         ],
-        "maxCommands": 16,
-        "explanation": "二重の長い縦壁を縫って南東へ到達！",
-        "examTip": "壁の隙間を捉える鋭い空間認知力！"
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
       }
     ],
     "5": [
@@ -2450,86 +2176,92 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 6,
         "start": {
           "x": 0,
-          "y": 5,
-          "dir": "UP"
+          "y": 0,
+          "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 0
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
-            "x": 1,
-            "y": 5
-          },
-          {
             "x": 2,
-            "y": 4
+            "y": 0
           },
           {
             "x": 3,
-            "y": 3
+            "y": 0
           },
           {
             "x": 4,
-            "y": 2
+            "y": 0
           },
           {
             "x": 5,
-            "y": 1
+            "y": 0
           },
           {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 3,
-            "y": 5
-          },
-          {
-            "x": 2,
-            "y": 1
-          }
-        ],
-        "maxCommands": 16,
-        "explanation": "斜めブロック列と防壁の迷宮を突破！",
-        "examTip": "【最難関中の名問】適性検査の思考力パズル最高峰！"
-      },
-      {
-        "gridSize": 6,
-        "start": {
-          "x": 5,
-          "y": 5,
-          "dir": "LEFT"
-        },
-        "goal": {
-          "x": 0,
-          "y": 0
-        },
-        "walls": [
-          {
-            "x": 4,
-            "y": 5
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 2,
-            "y": 3
-          },
-          {
-            "x": 1,
+            "x": 0,
             "y": 2
           },
           {
             "x": 0,
+            "y": 3
+          },
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 3,
             "y": 1
           },
           {
             "x": 4,
-            "y": 2
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
+      },
+      {
+        "gridSize": 6,
+        "start": {
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
+        },
+        "goal": {
+          "x": 4,
+          "y": 0
+        },
+        "walls": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
           },
           {
             "x": 2,
@@ -2537,12 +2269,30 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 3,
-            "y": 1
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 4,
+            "y": 2
           }
         ],
-        "maxCommands": 16,
-        "explanation": "逆走斜め要塞を神業的なコマンドで攻略！",
-        "examTip": "全国トップクラスのアルゴリズム構築力！"
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
       },
       {
         "gridSize": 6,
@@ -2558,36 +2308,24 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "walls": [
           {
             "x": 1,
-            "y": 0
-          },
-          {
-            "x": 2,
             "y": 1
           },
           {
-            "x": 3,
+            "x": 2,
             "y": 2
           },
           {
-            "x": 4,
+            "x": 3,
             "y": 3
           },
           {
-            "x": 5,
-            "y": 4
-          },
-          {
-            "x": 3,
-            "y": 0
-          },
-          {
-            "x": 2,
+            "x": 4,
             "y": 4
           }
         ],
-        "maxCommands": 16,
-        "explanation": "対角線上の防壁を美しく外回りで回避！",
-        "examTip": "完璧なステップ配分で見事ゴール！"
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
       }
     ],
     "6": [
@@ -2595,33 +2333,49 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
         "gridSize": 6,
         "start": {
           "x": 0,
-          "y": 5,
-          "dir": "UP"
+          "y": 0,
+          "dir": "RIGHT"
         },
         "goal": {
-          "x": 5,
-          "y": 0
+          "x": 3,
+          "y": 3
         },
         "walls": [
           {
             "x": 2,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 0
+          },
+          {
+            "x": 4,
+            "y": 0
+          },
+          {
+            "x": 5,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 0,
             "y": 4
           },
           {
-            "x": 2,
-            "y": 3
+            "x": 0,
+            "y": 5
           },
           {
-            "x": 2,
-            "y": 2
-          },
-          {
-            "x": 4,
-            "y": 3
-          },
-          {
-            "x": 4,
-            "y": 2
+            "x": 3,
+            "y": 1
           },
           {
             "x": 4,
@@ -2629,31 +2383,53 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 1,
-            "y": 1
+            "y": 3
           },
           {
-            "x": 3,
-            "y": 5
+            "x": 1,
+            "y": 4
           }
         ],
-        "maxCommands": 16,
-        "explanation": "【全国模試トップ級】入り組んだ要塞迷路を最短16コマンド以内で完全制覇！",
-        "examTip": "【プログラミング思考の極致】どんな複雑な課題も小さな論理ステップに分解して解決する力が完成しました！"
+        "maxCommands": 4,
+        "explanation": "【サブルーチン F1 の勝利！】「前進・右折・前進・左折」の階段ステップを関数F1にまとめ、3回の呼び出しで見事最短クリア！",
+        "examTip": "【難関中プログラミング入試】開成・筑駒等で頻出する「手続きのモジュール化」。同じパターンを1つの関数にまとめる思考力です！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_RIGHT",
+          "FORWARD",
+          "TURN_LEFT"
+        ]
       },
       {
         "gridSize": 6,
         "start": {
-          "x": 5,
-          "y": 5,
-          "dir": "LEFT"
+          "x": 0,
+          "y": 4,
+          "dir": "RIGHT"
         },
         "goal": {
-          "x": 0,
+          "x": 4,
           "y": 0
         },
         "walls": [
           {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
             "x": 3,
+            "y": 5
+          },
+          {
+            "x": 2,
             "y": 4
           },
           {
@@ -2661,40 +2437,26 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
             "y": 3
           },
           {
-            "x": 3,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 3
-          },
-          {
-            "x": 1,
-            "y": 2
-          },
-          {
-            "x": 1,
-            "y": 1
-          },
-          {
             "x": 4,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 5
+            "y": 2
           }
         ],
-        "maxCommands": 16,
-        "explanation": "メガ要塞の逆走コースを完全制覇！",
-        "examTip": "【コンピュータ・サイエンスの未来の巨匠】アルゴリズムの真髄を極めました！"
+        "maxCommands": 4,
+        "explanation": "【登り階段サブルーチン】「前進・左折・前進・右折」をF1に登録し、4回呼び出して北東の頂上へ到達！",
+        "examTip": "【手続きの反復実行】関数の再利用によって、16命令必要な迷路をたった4命令で走破できます！",
+        "presetF1": [
+          "FORWARD",
+          "TURN_LEFT",
+          "FORWARD",
+          "TURN_RIGHT"
+        ]
       },
       {
         "gridSize": 6,
         "start": {
           "x": 0,
           "y": 0,
-          "dir": "DOWN"
+          "dir": "RIGHT"
         },
         "goal": {
           "x": 5,
@@ -2707,15 +2469,7 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 2,
-            "y": 1
-          },
-          {
-            "x": 3,
-            "y": 1
-          },
-          {
-            "x": 2,
-            "y": 3
+            "y": 2
           },
           {
             "x": 3,
@@ -2723,22 +2477,37 @@ const GRADE_MAZE_PUZZLES: Record<number, Record<number, MazePuzzle[]>> = {
           },
           {
             "x": 4,
-            "y": 3
-          },
-          {
-            "x": 3,
-            "y": 4
-          },
-          {
-            "x": 1,
             "y": 4
           }
         ],
-        "maxCommands": 16,
-        "explanation": "【アルゴリズム・レジェンド認定】6×6迷路の頂点へ到達！全カテゴリー完全制圧！",
-        "examTip": "【STEAM探検隊 伝説のマスター】科学・技術・工学・芸術・数学のすべての探検を成し遂げました！"
+        "maxCommands": 3,
+        "explanation": "【WHILEループの突進力】壁の手前まで一気に直進する強力なアルゴリズム！右折してさらに直進でゴール！",
+        "examTip": "【WHILE制御構造】「壁に当たるまで繰り返す」という探索アルゴリズムの王道です！"
       }
     ]
+  }
+};
+
+const GRADE_METRICS: Record<number, { title: string; subtitle: string; icon: string }> = {
+  3: {
+    title: '🎒 小学3年生: 順次処理（じゅんじしょり）',
+    subtitle: '命令カードを順番に並べて、ロボットを1歩ずつゴールへ導こう！',
+    icon: '🤖'
+  },
+  4: {
+    title: '🎒 小学4年生: 繰り返し（ループ）とパターンの発見',
+    subtitle: '同じ動きを見つけて「2歩すすむ」「3歩ダッシュ」で命令数を節約しよう！',
+    icon: '🔁'
+  },
+  5: {
+    title: '🎒 小学5年生: 条件分岐（もし〜なら）とセンサー判断',
+    subtitle: '障害物をセンサーで検知して進路を変える「条件分岐」を活用しよう！',
+    icon: '🔀'
+  },
+  6: {
+    title: '🎒 小学6年生: 関数（サブルーチン）＆最難関アルゴリズム',
+    subtitle: '繰り返しパターンを「関数 F1」に部品化し、最小コマンド数で迷路を制覇しよう！',
+    icon: '📦'
   }
 };
 
@@ -2752,16 +2521,21 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
   customTitle,
   customBadge
 }) => {
+  const currentGrade = [3, 4, 5, 6].includes(grade) ? grade : 3;
+
   const getLevelPuzzles = (lvl: number, gNum: number = 3): MazePuzzle[] => {
     const gradeData = GRADE_MAZE_PUZZLES[gNum] || GRADE_MAZE_PUZZLES[3];
     return gradeData[lvl] || gradeData[1];
   };
 
-  const mazes = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level, grade);
+  const mazes = (customPuzzles && customPuzzles.length > 0) ? customPuzzles : getLevelPuzzles(level, currentGrade);
   const [problemIndex, setProblemIndex] = useState(0);
   const maze = mazes[problemIndex % mazes.length];
 
   const [commands, setCommands] = useState<Command[]>([]);
+  const [f1Commands, setF1Commands] = useState<('FORWARD' | 'TURN_LEFT' | 'TURN_RIGHT')[]>(
+    maze.presetF1 || ['FORWARD', 'TURN_RIGHT', 'FORWARD', 'TURN_LEFT']
+  );
   const [botState, setBotState] = useState({
     x: maze.start.x,
     y: maze.start.y,
@@ -2770,7 +2544,7 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
   const [isRunning, setIsRunning] = useState(false);
   const [executingIndex, setExecutingIndex] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [feedback, setFeedback] = useState<string>('命令カードを並べてロボットを星まで導こう！');
+  const [feedback, setFeedback] = useState<string>(GRADE_METRICS[currentGrade]?.subtitle || '命令カードを並べてロボットを星まで導こう！');
 
   const DIR_DEG: Record<Direction, number> = {
     UP: 0,
@@ -2793,13 +2567,16 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
     setProblemIndex(nextIdx);
     setCommands([]);
     setExecutingIndex(null);
+    if (nextM.presetF1) {
+      setF1Commands(nextM.presetF1);
+    }
     setBotState({
       x: nextM.start.x,
       y: nextM.start.y,
       dir: nextM.start.dir
     });
     setIsCompleted(false);
-    setFeedback('命令カードを並べてロボットを星まで導こう！');
+    setFeedback(GRADE_METRICS[currentGrade]?.subtitle || '命令カードを並べてロボットを星まで導こう！');
   };
 
   const addCommand = (cmd: Command) => {
@@ -2814,6 +2591,18 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
     setCommands([]);
     setExecutingIndex(null);
     resetBot();
+  };
+
+  const addF1Command = (subCmd: 'FORWARD' | 'TURN_LEFT' | 'TURN_RIGHT') => {
+    if (f1Commands.length >= 4 || isRunning) return;
+    sound.playClick();
+    setF1Commands([...f1Commands, subCmd]);
+  };
+
+  const clearF1 = () => {
+    if (isRunning) return;
+    sound.playClick();
+    setF1Commands([]);
   };
 
   const resetBot = () => {
@@ -2834,69 +2623,142 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
     }
   };
 
+  const isBlocked = (x: number, y: number, dir: Direction, gSize: number, walls: { x: number; y: number }[]): boolean => {
+    let nx = x;
+    let ny = y;
+    if (dir === 'UP') ny -= 1;
+    if (dir === 'RIGHT') nx += 1;
+    if (dir === 'DOWN') ny += 1;
+    if (dir === 'LEFT') nx -= 1;
+    if (nx < 0 || nx >= gSize || ny < 0 || ny >= gSize) return true;
+    return walls.some((w) => w.x === nx && w.y === ny);
+  };
+
+  const stepForward = (x: number, y: number, dir: Direction): { x: number; y: number } => {
+    let nx = x;
+    let ny = y;
+    if (dir === 'UP') ny -= 1;
+    if (dir === 'RIGHT') nx += 1;
+    if (dir === 'DOWN') ny += 1;
+    if (dir === 'LEFT') nx -= 1;
+    return { x: nx, y: ny };
+  };
+
   const runProgram = async () => {
     if (commands.length === 0 || isRunning) return;
     setIsRunning(true);
-    setFeedback('プログラム実行中...');
+    setFeedback('🤖 プログラム実行中...');
     let curX = maze.start.x;
     let curY = maze.start.y;
     let curDir = maze.start.dir;
 
     setBotState({ x: curX, y: curY, dir: curDir });
 
+    const executeAtomic = async (type: 'MOVE' | 'TURN', turnType?: 'LEFT' | 'RIGHT'): Promise<boolean> => {
+      if (type === 'TURN' && turnType) {
+        sound.playClick();
+        curDir = turnDir(curDir, turnType);
+        setBotState({ x: curX, y: curY, dir: curDir });
+        await new Promise((r) => setTimeout(r, 220));
+        return true;
+      } else if (type === 'MOVE') {
+        if (isBlocked(curX, curY, curDir, maze.gridSize, maze.walls)) {
+          sound.playWrong();
+          setFeedback('💥 岩またはコースの外にぶつかってしまった！プログラムを直そう。');
+          return false;
+        }
+        sound.playClick();
+        const next = stepForward(curX, curY, curDir);
+        curX = next.x;
+        curY = next.y;
+        setBotState({ x: curX, y: curY, dir: curDir });
+        await new Promise((r) => setTimeout(r, 250));
+        return true;
+      }
+      return true;
+    };
+
     for (let i = 0; i < commands.length; i++) {
       setExecutingIndex(i);
-      await new Promise((r) => setTimeout(r, 450));
       const cmd = commands[i];
 
-      if (cmd === 'TURN_LEFT') {
-        sound.playClick();
-        curDir = turnDir(curDir, 'LEFT');
+      if (cmd === 'FORWARD') {
+        const ok = await executeAtomic('MOVE');
+        if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+      } else if (cmd === 'TURN_LEFT') {
+        await executeAtomic('TURN', 'LEFT');
       } else if (cmd === 'TURN_RIGHT') {
-        sound.playClick();
-        curDir = turnDir(curDir, 'RIGHT');
-      } else if (cmd === 'FORWARD') {
-        sound.playClick();
-        let nextX = curX;
-        let nextY = curY;
-        if (curDir === 'UP') nextY -= 1;
-        if (curDir === 'RIGHT') nextX += 1;
-        if (curDir === 'DOWN') nextY += 1;
-        if (curDir === 'LEFT') nextX -= 1;
-
-        // Check boundary
-        if (nextX < 0 || nextX >= maze.gridSize || nextY < 0 || nextY >= maze.gridSize) {
-          sound.playWrong();
-          setFeedback('コースの外に飛び出してしまった！プログラムを直そう。');
-          setIsRunning(false);
-          setExecutingIndex(null);
-          return;
+        await executeAtomic('TURN', 'RIGHT');
+      } else if (cmd === 'FORWARD_2') {
+        for (let s = 0; s < 2; s++) {
+          const ok = await executeAtomic('MOVE');
+          if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
         }
-
-        // Check wall
-        if (maze.walls.some((w) => w.x === nextX && w.y === nextY)) {
-          sound.playWrong();
-          setFeedback('岩にぶつかってしまった！別のルートを考えてみよう。');
-          setIsRunning(false);
-          setExecutingIndex(null);
-          return;
+      } else if (cmd === 'FORWARD_3') {
+        for (let s = 0; s < 3; s++) {
+          const ok = await executeAtomic('MOVE');
+          if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
         }
-
-        curX = nextX;
-        curY = nextY;
+      } else if (cmd === 'LOOP_FWD_RIGHT') {
+        const ok = await executeAtomic('MOVE');
+        if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+        await executeAtomic('TURN', 'RIGHT');
+      } else if (cmd === 'LOOP_FWD_LEFT') {
+        const ok = await executeAtomic('MOVE');
+        if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+        await executeAtomic('TURN', 'LEFT');
+      } else if (cmd === 'IF_WALL_RIGHT_ELSE_FWD') {
+        if (isBlocked(curX, curY, curDir, maze.gridSize, maze.walls)) {
+          setFeedback('🤖 センサー検知：前方が壁なので【右折】しました');
+          await executeAtomic('TURN', 'RIGHT');
+        } else {
+          setFeedback('🤖 センサー検知：前方が道なので【前進】しました');
+          const ok = await executeAtomic('MOVE');
+          if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+        }
+      } else if (cmd === 'IF_WALL_LEFT_ELSE_FWD') {
+        if (isBlocked(curX, curY, curDir, maze.gridSize, maze.walls)) {
+          setFeedback('🤖 センサー検知：前方が壁なので【左折】しました');
+          await executeAtomic('TURN', 'LEFT');
+        } else {
+          setFeedback('🤖 センサー検知：前方が道なので【前進】しました');
+          const ok = await executeAtomic('MOVE');
+          if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+        }
+      } else if (cmd === 'WHILE_NOT_WALL') {
+        let steps = 0;
+        while (!isBlocked(curX, curY, curDir, maze.gridSize, maze.walls) && steps < maze.gridSize) {
+          const ok = await executeAtomic('MOVE');
+          if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+          steps++;
+          if (curX === maze.goal.x && curY === maze.goal.y) break;
+        }
+        if (steps > 0) {
+          setFeedback(`🚀 壁の手前まで一気に${steps}歩ダッシュ！`);
+        }
+      } else if (cmd === 'CALL_F1') {
+        setFeedback('📦 関数 F1 (サブルーチン) を実行中...');
+        for (const subCmd of f1Commands) {
+          if (subCmd === 'FORWARD') {
+            const ok = await executeAtomic('MOVE');
+            if (!ok) { setIsRunning(false); setExecutingIndex(null); return; }
+          } else if (subCmd === 'TURN_LEFT') {
+            await executeAtomic('TURN', 'LEFT');
+          } else if (subCmd === 'TURN_RIGHT') {
+            await executeAtomic('TURN', 'RIGHT');
+          }
+        }
       }
-
-      setBotState({ x: curX, y: curY, dir: curDir });
     }
 
     setExecutingIndex(null);
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 200));
 
     if (curX === maze.goal.x && curY === maze.goal.y) {
       sound.playCorrect();
       fireConfetti();
       setIsCompleted(true);
-      setFeedback('ゴール達成！見事なプログラムです！');
+      setFeedback('🎉 ゴール達成！見事なアルゴリズムです！');
       onComplete(3);
     } else {
       sound.playWrong();
@@ -2904,6 +2766,42 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
     }
     setIsRunning(false);
   };
+
+  const getCommandBadge = (cmd: Command) => {
+    switch (cmd) {
+      case 'FORWARD':
+        return <span>⬆️ 1歩前進</span>;
+      case 'TURN_LEFT':
+        return <span>↩️ 左向く</span>;
+      case 'TURN_RIGHT':
+        return <span>↪️ 右向く</span>;
+      case 'FORWARD_2':
+        return <span>👟 2歩前進</span>;
+      case 'FORWARD_3':
+        return <span>🚀 3歩ダッシュ</span>;
+      case 'LOOP_FWD_RIGHT':
+        return <span>🔁 前+右折</span>;
+      case 'LOOP_FWD_LEFT':
+        return <span>🔁 前+左折</span>;
+      case 'IF_WALL_RIGHT_ELSE_FWD':
+        return <span>🔀 壁→右折</span>;
+      case 'IF_WALL_LEFT_ELSE_FWD':
+        return <span>🔀 壁→左折</span>;
+      case 'WHILE_NOT_WALL':
+        return <span>🚀 壁まで直進</span>;
+      case 'CALL_F1':
+        return <span>📦 関数F1</span>;
+      default:
+        return <span>{cmd}</span>;
+    }
+  };
+
+  const cellSizeClass =
+    maze.gridSize >= 6
+      ? 'w-10 h-10 sm:w-11 sm:h-11'
+      : maze.gridSize === 5
+      ? 'w-11 h-11 sm:w-13 sm:h-13'
+      : 'w-12 h-12 sm:w-14 sm:h-14';
 
   return (
     <GameModalWrapper
@@ -2923,27 +2821,38 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
         setCommands([]);
         resetBot();
         setIsCompleted(false);
-        setFeedback('命令カードを並べてロボットを星まで導こう！');
+        setFeedback(GRADE_METRICS[currentGrade]?.subtitle || '命令カードを並べてロボットを星まで導こう！');
       }}
     >
       <div className="flex flex-col items-center select-none w-full">
+        {/* Grade Theme Banner */}
+        <div className="w-full max-w-md bg-gradient-to-r from-indigo-50 via-sky-50 to-indigo-50 border-2 border-indigo-200 rounded-2xl py-1.5 px-3 mb-2 flex items-center justify-between text-xs shadow-xs">
+          <span className="font-black text-indigo-950 flex items-center gap-1.5">
+            <span>{GRADE_METRICS[currentGrade]?.icon}</span>
+            <span>{GRADE_METRICS[currentGrade]?.title}</span>
+          </span>
+          <span className="text-[10px] bg-white border border-indigo-200 px-2 py-0.5 rounded-full font-bold text-indigo-800">
+            上限: {maze.maxCommands}命令
+          </span>
+        </div>
+
         {/* Status prompt */}
-        <div className="w-full text-center py-2 px-4 bg-sky-50 border border-sky-200 rounded-2xl mb-2.5 font-extrabold text-sky-900 text-sm sm:text-base">
+        <div className="w-full max-w-md text-center py-2 px-3 bg-sky-50 border border-sky-200 rounded-2xl mb-2 font-extrabold text-sky-900 text-xs sm:text-sm">
           {feedback}
         </div>
 
         {/* Direction Status & Compass Banner */}
-        <div className="flex items-center justify-center gap-2 px-4 py-1.5 bg-slate-900 border-2 border-indigo-500/50 rounded-2xl text-xs sm:text-sm font-black text-white shadow-md mb-3">
-          <span className="text-slate-300">🤖 ロボットの正面の向き:</span>
-          <span className="px-2.5 py-0.5 rounded-xl bg-amber-400 text-slate-950 font-black flex items-center gap-1.5 shadow">
-            <span className="text-base">{DIR_LABEL[botState.dir].icon}</span>
+        <div className="flex items-center justify-center gap-2 px-3 py-1 bg-slate-900 border border-indigo-500/50 rounded-2xl text-xs font-black text-white shadow-sm mb-2.5">
+          <span className="text-slate-300">🤖 ロボットの正面:</span>
+          <span className="px-2 py-0.5 rounded-xl bg-amber-400 text-slate-950 font-black flex items-center gap-1 shadow-xs text-xs">
+            <span>{DIR_LABEL[botState.dir].icon}</span>
             <span>{DIR_LABEL[botState.dir].text}</span>
           </span>
         </div>
 
         {/* Maze Grid Stage */}
         <div
-          className="grid gap-1.5 p-3 bg-slate-800 rounded-3xl border-4 border-slate-700 shadow-xl mb-4"
+          className="grid gap-1.5 p-3 bg-slate-800 rounded-3xl border-4 border-slate-700 shadow-xl mb-3"
           style={{
             gridTemplateColumns: `repeat(${maze.gridSize}, minmax(0, 1fr))`
           }}
@@ -2958,45 +2867,36 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
                 return (
                   <div
                     key={`${x}-${y}`}
-                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex flex-col items-center justify-center font-black relative transition-all duration-300 overflow-visible ${
+                    className={`${cellSizeClass} rounded-2xl flex flex-col items-center justify-center font-black relative transition-all duration-200 overflow-visible ${
                       isWall
                         ? 'bg-slate-700 border-2 border-slate-600 shadow-inner'
                         : 'bg-slate-900/80 border border-slate-700/50'
                     }`}
                   >
-                    {isWall && <span className="text-xl">🪨</span>}
+                    {isWall && <span className="text-lg sm:text-xl">🪨</span>}
                     {isGoal && (
-                      <span className="text-2xl sm:text-3xl animate-pulse-subtle filter drop-shadow">
+                      <span className="text-xl sm:text-2xl animate-pulse filter drop-shadow">
                         ⭐
                       </span>
                     )}
                     {isBot && (
                       <div className="relative w-full h-full flex items-center justify-center">
-                        {/* Rotating Directional Robot Container */}
                         <div
-                          className="relative flex items-center justify-center transition-transform duration-300 ease-out"
+                          className="relative flex items-center justify-center transition-transform duration-200 ease-out"
                           style={{
                             transform: `rotate(${DIR_DEG[botState.dir]}deg)`
                           }}
                         >
-                          {/* Front Direction Indicator Arrow pointing UP (rotates with robot) */}
                           <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20">
                             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[8px] border-b-amber-300 animate-pulse drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]" />
                           </div>
-
-                          {/* Robot Body */}
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-b from-sky-400 via-indigo-500 to-indigo-700 border-2 border-white shadow-lg flex flex-col items-center justify-center text-white relative">
-                            {/* Antenna at front */}
-                            <div className="absolute -top-2 w-1.5 h-2 bg-amber-400 rounded-t-sm flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-amber-300 -mt-1 shadow-[0_0_5px_#fde047]" />
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-b from-sky-400 via-indigo-500 to-indigo-700 border-2 border-white shadow-md flex flex-col items-center justify-center text-white relative">
+                            <div className="absolute -top-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full shadow-[0_0_4px_#fde047]" />
+                            <div className="flex gap-1 mb-0.5 mt-0.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_4px_#fde047]" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_4px_#fde047]" />
                             </div>
-                            {/* Headlights / Eyes facing forward */}
-                            <div className="flex gap-1.5 mb-0.5 mt-0.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_5px_#fde047] border border-amber-100" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_5px_#fde047] border border-amber-100" />
-                            </div>
-                            {/* Chest visor */}
-                            <div className="w-3.5 h-1 bg-sky-200/80 rounded-full" />
+                            <div className="w-3 h-0.5 bg-sky-200 rounded-full" />
                           </div>
                         </div>
                       </div>
@@ -3008,8 +2908,78 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
           ))}
         </div>
 
+        {/* Grade 6 Function F1 Definition Panel */}
+        {currentGrade === 6 && (
+          <div className="w-full max-w-md bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border-2 border-purple-300 rounded-2xl p-2.5 mb-2.5 shadow-xs">
+            <div className="flex justify-between items-center mb-1 px-1">
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded-lg bg-purple-600 text-white font-black text-xs shadow-xs flex items-center gap-1">
+                  <Box className="w-3 h-3 text-yellow-300" />
+                  <span>関数 F1 の定義</span>
+                </span>
+                <span className="text-[11px] font-bold text-purple-900">
+                  (サブルーチン: 最大4命令)
+                </span>
+              </div>
+              <button
+                onClick={clearF1}
+                disabled={isRunning || f1Commands.length === 0}
+                className="text-[11px] font-bold text-rose-600 hover:text-rose-800 flex items-center gap-0.5 disabled:opacity-40"
+              >
+                <Trash2 className="w-3 h-3" />
+                <span>クリア</span>
+              </button>
+            </div>
+
+            {/* F1 items */}
+            <div className="flex flex-wrap gap-1 min-h-[34px] bg-white/95 p-1.5 rounded-xl border border-purple-200 mb-1.5">
+              {f1Commands.map((cmd, idx) => (
+                <span
+                  key={idx}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-100 text-purple-950 text-[11px] font-black border border-purple-300"
+                >
+                  <span>{idx + 1}.</span>
+                  {cmd === 'FORWARD' && <span>⬆️ 前進</span>}
+                  {cmd === 'TURN_LEFT' && <span>↩️ 左折</span>}
+                  {cmd === 'TURN_RIGHT' && <span>↪️ 右折</span>}
+                </span>
+              ))}
+              {f1Commands.length === 0 && (
+                <span className="text-[11px] text-purple-400 font-bold self-center px-1">
+                  下のボタンでF1の動作を登録してね
+                </span>
+              )}
+            </div>
+
+            {/* F1 adder buttons */}
+            <div className="flex gap-1.5 justify-end">
+              <button
+                onClick={() => addF1Command('FORWARD')}
+                disabled={isRunning || f1Commands.length >= 4}
+                className="px-2 py-0.5 bg-white hover:bg-purple-100 border border-purple-300 text-purple-900 rounded-lg text-xs font-black shadow-xs active:scale-95 disabled:opacity-40"
+              >
+                + ⬆️ 前進
+              </button>
+              <button
+                onClick={() => addF1Command('TURN_LEFT')}
+                disabled={isRunning || f1Commands.length >= 4}
+                className="px-2 py-0.5 bg-white hover:bg-purple-100 border border-purple-300 text-purple-900 rounded-lg text-xs font-black shadow-xs active:scale-95 disabled:opacity-40"
+              >
+                + ↩️ 左折
+              </button>
+              <button
+                onClick={() => addF1Command('TURN_RIGHT')}
+                disabled={isRunning || f1Commands.length >= 4}
+                className="px-2 py-0.5 bg-white hover:bg-purple-100 border border-purple-300 text-purple-900 rounded-lg text-xs font-black shadow-xs active:scale-95 disabled:opacity-40"
+              >
+                + ↪️ 右折
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Command Queue Box */}
-        <div className="w-full max-w-md bg-slate-100 border-2 border-slate-300 rounded-2xl p-2.5 sm:p-3 mb-3">
+        <div className="w-full max-w-md bg-slate-100 border-2 border-slate-300 rounded-2xl p-2.5 mb-2.5">
           <div className="flex justify-between items-center mb-1.5 px-1">
             <span className="text-xs font-black text-slate-600">
               命令キュー ({commands.length}/{maze.maxCommands})
@@ -3028,16 +2998,22 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
             {commands.map((cmd, idx) => (
               <div
                 key={idx}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black shadow-sm transition-all ${
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black shadow-xs transition-all ${
                   executingIndex === idx
                     ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-300 scale-110 z-10'
+                    : cmd === 'CALL_F1'
+                    ? 'bg-purple-600 text-white border border-purple-700'
+                    : cmd.includes('IF_')
+                    ? 'bg-rose-500 text-white border border-rose-600'
+                    : cmd.includes('FORWARD_2') || cmd.includes('FORWARD_3')
+                    ? 'bg-emerald-600 text-white border border-emerald-700'
+                    : cmd === 'WHILE_NOT_WALL'
+                    ? 'bg-amber-600 text-white border border-amber-700'
                     : 'bg-sky-500 text-white border border-sky-600'
                 }`}
               >
                 <span>{idx + 1}.</span>
-                {cmd === 'FORWARD' && <span>⬆️ すすむ</span>}
-                {cmd === 'TURN_LEFT' && <span>↩️ ひだり</span>}
-                {cmd === 'TURN_RIGHT' && <span>↪️ みぎ</span>}
+                {getCommandBadge(cmd)}
               </div>
             ))}
             {commands.length === 0 && (
@@ -3049,34 +3025,206 @@ export const AlgoMazeGame: React.FC<AlgoMazeGameProps> = ({
         </div>
 
         {/* Available Action Cards Bar */}
-        <div className="w-full max-w-md grid grid-cols-3 gap-2 mb-3">
-          <button
-            onClick={() => addCommand('FORWARD')}
-            disabled={isRunning || commands.length >= maze.maxCommands}
-            className="py-2 px-2 bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 text-sky-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
-          >
-            <ArrowUp className="w-5 h-5 text-sky-600" />
-            <span>前にすすむ</span>
-            <span className="text-[10px] text-sky-600/80 font-normal">正面へ1マス</span>
-          </button>
-          <button
-            onClick={() => addCommand('TURN_LEFT')}
-            disabled={isRunning || commands.length >= maze.maxCommands}
-            className="py-2 px-2 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
-          >
-            <ArrowLeft className="w-5 h-5 text-amber-600" />
-            <span>左を向く</span>
-            <span className="text-[10px] text-amber-700/80 font-normal">左に90°回転</span>
-          </button>
-          <button
-            onClick={() => addCommand('TURN_RIGHT')}
-            disabled={isRunning || commands.length >= maze.maxCommands}
-            className="py-2 px-2 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
-          >
-            <ArrowRight className="w-5 h-5 text-indigo-600" />
-            <span>右を向く</span>
-            <span className="text-[10px] text-indigo-700/80 font-normal">右に90°回転</span>
-          </button>
+        <div className="w-full max-w-md mb-3">
+          {currentGrade === 3 && (
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => addCommand('FORWARD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2.5 px-2 bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 text-sky-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowUp className="w-5 h-5 text-sky-600" />
+                <span>1歩すすむ</span>
+                <span className="text-[10px] text-sky-600/80 font-normal">正面へ1マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_LEFT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2.5 px-2 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowLeft className="w-5 h-5 text-amber-600" />
+                <span>左を向く</span>
+                <span className="text-[10px] text-amber-700/80 font-normal">左に90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_RIGHT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2.5 px-2 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-800 rounded-2xl font-black text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-sm active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowRight className="w-5 h-5 text-indigo-600" />
+                <span>右を向く</span>
+                <span className="text-[10px] text-indigo-700/80 font-normal">右に90°回転</span>
+              </button>
+            </div>
+          )}
+
+          {currentGrade === 4 && (
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => addCommand('FORWARD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 text-sky-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowUp className="w-4 h-4 text-sky-600" />
+                <span>1歩すすむ</span>
+                <span className="text-[9px] text-sky-600/80 font-normal">正面へ1マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('FORWARD_2')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 text-emerald-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <FastForward className="w-4 h-4 text-emerald-600" />
+                <span>👟 2歩すすむ</span>
+                <span className="text-[9px] text-emerald-700/80 font-normal">直線2マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('FORWARD_3')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Zap className="w-4 h-4 text-amber-600" />
+                <span>🚀 3歩ダッシュ</span>
+                <span className="text-[9px] text-amber-700/80 font-normal">直線3マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_LEFT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowLeft className="w-4 h-4 text-amber-600" />
+                <span>左を向く</span>
+                <span className="text-[9px] text-amber-700/80 font-normal">左90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_RIGHT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowRight className="w-4 h-4 text-indigo-600" />
+                <span>右を向く</span>
+                <span className="text-[9px] text-indigo-700/80 font-normal">右90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('LOOP_FWD_RIGHT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 text-purple-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Repeat className="w-4 h-4 text-purple-600" />
+                <span>🔁 前進+右折</span>
+                <span className="text-[9px] text-purple-700/80 font-normal">前進して右向く</span>
+              </button>
+            </div>
+          )}
+
+          {currentGrade === 5 && (
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => addCommand('FORWARD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 text-sky-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowUp className="w-4 h-4 text-sky-600" />
+                <span>1歩すすむ</span>
+                <span className="text-[9px] text-sky-600/80 font-normal">正面へ1マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('FORWARD_2')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 text-emerald-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <FastForward className="w-4 h-4 text-emerald-600" />
+                <span>👟 2歩すすむ</span>
+                <span className="text-[9px] text-emerald-700/80 font-normal">直線2マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_LEFT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowLeft className="w-4 h-4 text-amber-600" />
+                <span>左を向く</span>
+                <span className="text-[9px] text-amber-700/80 font-normal">左90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_RIGHT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowRight className="w-4 h-4 text-indigo-600" />
+                <span>右を向く</span>
+                <span className="text-[9px] text-indigo-700/80 font-normal">右90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('IF_WALL_RIGHT_ELSE_FWD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-rose-50 hover:bg-rose-100 border-2 border-rose-300 text-rose-900 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Zap className="w-4 h-4 text-rose-600" />
+                <span>🔀 壁なら右折</span>
+                <span className="text-[9px] text-rose-700/80 font-normal">道なら前進</span>
+              </button>
+              <button
+                onClick={() => addCommand('IF_WALL_LEFT_ELSE_FWD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-rose-50 hover:bg-rose-100 border-2 border-rose-300 text-rose-900 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Zap className="w-4 h-4 text-rose-600" />
+                <span>🔀 壁なら左折</span>
+                <span className="text-[9px] text-rose-700/80 font-normal">道なら前進</span>
+              </button>
+            </div>
+          )}
+
+          {currentGrade === 6 && (
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => addCommand('FORWARD')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-sky-50 hover:bg-sky-100 border-2 border-sky-300 text-sky-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowUp className="w-4 h-4 text-sky-600" />
+                <span>1歩すすむ</span>
+                <span className="text-[9px] text-sky-600/80 font-normal">正面へ1マス</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_LEFT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowLeft className="w-4 h-4 text-amber-600" />
+                <span>左を向く</span>
+                <span className="text-[9px] text-amber-700/80 font-normal">左90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('TURN_RIGHT')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="py-2 px-1.5 bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-800 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <ArrowRight className="w-4 h-4 text-indigo-600" />
+                <span>右を向く</span>
+                <span className="text-[9px] text-indigo-700/80 font-normal">右90°回転</span>
+              </button>
+              <button
+                onClick={() => addCommand('WHILE_NOT_WALL')}
+                disabled={isRunning || commands.length >= maze.maxCommands}
+                className="col-span-1 py-2 px-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 text-amber-900 rounded-2xl font-black text-xs flex flex-col items-center gap-0.5 shadow-xs active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Zap className="w-4 h-4 text-amber-600" />
+                <span>🚀 壁まで直進</span>
+                <span className="text-[9px] text-amber-700/80 font-normal">壁の手前で停止</span>
+              </button>
+              <button
+                onClick={() => addCommand('CALL_F1')}
+                disabled={isRunning || commands.length >= maze.maxCommands || f1Commands.length === 0}
+                className="col-span-2 py-2 px-2 bg-gradient-to-r from-purple-500 via-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-40"
+              >
+                <Box className="w-4 h-4 text-yellow-300" />
+                <span>📦 関数 F1 を実行！</span>
+                <span className="text-[10px] text-purple-200">({f1Commands.length}命令)</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Execute Button */}

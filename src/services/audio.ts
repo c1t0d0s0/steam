@@ -100,6 +100,14 @@ class SoundEngine {
     }
   }
 
+  playSuccess() {
+    this.playCorrect();
+  }
+
+  playError() {
+    this.playWrong();
+  }
+
   // Shiny Star Coin jingle
   playCoin() {
     if (!this.enabled) return;
@@ -221,6 +229,36 @@ class SoundEngine {
       popGain.connect(this.ctx.destination);
       popOsc.start(now + 0.5);
       popOsc.stop(now + 0.7);
+    } catch (e) {
+      console.warn('Audio play failed', e);
+    }
+  }
+
+  // Radiant Legendary Fanfare (Sparkling high arpeggio + triumphant chord)
+  playLegendary() {
+    if (!this.enabled) return;
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      // High arpeggio notes: C5, E5, G5, B5, C6, E6, G6
+      const notes = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51, 1567.98];
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        const startTime = now + idx * 0.08;
+        const duration = idx === notes.length - 1 ? 0.8 : 0.25;
+
+        osc.type = idx >= notes.length - 2 ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        gain.gain.setValueAtTime(0.22, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx!.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      });
     } catch (e) {
       console.warn('Audio play failed', e);
     }

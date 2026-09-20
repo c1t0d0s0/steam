@@ -340,6 +340,86 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         examTip: '【天才プログラマー認定】無駄な方向転換を省いた完璧なアルゴリズムの構築に成功しました！'
       }
     }
+  },
+  circuit: {
+    1: {
+      title: '超電導・量子電気回路パズル (EX Lv.1)',
+      badge: 'EX裏 Lv.1',
+      puzzle: {
+        id: 'ex_c1',
+        title: 'ブリッジ回路と電位差ゼロの幻影電球',
+        question: '中央の電球Cを流れる電流はどうなるでしょう？',
+        puzzleType: 'brightness_quiz',
+        batteries: [{ id: 'bat1', x: 20, y: 80, count: 1, connection: 'series' }],
+        bulbs: [
+          { id: 'A', label: '電球A', x: 40, y: 35 },
+          { id: 'B', label: '電球B', x: 70, y: 35 },
+          { id: 'C', label: '電球C（中央）', x: 55, y: 55 },
+          { id: 'D', label: '電球D', x: 40, y: 75 },
+          { id: 'E', label: '電球E', x: 70, y: 75 }
+        ],
+        switches: [{ id: 'SW1', label: 'メインスイッチ', x: 30, y: 80, defaultOn: true }],
+        options: [
+          { id: 'opt1', text: '電球Cには電流が流れず、点灯しない（明るさ0）', correct: true },
+          { id: 'opt2', text: '電球Cが一番明るく点灯する（明るさ2）', correct: false },
+          { id: 'opt3', text: 'すべての電球が同じ明るさで点灯する', correct: false }
+        ],
+        explanation: '上側の枝（電球AとB）と下側の枝（電球DとE）の抵抗比が等しいため、電球Cの両端の電位（電気の高さ）が全く同じになります（ホイートストンブリッジ回路）。電位差がゼロなので電球Cには一切電流が流れず消灯します！',
+        examTip: '【中学受験最難関のツボ】対称なブリッジ回路の中央の電球には電流が流れません！難関校（灘・開成）で出題される幻影電球の見破りテクニックです！'
+      }
+    },
+    2: {
+      title: '超電導・量子電気回路パズル (EX Lv.2)',
+      badge: 'EX裏 Lv.2',
+      puzzle: {
+        id: 'ex_c2',
+        title: '乾電池3個直列＋3分岐混列回路の電流比',
+        question: '乾電池3個を直列につなぎ、電球Aの直列に(電球Bと電球Cの並列)をつなぎました。電球Aの明るさはいくつ？',
+        puzzleType: 'brightness_quiz',
+        batteries: [{ id: 'bat1', x: 20, y: 80, count: 3, connection: 'series' }],
+        bulbs: [
+          { id: 'A', label: '電球A（直列）', x: 45, y: 40 },
+          { id: 'B', label: '電球B（並列上）', x: 70, y: 30 },
+          { id: 'C', label: '電球C（並列下）', x: 70, y: 60 }
+        ],
+        options: [
+          { id: 'opt1', text: '明るさ 2 （電流 2）', correct: true },
+          { id: 'opt2', text: '明るさ 1 （電流 1）', correct: false },
+          { id: 'opt3', text: '明るさ 3/2 （電流 1.5）', correct: false },
+          { id: 'opt4', text: '明るさ 3 （電流 3）', correct: false }
+        ],
+        explanation: '全体の合成抵抗は、電球Aの抵抗1＋並列部分(BとC)の合成抵抗1/2 = 1.5（3/2）です。乾電池3個（電圧3）なので、回路全体に流れる電流は「3 ÷ 1.5 = 2」！したがって電球Aには電流2が流れ、電球BとCにはそれぞれ半分ずつの電流1が流れます！',
+        examTip: '【混列回路の合成抵抗の極意】並列部分を1つの抵抗（1/2）に置き換えて直列と足し算（1 + 1/2 = 1.5）！全体の電圧 ÷ 全体の抵抗 で主幹電流を一発計算できます！'
+      }
+    },
+    3: {
+      title: '超電導・量子電気回路パズル (EX Lv.3)',
+      badge: 'EX裏 Lv.3',
+      puzzle: {
+        id: 'ex_c3',
+        title: '【超難関EX裏】究極のショート・マトリクスパズル',
+        question: 'スイッチSW1, SW2, SW3を操作して、【電球Aと電球Cだけを点灯】させ、電球Bをショート（短絡）させて消灯させてください！',
+        puzzleType: 'switch_target',
+        batteries: [{ id: 'bat1', x: 15, y: 80, count: 2, connection: 'series' }],
+        bulbs: [
+          { id: 'A', label: '電球A', x: 35, y: 40 },
+          { id: 'B', label: '電球B', x: 60, y: 40 },
+          { id: 'C', label: '電球C', x: 85, y: 40 }
+        ],
+        switches: [
+          { id: 'SW1', label: 'SW1（主電源）', x: 25, y: 80, defaultOn: false },
+          { id: 'SW2', label: 'SW2（電球Bバイパス）', x: 60, y: 20, defaultOn: false },
+          { id: 'SW3', label: 'SW3（電球C分岐）', x: 75, y: 60, defaultOn: false }
+        ],
+        targetCondition: {
+          requiredOn: ['A', 'C'],
+          requiredOff: ['B'],
+          description: '電球AとCのみ点灯（Bは消灯）'
+        },
+        explanation: 'SW1を閉じて回路全体に通電し、SW2を閉じることで電球Bの両端が導線だけで直結されてショート（バイパス）し消灯します。SW3を閉じることで電球Cに電流が流れ、見事に「電球AとCのみ点灯」が成立します！',
+        examTip: '【超電導マスター認定】ショート回路の原理（電流は抵抗のない導線を選んで一気に流れる）を完全制覇しました！これで中学受験の電気分野は向かうところ敵なしです！'
+      }
+    }
   }
 };
 
