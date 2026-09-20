@@ -3,7 +3,7 @@ import { Star, Play, Award, ChevronRight, X, Lock, Sparkles } from 'lucide-react
 import { UserProgress, getStageProgressData, isExIslandUnlocked } from '../../services/storage';
 import { sound } from '../../services/audio';
 
-export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section';
+export type GameModuleType = 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section' | 'binary_cipher';
 
 export interface Island {
   id: string;
@@ -55,7 +55,7 @@ export const ISLANDS: Island[] = [
     category: 'T',
     title: 'テックラボ',
     subtitle: 'AI・暗号研究所',
-    examTopic: 'アルゴリズム的思考・ループ処理と最短経路探索',
+    examTopic: 'アルゴリズム的思考＆論理回路（AND/OR/NOT）・2進数・デジタル暗号',
     icon: '💻',
     bgGradient: 'from-cyan-400 via-teal-500 to-emerald-600',
     borderColor: 'border-cyan-300',
@@ -64,6 +64,12 @@ export const ISLANDS: Island[] = [
         type: 'algo_maze',
         name: 'アルゴリズム迷路探索',
         stagePrefix: 'algo',
+        levels: [1, 2, 3, 4, 5, 6]
+      },
+      {
+        type: 'binary_cipher',
+        name: '論理回路＆2進数・暗号解読パズル',
+        stagePrefix: 'cipher',
         levels: [1, 2, 3, 4, 5, 6]
       }
     ]
@@ -207,6 +213,12 @@ export const ISLANDS: Island[] = [
         type: 'cross_section',
         name: '【EX裏】多面体切断・極限断面幾何パズル',
         stagePrefix: 'ex_section',
+        levels: [1, 2, 3]
+      },
+      {
+        type: 'binary_cipher',
+        name: '【EX裏】量子ビット・暗号解読・超論理ネットワーク',
+        stagePrefix: 'ex_cipher',
         levels: [1, 2, 3]
       }
     ]

@@ -10,6 +10,7 @@ import { ContraptionGame } from './components/modules/engineering/ContraptionGam
 import { CubeNetGame } from './components/modules/art/CubeNetGame';
 import { CrossSectionGame } from './components/modules/art/CrossSectionGame';
 import { AlgoMazeGame } from './components/modules/tech/AlgoMazeGame';
+import { BinaryCipherGame } from './components/modules/tech/BinaryCipherGame';
 import { StampBookModal } from './components/gamification/StampBookModal';
 import { ProfileModal } from './components/gamification/ProfileModal';
 import { GachaModal } from './components/gamification/GachaModal';
@@ -335,7 +336,8 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
                 contraption: 'ex_contraption',
                 cube_net: 'ex_net',
                 algo_maze: 'ex_algo',
-                cross_section: 'ex_section'
+                cross_section: 'ex_section',
+                binary_cipher: 'ex_cipher'
               };
               const exDef = getExPuzzle(type, level);
               setSelectedIslandId('ex_island');
@@ -360,7 +362,8 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               contraption: 'engineering',
               cube_net: 'art',
               cross_section: 'art',
-              algo_maze: 'tech'
+              algo_maze: 'tech',
+              binary_cipher: 'tech'
             };
             setSelectedIslandId(gameToIsland[type]);
             setActiveGame({ type, level });
@@ -522,6 +525,24 @@ export const App: React.FC<AppProps> = ({ autoPromptDaily }) => {
               customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
               customTitle={activeGame.customTitle}
               customBadge={activeGame.customBadge}
+            />
+          )}
+
+          {activeGame.type === 'binary_cipher' && (
+            <BinaryCipherGame
+              level={activeGame.level}
+              grade={progress.grade}
+              onComplete={handleGameComplete}
+              onBack={() => {
+                setActiveGame(null);
+                if (activeGame.isDaily) setIsDailyOpen(true);
+                if (activeGame.isEX) setSelectedIslandId('ex_island');
+              }}
+              onNextLevel={activeGame.isDaily ? handleDailyNext : (activeGame.level < (activeGame.isEX ? 3 : 6) ? handleNextLevel : undefined)}
+              customPuzzles={activeGame.customPuzzle ? [activeGame.customPuzzle] : undefined}
+              customTitle={activeGame.customTitle}
+              customBadge={activeGame.customBadge}
+              isEX={activeGame.isEX}
             />
           )}
         </>

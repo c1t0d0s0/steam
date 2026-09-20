@@ -1254,6 +1254,131 @@ export const generateCrossSectionPuzzle = (
 };
 
 // =============================================================================
+// Tech Island: Binary & Logic Gate Cipher Puzzle Generator
+// =============================================================================
+
+export const generateBinaryCipherPuzzle = (
+  solvedSignatures: Set<string>,
+  grade: number = 4
+): { puzzle: any; signature: string } => {
+  const g = Math.min(Math.max(grade, 3), 6);
+
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const seed = randInt(1000, 9999);
+    const signature = `cipher:g${g}_seed${seed}`;
+    if (solvedSignatures.has(signature)) continue;
+
+    let puzzle: any;
+    if (g === 3) {
+      // 2進数 4ビット変換（例: 8 + 2 + 1 = 11）
+      const decimalVal = randInt(1, 15);
+      const b3 = (decimalVal & 8) ? 1 : 0;
+      const b2 = (decimalVal & 4) ? 1 : 0;
+      const b1 = (decimalVal & 2) ? 1 : 0;
+      const b0 = (decimalVal & 1) ? 1 : 0;
+      const binaryStr = `${b3}${b2}${b1}${b0}`;
+
+      puzzle = {
+        id: `daily_cipher_${seed}`,
+        title: '2進数ビット暗号解読ミッション',
+        subtitle: `十進数「${decimalVal}」を4ビットで作ろう！`,
+        question: `コンピュータは0と1だけで数を数えます。4つのスイッチ（8, 4, 2, 1）を使って、十進数の「${decimalVal}」を表す2進数はどれかな？`,
+        puzzleType: 'binary_match',
+        targetDecimal: decimalVal,
+        options: [
+          { id: 'opt_correct', text: `${binaryStr}₂ (8×${b3} + 4×${b2} + 2×${b1} + 1×${b0} = ${decimalVal})`, correct: true },
+          { id: 'opt_w1', text: `${(b3 ? 0 : 1)}${b2}${b1}${b0}₂`, correct: false },
+          { id: 'opt_w2', text: `${b3}${(b2 ? 0 : 1)}${b1}${b0}₂`, correct: false },
+          { id: 'opt_w3', text: `${b3}${b2}${(b1 ? 0 : 1)}${b0}₂`, correct: false }
+        ],
+        explanation: `正解！2進数「${binaryStr}₂」は、8の位が${b3}、4の位が${b2}、2の位が${b1}、1の位が${b0}なので、合計は ${decimalVal} になります！`,
+        examTip: '【2進数の位取り】右から順に「1, 2, 4, 8, 16...」と2倍ずつ位が大きくなります！'
+      };
+    } else if (g === 4) {
+      // 論理ゲート（AND, OR, NOT）
+      const gates = [
+        { type: 'AND', question: 'スイッチAとスイッチBの両方がONの時だけLEDが点灯する論理回路はどれかな？', answer: 'ANDゲート（論理積回路）', tip: '両方成立で1になるのがAND！' },
+        { type: 'OR', question: 'スイッチAまたはスイッチBの少なくともどちらか一方がONなら警報が鳴る回路はどれかな？', answer: 'ORゲート（論理和回路）', tip: 'いずれかが1で1になるのがOR！' },
+        { type: 'NOT', question: '入力がOFF（0）のときにLEDが点灯（1）し、入力がON（1）のときに消灯（0）する反転回路は？', answer: 'NOTゲート（インバータ・論理否定回路）', tip: '0と1を真逆にひっくり返すのがNOT！' }
+      ];
+      const selected = gates[seed % gates.length];
+
+      puzzle = {
+        id: `daily_cipher_${seed}`,
+        title: '基本論理ゲート照合パズル',
+        subtitle: `${selected.type}回路の働きを当てよう！`,
+        question: selected.question,
+        puzzleType: 'logic_quiz',
+        options: [
+          { id: 'opt_correct', text: selected.answer, correct: true },
+          { id: 'opt_w1', text: selected.type === 'AND' ? 'ORゲート（論理和回路）' : 'ANDゲート（論理積回路）', correct: false },
+          { id: 'opt_w2', text: 'XORゲート（排他的論理和回路）', correct: false },
+          { id: 'opt_w3', text: '直列抵抗回路', correct: false }
+        ],
+        explanation: `大正解！${selected.answer}です。${selected.tip}`,
+        examTip: '【論理回路の3大基本ゲート】AND・OR・NOTの組み合わせがあらゆるコンピュータ演算の原点です！'
+      };
+    } else if (g === 5) {
+      // シーザー暗号
+      const shift = 1 + (seed % 3);
+      puzzle = {
+        id: `daily_cipher_${seed}`,
+        title: 'シーザー暗号解読チャレンジ',
+        subtitle: `シフト量 +${shift} の秘密メッセージ`,
+        question: `古代ローマのカエサル（シーザー）が使った文字シフト暗号です。アルファベットを「+${shift}」文字ずらす暗号で、【D O G】を暗号化するとどうなるかな？`,
+        puzzleType: 'cipher_quiz',
+        options: [
+          { id: 'opt_correct', text: shift === 1 ? 'E P H (+1シフト)' : shift === 2 ? 'F Q I (+2シフト)' : 'G R J (+3シフト)', correct: true },
+          { id: 'opt_w1', text: 'C N F (-1シフト)', correct: false },
+          { id: 'opt_w2', text: 'D O G (無変換)', correct: false },
+          { id: 'opt_w3', text: 'Z B C (ランダム変換)', correct: false }
+        ],
+        explanation: `正解！各文字をアルファベット順に+${shift}文字進めると、暗号メッセージが完成します！`,
+        examTip: '【シーザー暗号】文字を一定数スライドさせる換字式暗号の代表格！中学入試の規則性・暗号問題で頻出です！'
+      };
+    } else {
+      // 小6: 半加算器（Half Adder）
+      puzzle = {
+        id: `daily_cipher_${seed}`,
+        title: '半加算器（Half Adder）の計算原理',
+        subtitle: '1ビットの足し算を論理ゲートで作る！',
+        question: '入力 A=1, B=1 のとき、1ビットの和 Sum (A ⊕ B) と繰り上がり Carry (A · B) の出力はどうなるかな？',
+        puzzleType: 'logic_quiz',
+        options: [
+          { id: 'opt_correct', text: '和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！', correct: true },
+          { id: 'opt_w1', text: '和 Sum＝1、繰り上がり Carry＝0', correct: false },
+          { id: 'opt_w2', text: '和 Sum＝1、繰り上がり Carry＝1', correct: false },
+          { id: 'opt_w3', text: '和 Sum＝0、繰り上がり Carry＝0', correct: false }
+        ],
+        explanation: '正解！1 + 1 = 2（二進数で 10₂）。XORゲートで出力される和 Sum は「0」、ANDゲートで出力される繰り上がり Carry は「1」となります！',
+        examTip: '【半加算器の美しさ】和はXOR、繰り上がりはAND！わずか2つのゲートで算数の足し算が実現します！'
+      };
+    }
+
+    return { puzzle, signature };
+  }
+
+  // Fallback
+  return {
+    signature: `cipher:g${g}_fallback`,
+    puzzle: {
+      id: 'daily_cipher_fallback',
+      title: '論理回路＆2進数暗号ミッション',
+      subtitle: '2進数の秘密を解き明かそう！',
+      question: '2進数の「1010₂」は十進数でいくつかな？',
+      puzzleType: 'binary_match',
+      options: [
+        { id: 'opt1', text: '「10」（8×1 + 4×0 + 2×1 + 1×0）！', correct: true },
+        { id: 'opt2', text: '8', correct: false },
+        { id: 'opt3', text: '12', correct: false }
+      ],
+      explanation: '正解は「10」！8 + 2 = 10 となります！',
+      examTip: '各ビットの重みを足し算しよう！'
+    }
+  };
+};
+
+// =============================================================================
 // Master Daily Challenge Generator (5 Questions: 1 from each island)
 // =============================================================================
 
@@ -1322,8 +1447,19 @@ export const generateDailyChallenge = (
         ...generateCubeNetPuzzle(solvedSet, grade)
       };
 
-  // 5. Tech Island: Algo Maze
-  const algoMaze = generateMazePuzzle(solvedSet, grade);
+  // 5. Tech Island: Alternate between Algo Maze and Binary Cipher by day
+  const techIsBinaryCipher = dateDay % 2 === 0;
+  const techQuestion = techIsBinaryCipher
+    ? {
+        gameType: 'binary_cipher' as const,
+        title: '論理回路＆2進数・暗号パズル',
+        ...generateBinaryCipherPuzzle(solvedSet, grade)
+      }
+    : {
+        gameType: 'algo_maze' as const,
+        title: 'アルゴ・迷路',
+        ...generateMazePuzzle(solvedSet, grade)
+      };
 
   const questions: DailyChallengeQuestion[] = [
     {
@@ -1365,11 +1501,11 @@ export const generateDailyChallenge = (
     {
       islandId: 'tech',
       islandName: 'テックラボ',
-      islandIcon: '🤖',
-      gameType: 'algo_maze',
-      title: 'アルゴ・迷路',
-      signature: algoMaze.signature,
-      puzzle: algoMaze.puzzle
+      islandIcon: '💻',
+      gameType: techQuestion.gameType,
+      title: techQuestion.title,
+      signature: techQuestion.signature,
+      puzzle: techQuestion.puzzle
     }
   ];
 

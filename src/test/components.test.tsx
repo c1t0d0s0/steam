@@ -221,11 +221,11 @@ describe('App Component Integration', () => {
     const gradeSelect = screen.getByRole('combobox') as HTMLSelectElement;
     fireEvent.change(gradeSelect, { target: { value: '6' } });
 
-    // Now in Grade 6, stage banner indicates Grade 6 and Science/Math/Engineering/Art are 0 / 36, and 1 island (Tech) is 0 / 18
+    // Now in Grade 6, stage banner indicates Grade 6 and all 5 islands are 0 / 36
     expect(screen.getByText('🎒 小学6年生レベル')).toBeInTheDocument();
     expect(screen.queryByText('3 / 36')).not.toBeInTheDocument();
-    expect(screen.getAllByText('0 / 18')).toHaveLength(1);
-    expect(screen.getAllByText('0 / 36')).toHaveLength(4);
+    expect(screen.queryAllByText('0 / 18')).toHaveLength(0);
+    expect(screen.getAllByText('0 / 36')).toHaveLength(5);
 
     // Switch back to Grade 3
     fireEvent.change(gradeSelect, { target: { value: '3' } });
@@ -375,7 +375,7 @@ describe('App Component Integration', () => {
     // Click EX island to open stage select
     fireEvent.click(screen.getByText('EXアイランド'));
     expect(screen.getByText('【EX裏】多重モーメント・連鎖天秤パズル')).toBeInTheDocument();
-    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(9);
+    expect(screen.getAllByText('Lv.1 (EX初級)').length).toBe(10);
 
     // Launch EX Level 1
     const startButtons = screen.getAllByText('スタート');
@@ -846,6 +846,116 @@ describe('App Component Integration', () => {
 
     // Select correct option
     fireEvent.click(screen.getByText(/8個の小立方体に分かれ、切断面の総面積は「108cm²」！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders BinaryCipherGame on Tech Island and tests bit switches and quiz in Grade 3', () => {
+    localStorage.clear();
+    render(<App />);
+
+    // Click on Tech Island (テックラボ)
+    fireEvent.click(screen.getByText('テックラボ'));
+
+    // Both Algo Maze and Binary Cipher games should be visible
+    expect(screen.getByText('アルゴリズム迷路探索')).toBeInTheDocument();
+    expect(screen.getByText('論理回路＆2進数・暗号解読パズル')).toBeInTheDocument();
+
+    // Start Binary Cipher Lv.1 (index 6, since Algo Maze has 6 levels 0..5)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[6]);
+
+    // Check game header and question
+    expect(screen.getAllByText(/0と1のスイッチ（1ビットの世界）/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/コンピュータは電気の「ON（1）」と「OFF（0）」/)).toBeInTheDocument();
+
+    // Test switch input toggle (1の位 button)
+    const bit0Btn = screen.getByText('1の位 (2⁰)');
+    fireEvent.click(bit0Btn);
+    expect(screen.getByText('目標一致！')).toBeInTheDocument();
+
+    // Test Hint / Strategy modal
+    const helpBtn = screen.getByText('ヒント');
+    fireEvent.click(helpBtn);
+    expect(screen.getByText('論理回路・2進数・暗号解読ノート')).toBeInTheDocument();
+    expect(screen.getByText('【基本論理ゲート真理値】')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('わかった！閉じる'));
+    expect(screen.queryByText('論理回路・2進数・暗号解読ノート')).not.toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/「ビット（bit）」/));
+
+    // Stage cleared!
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    expect(screen.getByText(/電気が通っている状態を「1」/)).toBeInTheDocument();
+  });
+
+  it('renders BinaryCipherGame for Grade 4 and Grade 6 with logic gates and half adder', () => {
+    // Grade 4
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 4 })
+    );
+
+    const { unmount: unmountG4 } = render(<App />);
+    fireEvent.click(screen.getByText('テックラボ'));
+    const startBtnsG4 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG4[6]); // BinaryCipher Lv.1
+
+    // Grade 4 Lv.1: AND Gate
+    expect(screen.getAllByText(/【ANDゲート】両方ONで初めて動く！/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/「AND（アンド）ゲート」！/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/「AND（アンド）ゲート」！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+    unmountG4();
+
+    // Grade 6
+    localStorage.clear();
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ grade: 6 })
+    );
+
+    render(<App />);
+    fireEvent.click(screen.getByText('テックラボ'));
+    const startBtnsG6 = screen.getAllByText('スタート');
+    fireEvent.click(startBtnsG6[6]); // BinaryCipher Lv.1
+
+    // Grade 6 Lv.1: Half Adder
+    expect(screen.getAllByText(/【半加算器（Half Adder）】計算回路の誕生！/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/和 Sum＝0、繰り上がり Carry＝1（二進数で 10₂ ＝ 十進数2）！/));
+    expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
+  });
+
+  it('renders EX Island with BinaryCipher Puzzle and launches it', () => {
+    localStorage.clear();
+    const mockStamps = [
+      '2026-09-01', '2026-09-02', '2026-09-03',
+      '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07'
+    ];
+    localStorage.setItem(
+      'steam_lab_adventure_user_v1',
+      JSON.stringify({ stamps: mockStamps })
+    );
+
+    render(<App />);
+
+    // Click EX island
+    fireEvent.click(screen.getByText('EXアイランド'));
+    expect(screen.getByText('【EX裏】量子ビット・暗号解読・超論理ネットワーク')).toBeInTheDocument();
+
+    // Launch EX BinaryCipher Lv.1 (index 27, 10th game Lv.1)
+    const startBtns = screen.getAllByText('スタート');
+    fireEvent.click(startBtns[27]);
+
+    expect(screen.getByText(/全加算器（Full Adder）と多重リップルキャリー回路/)).toBeInTheDocument();
+    expect(screen.getByText(/和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！/)).toBeInTheDocument();
+
+    // Select correct option
+    fireEvent.click(screen.getByText(/和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！/));
     expect(screen.getByText('クリアおめでとう！')).toBeInTheDocument();
   });
 });

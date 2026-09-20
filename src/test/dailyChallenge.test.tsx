@@ -8,6 +8,7 @@ import {
   generateCubeNetPuzzle,
   generateCrossSectionPuzzle,
   generateMazePuzzle,
+  generateBinaryCipherPuzzle,
   generateDailyChallenge
 } from '../services/problemGenerator';
 import {
@@ -111,7 +112,7 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
     });
   });
 
-  describe('Technology Island Generator (Algo Maze)', () => {
+  describe('Technology Island Generator (Algo Maze & Binary Cipher)', () => {
     it('generates reachable mazes within command limit', () => {
       const { puzzle, signature } = generateMazePuzzle(new Set());
       expect(signature).toMatch(/^algo:/);
@@ -119,6 +120,17 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
       expect(puzzle.maxCommands).toBeGreaterThanOrEqual(4);
       expect(puzzle.start).toBeDefined();
       expect(puzzle.goal).toBeDefined();
+    });
+
+    it('generates solvable binary cipher logic puzzles with correct answer in options', () => {
+      const { puzzle, signature } = generateBinaryCipherPuzzle(new Set());
+      expect(signature).toMatch(/^cipher:/);
+      expect(puzzle.options.length).toBeGreaterThanOrEqual(3);
+      const correctOpt = puzzle.options.find((o: any) => o.correct);
+      expect(correctOpt).toBeDefined();
+      expect(puzzle.title).toBeTruthy();
+      expect(puzzle.explanation).toBeTruthy();
+      expect(puzzle.examTip).toBeTruthy();
     });
   });
 
@@ -137,9 +149,10 @@ describe('Daily Challenge & Dynamic Problem Generator', () => {
       expect(daily.questions[3].gameType).toBe('cube_net');
       expect(daily.questions[4].gameType).toBe('algo_maze');
 
-      // Verify that on even day, circuit is selected
+      // Verify that on even day, circuit and binary_cipher are selected
       const dailyEven = generateDailyChallenge([], '2026-09-20', 4);
       expect(dailyEven.questions[0].gameType).toBe('circuit');
+      expect(dailyEven.questions[4].gameType).toBe('binary_cipher');
 
       // All signatures must be non-empty and distinct
       const signatures = daily.questions.map((q) => q.signature);

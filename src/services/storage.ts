@@ -21,7 +21,7 @@ export interface DailyChallengeQuestion {
   islandId: 'science' | 'math' | 'engineering' | 'art' | 'tech';
   islandName: string;
   islandIcon: string;
-  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section';
+  gameType: 'lever' | 'block' | 'tsurukame' | 'gear' | 'cube_net' | 'algo_maze' | 'circuit' | 'contraption' | 'cross_section' | 'binary_cipher';
   title: string;
   signature: string;
   puzzle: any;
@@ -481,6 +481,13 @@ export const BADGES: Badge[] = [
     category: 'mastery'
   },
   {
+    id: 'b_cipher_master',
+    title: '論理暗号マスター',
+    description: 'テックラボの論理回路＆2進数・暗号解読パズルを全レベル制覇！',
+    icon: '🔐',
+    category: 'mastery'
+  },
+  {
     id: 'b_collector_5',
     title: 'かけだしコレクター',
     description: 'STEAM図鑑のアイテムを5個以上集めた！',
@@ -805,7 +812,10 @@ export const getStageKey = (stagePrefixOrType: string, lvl: number, grade: numbe
     circuit: 'circuit',
     contraption: 'contraption',
     cross_section: 'section',
-    section: 'section'
+    section: 'section',
+    binary_cipher: 'cipher',
+    cipher: 'cipher',
+    ex_cipher: 'ex_cipher'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   return `g${grade}_${prefix}_${lvl}`;
@@ -825,7 +835,10 @@ export const getLegacyStageKey = (stagePrefixOrType: string, lvl: number): strin
     circuit: 'circuit',
     contraption: 'contraption',
     cross_section: 'section',
-    section: 'section'
+    section: 'section',
+    binary_cipher: 'cipher',
+    cipher: 'cipher',
+    ex_cipher: 'ex_cipher'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   return `${prefix}_${lvl}`;
@@ -852,7 +865,10 @@ export const getStageProgressData = (
     circuit: 'circuit',
     contraption: 'contraption',
     cross_section: 'section',
-    section: 'section'
+    section: 'section',
+    binary_cipher: 'cipher',
+    cipher: 'cipher',
+    ex_cipher: 'ex_cipher'
   };
   const prefix = prefixMap[stagePrefixOrType] || stagePrefixOrType;
   const gradeKey = `g${grade}_${prefix}_${lvl}`;
@@ -932,6 +948,11 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
     newlyUnlocked.push('b_section_master');
   }
 
+  // Binary Cipher: cipher_1, cipher_2, cipher_3
+  if ([1, 2, 3].every(lvl => isStageCleared('cipher', lvl)) && !current.has('b_cipher_master')) {
+    newlyUnlocked.push('b_cipher_master');
+  }
+
   // Collector 5
   if (progress.unlockedItems.length >= 5 && !current.has('b_collector_5')) {
     newlyUnlocked.push('b_collector_5');
@@ -963,8 +984,8 @@ export const checkNewBadges = (progress: UserProgress): string[] => {
     newlyUnlocked.push('b_steam_master');
   }
 
-  // Grand Explorer: clear all 6 modules at Lv.6
-  const maxModules = ['lever', 'block', 'tsuru', 'gear', 'net', 'algo'];
+  // Grand Explorer: clear all 10 modules at Lv.6
+  const maxModules = ['lever', 'circuit', 'block', 'tsuru', 'gear', 'contraption', 'net', 'section', 'algo', 'cipher'];
   if (maxModules.every(p => isStageCleared(p, 6)) && !current.has('b_grand_explorer')) {
     newlyUnlocked.push('b_grand_explorer');
   }

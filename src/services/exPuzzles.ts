@@ -531,6 +531,65 @@ export const EX_PUZZLES: Record<GameModuleType, Record<number, ExPuzzleDefinitio
         examTip: '【断頭三角柱の体積公式】難関中学受験の算数で劇的な計算時短になる必殺公式！高さの平均（重心の高さ）× 底面積 でどんな切断柱体も秒速で解けます！'
       }
     }
+  },
+  binary_cipher: {
+    1: {
+      title: '量子ビット・暗号解読・超論理ネットワーク (EX Lv.1)',
+      badge: 'EX裏 Lv.1',
+      puzzle: {
+        id: 'ex_cip1',
+        title: '全加算器（Full Adder）と多重リップルキャリー回路',
+        subtitle: '3つのビット入力を瞬時に加算！',
+        question: '1ビット全加算器（Full Adder）は、2つの入力 A, B と下からの繰り上がり Cin の3つのビットを入力します。入力が A=1, B=1, Cin=1 のとき、和（Sum）と繰り上がり（Cout）はどうなるかな？',
+        puzzleType: 'logic_quiz',
+        options: [
+          { id: 'opt1', text: '和 Sum＝1、繰り上がり Cout＝1（二進数で 11₂ ＝ 十進数3）！', correct: true },
+          { id: 'opt2', text: '和 Sum＝0、繰り上がり Cout＝1（二進数で 10₂ ＝ 十進数2）', correct: false },
+          { id: 'opt3', text: '和 Sum＝1、繰り上がり Cout＝0', correct: false },
+          { id: 'opt4', text: '和 Sum＝0、繰り上がり Cout＝0', correct: false }
+        ],
+        explanation: '正解！1 + 1 + 1 = 3（二進数で 11₂）。したがって 1の位である和 Sum は「1」、繰り上がり Cout も「1」となります！全加算器を直列につなぐことで、何千ビットの超巨大な計算も実行できます！',
+        examTip: '【全加算器の真理値】コンピュータのCPU内部で行われる加算の絶対原則です！A ⊕ B ⊕ Cin で和Sum、多数決論理（A・B ＋ B・Cin ＋ Cin・A）でCoutが出力されます！'
+      }
+    },
+    2: {
+      title: '量子ビット・暗号解読・超論理ネットワーク (EX Lv.2)',
+      badge: 'EX裏 Lv.2',
+      puzzle: {
+        id: 'ex_cip2',
+        title: 'RSA公開鍵暗号と巨大素数の一方向性関数',
+        subtitle: '掛け算は簡単、割り戻す（素因数分解）は宇宙年齢級！',
+        question: '現代のインターネット通信の安全を支えるRSA暗号は、ある数学的性質（一方向性関数）に基づいています。その性質とは次のうちどれかな？',
+        puzzleType: 'logic_quiz',
+        options: [
+          { id: 'opt1', text: '「2つの巨大素数の掛け算」は一瞬だが、その積を「素因数分解」するのは天文学的に困難！', correct: true },
+          { id: 'opt2', text: '足し算を何億回も繰り返すことで暗号化する', correct: false },
+          { id: 'opt3', text: '文字をすべてアルファベット順に3つずらすだけ', correct: false },
+          { id: 'opt4', text: '一度暗号化すると二度と復号できなくなる', correct: false }
+        ],
+        explanation: '正解！例えば素数 89 × 97 = 8633 を計算するのは簡単ですが、「8633 を素因数分解せよ」と言われると計算が何倍も大変になります。これが数百桁の巨大素数になると、世界最強のスーパーコンピュータでも何億年も解けない鉄壁の暗号になります！',
+        examTip: '【公開鍵暗号の数学】中学受験・情報科学の教養として頻出！南京錠のように「誰でも鍵をかけられる（公開鍵）が、開けられるのは自分だけ（秘密鍵）」という画期的な暗号技術です！'
+      }
+    },
+    3: {
+      title: '量子ビット・暗号解読・超論理ネットワーク (EX Lv.3)',
+      badge: 'EX裏 Lv.3',
+      puzzle: {
+        id: 'ex_cip3',
+        title: '【究極EX裏】ド・モルガンの法則と万能NANDゲート',
+        subtitle: 'NANDゲートだけで宇宙のすべての論理を作れる！',
+        question: 'ブール代数の最重要定理「ド・モルガンの法則」によると、「NOT (A AND B)」と同じ論理出力になる式は次のうちどれかな？',
+        puzzleType: 'logic_quiz',
+        options: [
+          { id: 'opt1', text: '「(NOT A) OR (NOT B)」！', correct: true },
+          { id: 'opt2', text: '「(NOT A) AND (NOT B)」', correct: false },
+          { id: 'opt3', text: '「A OR B」', correct: false },
+          { id: 'opt4', text: '「NOT (A OR B)」', correct: false }
+        ],
+        explanation: '正解は「(NOT A) OR (NOT B)」！「AかつBではない」＝「Aではない、またはBではない」という関係です。このド・モルガンの法則により、半導体チップはNANDゲート（またはNORゲート）ただ1種類を組み合わせるだけで、AND・OR・NOT・XORを含むすべての論理回路を製造できるのです！',
+        examTip: '【ド・モルガンの法則】集合と論理・情報科学の金字塔！全体否定のバーを割ると、AND記号とOR記号がひっくり返るという美しい数学の調和です！'
+      }
+    }
   }
 };
 
